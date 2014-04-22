@@ -18,12 +18,12 @@
  TIMEZONE        = 'UTC',
  DATE_FORMAT     = 'YMD'
  START_DATE      = '2012-02-01 00:00:00'
- END_DATE        = '2012-3-01 00:00:00'
+ END_DATE        = '2012-03-01 00:00:00'
  /
 
  &NML_STARTUP
  STARTUP_TYPE      = 'hotstart'
- STARTUP_FILE      = 'dngrid_0005.nc'
+ STARTUP_FILE      = 'dngrid_restart_0005.nc'
  STARTUP_UV_TYPE   = 'set values'
  STARTUP_TURB_TYPE = 'set values'
  STARTUP_TS_TYPE   = 'constant'
