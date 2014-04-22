@@ -14,18 +14,18 @@
 
 
  &NML_CASE
- CASE_TITLE      = 'dngrid'
+ CASE_TITLE      = '$1'
  TIMEZONE        = 'UTC',
  DATE_FORMAT     = 'YMD'
- START_DATE      = '2011-12-26 00:00:00'
- END_DATE        = '2012-02-01 00:00:00'
+ START_DATE      = '2012-12-01 00:00:00'
+ END_DATE        = '2012-013-01 00:00:00'
  /
 
  &NML_STARTUP
- STARTUP_TYPE      = 'coldstart'
- STARTUP_FILE      = 'none'
- STARTUP_UV_TYPE   = 'default'
- STARTUP_TURB_TYPE = 'default'
+ STARTUP_TYPE      = 'hotstart'
+ STARTUP_FILE      = '$1_restart_0005.nc'
+ STARTUP_UV_TYPE   = 'set values'
+ STARTUP_TURB_TYPE = 'set values'
  STARTUP_TS_TYPE   = 'constant'
  STARTUP_T_VALS    = 18
  STARTUP_S_VALS    = 35.0
@@ -51,14 +51,14 @@
 
  &NML_RESTART
  RST_ON  = T,
- RST_FIRST_OUT      = '2012-01-01 00:00:00'
+ RST_FIRST_OUT      = '2012-12-01 00:00:00'
  RST_OUT_INTERVAL   = 'days = 1.0'
  RST_OUTPUT_STACK   =           7
  /
 
  &NML_NETCDF
  NC_ON   = T,
- NC_FIRST_OUT    = '2012-01-01 00:00:00',
+ NC_FIRST_OUT    = '2012-12-01 00:00:00',
  NC_OUT_INTERVAL =  'seconds=600.0',
  NC_OUTPUT_STACK =  0,
  NC_GRID_METRICS = T,
@@ -133,9 +133,9 @@
 
  &NML_OPEN_BOUNDARY_CONTROL
  OBC_ON                      = T,
- OBC_NODE_LIST_FILE          = 'dngrid_obc.dat'
+ OBC_NODE_LIST_FILE          = '$1_obc.dat'
  OBC_ELEVATION_FORCING_ON    = T,
- OBC_ELEVATION_FILE          = 'dngrid_el_obc.nc'
+ OBC_ELEVATION_FILE          = '$1_el_obc.nc'
  OBC_TS_TYPE                 = 3
  OBC_TEMP_NUDGING            = F,
  OBC_TEMP_FILE               = 'none'
@@ -147,15 +147,15 @@
 /
 
  &NML_GRID_COORDINATES
- GRID_FILE       = 'dngrid_grd.dat'
+ GRID_FILE       = '$1_grd.dat'
  GRID_FILE_UNITS = 'meters'
  PROJECTION_REFERENCE  = 'proj=lcc +lon_0=-64.55880 +lat_0=41.78504 +lat_1=39.69152 +lat_2=43.87856'
  SIGMA_LEVELS_FILE     = 'sigma.dat'
- DEPTH_FILE      = 'dngrid_dep.dat'
- CORIOLIS_FILE   = 'dngrid_cor.dat'
- SPONGE_FILE     = 'dngrid_spg.dat'
- BFRIC_FILE='dngrid_bfric.dat'
-VVCOE_FILE='dngrid_vvcoe.dat'
+ DEPTH_FILE      = '$1_dep.dat'
+ CORIOLIS_FILE   = '$1_cor.dat'
+ SPONGE_FILE     = '$1_spg.dat'
+ BFRIC_FILE='$1_bfric.dat'
+VVCOE_FILE='$1_vvcoe.dat'
 /
 
  &NML_GROUNDWATER

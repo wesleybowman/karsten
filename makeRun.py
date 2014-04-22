@@ -6,9 +6,15 @@ gridName = arguments[1]
 year = arguments[2]
 month = arguments[3]
 nextMonth = int(arguments[3])+1
-nextMonth = '0{0}'.format(nextMonth)
+nextYear = int(arguments[2])+1
 
-fileContent = '''
+if nextMonth < 10:
+    nextMonth = '0{0}'.format(nextMonth)
+
+if nextMonth == 13:
+    nextMonth = '01'
+
+top = '''
  !================================================================!
    _______  _     _  _______  _______  _______  ______     _____
   (_______)(_)   (_)(_______)(_______)(_______)(_____ \   (_____)
@@ -27,10 +33,19 @@ fileContent = '''
  CASE_TITLE      = '{0}'
  TIMEZONE        = 'UTC',
  DATE_FORMAT     = 'YMD'
- START_DATE      = '{1}-{2}-01 00:00:00'
- END_DATE        = '{1}-{3}-01 00:00:00'
- /
+ START_DATE      = '{1}-{2}-01 00:00:00' '''.format(gridName, year, month)
 
+if month == '12':
+    middle = ''' END_DATE        = '{0}-{1}-01 00:00:00'
+ /
+'''.format(nextYear, nextMonth)
+else:
+    middle = ''' END_DATE        = '{0}-{1}-01 00:00:00'
+ /
+'''.format(year, nextMonth)
+
+
+bottom = '''
  &NML_STARTUP
  STARTUP_TYPE      = 'hotstart'
  STARTUP_FILE      = '{0}_restart_0005.nc'
@@ -230,10 +245,18 @@ OUT_INTERVAL= 'seconds=1000.0'
 
 '''.format(gridName, year, month, nextMonth)
 
-fileContent = fileContent.split('\n')
+top = top.split('\n')
+middle = middle.split('\n')
+bottom = bottom.split('\n')
 
 outputFile = '{0}_run.nml'.format(gridName)
 
 with open(outputFile, 'w') as f:
-    for line in fileContent:
-        print >> f, line
+    for t in top:
+        print >> f, t
+
+    for m in middle:
+        print >> f, m
+
+    for b in bottom:
+        print >> f, b

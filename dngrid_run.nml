@@ -1,10 +1,11 @@
+
  !================================================================!
-   _______  _     _  _______  _______  _______  ______     _____  
-  (_______)(_)   (_)(_______)(_______)(_______)(_____ \   (_____) 
-   _____    _     _  _        _     _  _  _  _  _____) )  _  __ _ 
+   _______  _     _  _______  _______  _______  ______     _____
+  (_______)(_)   (_)(_______)(_______)(_______)(_____ \   (_____)
+   _____    _     _  _        _     _  _  _  _  _____) )  _  __ _
   |  ___)  | |   | || |      | |   | || ||_|| |(_____ (  | |/ /| |
   | |       \ \ / / | |_____ | |___| || |   | | _____) )_|   /_| |
-  |_|        \___/   \______) \_____/ |_|   |_|(______/(_)\_____/ 
+  |_|        \___/   \______) \_____/ |_|   |_|(______/(_)\_____/
   -- Beta Release
  !                                                                !
  !========DOMAIN DECOMPOSITION USING: METIS 4.0.1 ================!
@@ -16,15 +17,16 @@
  CASE_TITLE      = 'dngrid'
  TIMEZONE        = 'UTC',
  DATE_FORMAT     = 'YMD'
- START_DATE      = '2011-12-26 00:00:00'
- END_DATE        = '2012-02-01 00:00:00'
+ START_DATE      = '2012-11-01 00:00:00' 
+ END_DATE        = '2012-12-01 00:00:00'
  /
 
+
  &NML_STARTUP
- STARTUP_TYPE      = 'coldstart'
- STARTUP_FILE      = 'none'
- STARTUP_UV_TYPE   = 'default'
- STARTUP_TURB_TYPE = 'default'
+ STARTUP_TYPE      = 'hotstart'
+ STARTUP_FILE      = 'dngrid_restart_0005.nc'
+ STARTUP_UV_TYPE   = 'set values'
+ STARTUP_TURB_TYPE = 'set values'
  STARTUP_TS_TYPE   = 'constant'
  STARTUP_T_VALS    = 18
  STARTUP_S_VALS    = 35.0
@@ -43,21 +45,21 @@
  &NML_INTEGRATION
  EXTSTEP_SECONDS =  0.6,
  ISPLIT          =  1
- IRAMP           =  34560  
+ IRAMP           =  34560
  MIN_DEPTH       =  0.5
  STATIC_SSH_ADJ  =  0.0
  /
 
  &NML_RESTART
  RST_ON  = T,
- RST_FIRST_OUT      = '2012-01-01 00:00:00'
+ RST_FIRST_OUT      = '2012-11-01 00:00:00'
  RST_OUT_INTERVAL   = 'days = 1.0'
  RST_OUTPUT_STACK   =           7
  /
 
  &NML_NETCDF
  NC_ON   = T,
- NC_FIRST_OUT    = '2012-01-01 00:00:00',
+ NC_FIRST_OUT    = '2012-11-01 00:00:00',
  NC_OUT_INTERVAL =  'seconds=600.0',
  NC_OUTPUT_STACK =  0,
  NC_GRID_METRICS = T,
@@ -119,7 +121,7 @@
  BAROCLINIC_PRESSURE_GRADIENT    = 'sigma levels'
  SEA_WATER_DENSITY_FUNCTION      = 'dens2'
  RECALCULATE_RHO_MEAN           = F
- INTERVAL_RHO_MEAN              = 'seconds=1800.' 
+ INTERVAL_RHO_MEAN              = 'seconds=1800.'
  TEMPERATURE_ACTIVE              = F,
  SALINITY_ACTIVE                 = F,
  SURFACE_WAVE_MIXING             = F,
@@ -185,12 +187,12 @@ VVCOE_FILE='dngrid_vvcoe.dat'
 &NML_PROBES
 PROBES_ON = F,
 PROBES_NUMBER = 75,
-PROBES_FILE = 'dngrid_timeseries2dgpppdg.nml',
+PROBES_FILE = 'none',
 /
 
 &NML_TURBINE
 TURBINE_ON = F,
-TURBINE_FILE = 'dngrid_turbines.dat'
+TURBINE_FILE = 'none'
 /
 
 &NML_NESTING
