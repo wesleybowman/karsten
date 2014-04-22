@@ -1,20 +1,18 @@
 #!/bin/bash
 gridName="$1"
 year="$2"
-month="$3"
-nextMonth=$((month+1))
-echo "0$nextMonth"
 
 python makeFirstRun.py $gridName $year
 
 export gridName
 ./RUN_PAR2.sh
 wait ${!}
-python moveFile $gridName $year $month
+python moveFile $gridName $year 01
 
-for number in {02..12}
+for month in {02..12}
 do
-    python makeRun.py $gridName $year $number
+    python makeRun.py $gridName $year $month
     ./RUN_PAR2.sh
     wait ${!}
+    python moveFile $gridName $year $month
 done
