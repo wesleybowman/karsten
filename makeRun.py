@@ -232,7 +232,7 @@ OUT_INTERVAL= 'seconds=1000.0'
 
 fileContent = fileContent.split('\n')
 
-outputFile = '{0}_run_restart.nml'.format(gridName)
+outputFile = '{0}_run.nml'.format(gridName)
 
 with open(outputFile, 'w') as f:
     for line in fileContent:
