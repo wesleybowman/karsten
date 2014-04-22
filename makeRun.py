@@ -5,7 +5,8 @@ arguments = sys.argv
 gridName = arguments[1]
 year = arguments[2]
 month = arguments[3]
-nextMonth = str(int(arguments[3])+1)
+nextMonth = int(arguments[3])+1
+nextMonth = '0{0}'.format(nextMonth)
 
 fileContent = '''
  !================================================================!
@@ -32,7 +33,7 @@ fileContent = '''
 
  &NML_STARTUP
  STARTUP_TYPE      = 'hotstart'
- STARTUP_FILE      = '{0}_0005.nc'
+ STARTUP_FILE      = '{0}_restart_0005.nc'
  STARTUP_UV_TYPE   = 'set values'
  STARTUP_TURB_TYPE = 'set values'
  STARTUP_TS_TYPE   = 'constant'
