@@ -1,2 +1,0 @@
-echo "$gridName $year $month"
-
