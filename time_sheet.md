@@ -18,5 +18,7 @@
     until we get down to matlab function calls (except uTides).
 
     Most seem reasonable, need to figure out about uTides.
++5-5:30 --
+    Worked a little on oct2py, and looked into IPython notebooks.
 
 ```
