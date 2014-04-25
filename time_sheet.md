@@ -1,5 +1,4 @@
 
-
 ```diff
 - 2014/04/25
 09:00 - 12:00 + Got my computer to boot
