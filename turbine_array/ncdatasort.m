@@ -13,11 +13,15 @@ period=(TP*3600)/(2*pi);
 
 time=double(time);
 time=time+678942;
+time
 
 
 dt=time(2)-time(1);
+dt
 thour=time/hour;
+thour
 deltat=thour(2)-thour(1);
+deltat
 
 
 nodexy(:,1)=x;

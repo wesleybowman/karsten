@@ -21,4 +21,14 @@
 +5-5:30 --
     Worked a little on oct2py, and looked into IPython notebooks.
 
+- 2014/04/27
++ 9:42-13:09 --
+    Started conversion process on turbine array code.
+
+    From doing the loading, seems like matlab takes 4.851s while python takes
+    31.7ms. More testing may need to be done.
+
+    Had some errors, but that was because MatLab starts at index 1 while python
+    starts at index zero. The error came in because trinodes is an array of
+    indices, so I had to subtract one from all of them for it to be correct.
 ```
