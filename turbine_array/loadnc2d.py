@@ -22,8 +22,10 @@ def loadnc2d(filename):
     trinodes = data.variables['nv'][:]
     siglay = data.variables['siglay'][:]
     siglev = data.variables['siglev'][:]
-    nele = data.variables['nele'][:]
-    node = data.variables['node'][:]
+
+    # Need to use len to get size of dimensions
+    nele = data.dimensions['nele']
+    node = data.dimensions['node']
 
     return (x, y, ua, va, trinodes, el, h, time, siglev, siglay, nbe, a1u, a2u,
-            nele, aw0, awx, awy, node, lon, lat)
+            aw0, awx, awy, lon, lat, nele, node)

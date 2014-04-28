@@ -31,4 +31,25 @@
     Had some errors, but that was because MatLab starts at index 1 while python
     starts at index zero. The error came in because trinodes is an array of
     indices, so I had to subtract one from all of them for it to be correct.
+
+- 2014/04/28
++ 8:30-9 --
+    Looked at the year long automation, there is a bug I was trying to find,
+    need Aidan to point it out. (Turned out there wasn't a bug, just the code
+    Aidan was using was the updated version.)
+
++ 9-15:47 --
+    More turbine array coding. Converted most of the code. Jon and Andy came
+    by, so some discussion with them about linux and python.
+
+
+    Still trying to get cf_u_rated_turbs to work. Having some issues with
+    structures from Matlab. Got them to work, but now it has stopped working
+    for some reason.
+
+    calculate_power is the issue. Having difficulties seeing the problem since
+    its all functional based. Wrote  test script to make it easier. Seems to be
+    a broadcasting error with the structured numpy arrays. Will look more into
+    it tomorrow.
+
 ```
