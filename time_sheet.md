@@ -52,4 +52,33 @@
     a broadcasting error with the structured numpy arrays. Will look more into
     it tomorrow.
 
+- 2014/04/29
++ 9-10:31 --
+    Ironed out the bugs in yesterdays code. Used recarrays instead of
+    structured ones. Running both matlab and the code now to see if the returns
+    are the same. No impressive speedups yet. If anything Matlab may be faster,
+    but I see areas for big improvement.
+
++ 10:31-11:40 --
+    Saved matlab turbines file so that I can review it without having to run
+    it. Checked to see if code was doing correct calculations. Got rid of a for
+    loop. Waiting to see if code is still correct.
+
++ 11:40-12:15 --
+    Lunch
+
++ 12:30 - 13:30 --
+    Still debugging. Let run and went to see Dr. K.
+
++ 13:30 -15:00 --
+    Working on turning recarrays into pandas DataFrames (this is easy, one line
+    command). Also trying to save as h5 (also easy) and then load those h5
+    files into matlab (proving difficult).
+
+    Converted turbines into DataFrame, then saved the dataframe as a csv, which
+    I could then use to load the variables into matlab.
+
+    Tidied up code.
+
+
 ```
