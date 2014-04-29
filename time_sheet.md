@@ -87,5 +87,10 @@
     Got it up and working. Asks for 17 different variables, then creates the
     .nml and the .sh files needed for qsubbing.
 
++ 16:24- 17:16 --
+    Tested the general scripts. Had to wait on Aidan to check them. Still need
+    to change bottom_roughness_minimum. Should also add making the RUN_PAR2 to
+    the yearLongRuns as well.
+
 
 ```
