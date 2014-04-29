@@ -1,9 +1,0 @@
-name.area=area;
-name.Cp=Cp;
-name.rho=rho;
-name.cutin=cutin;
-name.rated=rated;
-name.cutoff=cutoff;
-name.Prated=Prated;
-name.meanP=meanP;
-name.cf=cf;
