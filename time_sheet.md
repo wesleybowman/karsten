@@ -80,5 +80,12 @@
 
     Tidied up code.
 
++ 15-16:24 --
+    Started generalRunFiles. Talked with Aidan about the things that need to be
+    able to be changed.
+
+    Got it up and working. Asks for 17 different variables, then creates the
+    .nml and the .sh files needed for qsubbing.
+
 
 ```
