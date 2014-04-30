@@ -92,5 +92,24 @@
     to change bottom_roughness_minimum. Should also add making the RUN_PAR2 to
     the yearLongRuns as well.
 
+- 2014/04/30
++ 8:56-9:52 --
+    Working on bash line history in scripts. 
+
+    Stopped since I was getting no where, and asked the internet for help.
+
++ 9:52-10:30 --
+    Looking into timing python and matlab scripts that were written yesterday.
+    Also, while those are running, testing more ways to handle structures from
+    matlab. Specifically:
+    [] structured arrays
+    [] recarrays
+    [] pandas panels/dataframe
+    [] dictionaries
+
+    Time for matlab is 1052s for cf_u_rated_turbs.
+
+
+
 
 ```

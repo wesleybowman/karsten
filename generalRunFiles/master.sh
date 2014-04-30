@@ -1,31 +1,32 @@
 #!/bin/bash
+HISTFILE=~/.bash_history
 set -a
 
 echo -e "All dates are in the format
 year-month-day hour:minute:second
 1970-01-30 00:00:00\n"
 
-echo -n "2D or 3D run: "
-read run_type
+read -ep "2D or 3D run: " run_type
+history -s $run_type
 
-echo -n "Number of Processors: "
-read processors
+read -ep "Number of Processors: " processors
+history -s $processors
 
-echo -n "Gridname: "
-read gridName
+read -ep "Gridname: " gridName
+history -s $gridName
 
-echo -n "START_DATE: "
-read start_date
+read -ep "START_DATE: " start_date
+history -s $start_date
 
-echo -n "END_DATE : "
-read end_date
+read -ep "END_DATE : " end_date
+history -s $end_date
 
-echo -n "coldstart or hotstart: "
-read startup_type
+read -ep "coldstart or hotstart: " startup_type
+history -s $startup_type
 
 if [ $startup_type = 'hotstart' ]; then
-    echo -n 'STARTUP_FILE'
-    read startup_file
+    read -ep 'STARTUP_FILE' startup_file
+    history -s $startup_file
     startup_uv_type='set values'
     startup_turb_type='set values'
 else
@@ -34,21 +35,21 @@ else
     startup_turb_type='default'
 fi
 
-echo -n "EXTSTEP_SECONDS: "
-read extstep_seconds
+read -ep "EXTSTEP_SECONDS: " extstep_seconds
+history -s $extstep_seconds
 
 
-echo -n "RST_FIRST_OUT: "
-read rst_first_out
+read -ep "RST_FIRST_OUT: " rst_first_out
+history -s $rst_first_out
 
-echo -n "RST_OUTPUT_STACK: "
-read rst_output_stack
+read -ep "RST_OUTPUT_STACK: " rst_output_stack
+history -s $rst_output_stack
 
-echo -n "NC_FIRST_OUT: "
-read nc_first_out
+read -ep "NC_FIRST_OUT: " nc_first_out
+history -s $nc_first_out
 
-echo -n "NC_OUT_INTERVAL: "
-read nc_out_interval
+read -ep "NC_OUT_INTERVAL: " nc_out_interval
+history -s $nc_out_interval
 
 if [ $run_type = '3D' ]; then
     nc_velocity='T'
@@ -58,26 +59,26 @@ else
     exe='fvcom2d_fast'
 fi
 
-echo -n "PROBES_ON (T or F): "
-read probes_on
+read -ep "PROBES_ON (T or F): " probes_on
+history -s $probes_on
 
 if [ $probes_on = 'T' ]; then
-    echo -n "PROBES_NUMBER: "
-    read probes_number
-    echo -n "PROBES_FILE: "
-    read probes_file
+    read -ep "PROBES_NUMBER: " probes_number
+    history -s $probes_number
+    read -ep "PROBES_FILE: " probes_file
+    history -s $probes_file
 else
     probes_number='none'
     probes_file='none'
 fi
 
 
-echo -n "TURBINE_ON (T or F): "
-read turbine_on
+read -ep "TURBINE_ON (T or F): " turbine_on
+history -s $turbine_on
 
 if [ $turbine_on = 'T' ]; then
-    echo -n "TURBINE_FILE: "
-    read turbine_file
+    read -ep "TURBINE_FILE: " turbine_file
+    history -s $turbine_file
 else
     turbine_file='none'
 fi
