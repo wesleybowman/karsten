@@ -1629,6 +1629,7 @@ load('ut_constants.mat','const','shallow');
 ii = isfinite(const.ishallow); %#ok
 const.freq(~ii) = const.doodson(~ii,:)*ader/24;
 for k = find(ii)'
+    k
     ik = const.ishallow(k) + (0:const.nshallow(k)-1);
     const.freq(k)=sum(const.freq(shallow.iname(ik)).*shallow.coef(ik));
 end

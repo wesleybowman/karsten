@@ -6,6 +6,7 @@ from closest_point import closest_point
 from cf_u_rated_turbs import *
 import matplotlib.pyplot as plt
 from ut_solv import ut_solv
+import scipy.io as sio
 
 
 filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
@@ -93,7 +94,7 @@ loci = np.argmin(turbine_score)
 
 nt, t, u, v, tref, lor, elor, opt, tgd, uvgd = ut_solv(time, ua[:,loci], va[:,loci],
                uvnodell[loci,1], 'auto',Rayleigh[0],'NoTrend','Rmin',
-               'OLS','NoDiagn','LinCI');
+               'OLS','NoDiagn','LinCI')
 
 '''
 coef = ut_solv(time, ua[:,loci], va[:,loci],

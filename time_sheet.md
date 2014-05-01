@@ -148,8 +148,14 @@
 + 13:00 - 13:27 --
     Lunch
 
-+ 13:28- --
++ 13:28-16:05 --
     Back to working on code, specifically ut_solv1.
+
+    got ut_astron and am working on ut_constitsel. Problem right now is loading
+    in the mat file. Wasn't the problem, multiplication was the problem. Used
+    np.dot and it fixed the issue. Done for the day. Been looking at this for
+    way too long today. Should start to go faster, since I am learning where
+    the problems are.
 
 
 
