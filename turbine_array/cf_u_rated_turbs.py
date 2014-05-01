@@ -27,7 +27,7 @@ def fillTurbines(Turbine, radius, Cp, rho, cutin, rated, cutoff, meanP, cf):
     cutin = 1
     rated = 2.5
     cutoff = 5
-    Prated = Cp * (1/2 * rho * area * rated**3)
+    Prated = Cp * (0.5 * rho * area * rated**3)
     meanP = 0
     cf = 0.40
 
@@ -52,6 +52,7 @@ def cf_u_rated_turbs(speed, turb, u_rated):
 
     for j in np.arange(num_els):
         print j
+
         u = speed[:, j]
 #        max_u = np.max(u)
 
@@ -62,7 +63,7 @@ def cf_u_rated_turbs(speed, turb, u_rated):
         turbs.Prated = turbs.Cp * (1/2 * turbs.rho * turbs.area *
                                    turbs.rated**3)
 
-        P = calculate_power(u, u, turbs)
+        P = calculate_power(u, turbs)
         turbs.meanP = np.mean(P, axis=1)
         turbs.cf = turbs.meanP / turbs.Prated
 
@@ -77,8 +78,9 @@ def cf_u_rated_turbs(speed, turb, u_rated):
     return turbines
 
 
-def calculate_power(u, t, turbine, debug=False):
+def calculate_power(u, turbine, debug=False):
 
+    t = u
     u = np.abs(u)
     nt = u.shape[0]
 

@@ -62,7 +62,7 @@ function coef = ut_solv(tin,uin,vin,lat,cnstit,varargin)
 %
 %   * Specification of constituents included in model.
 %   * One of the following:
-%       The string ‘auto’ (not case-sensitive), to implement the F77
+%       The string ï¿½autoï¿½ (not case-sensitive), to implement the F77
 %           automated decision tree (default Rmin = 1). If inference/
 %           reference constituents are also specified they are included 
 %           regardless of the decision tree results.
@@ -83,7 +83,7 @@ function coef = ut_solv(tin,uin,vin,lat,cnstit,varargin)
 %   * Nodal/satellite corrections with exact times are implemented.
 %   * Greenwich phase lags use the astronomical argument with exact times.
 %   * No constituents are inferred.
-%   * If cnstit is ‘auto’, the automated decision tree constituent 
+%   * If cnstit is ï¿½autoï¿½, the automated decision tree constituent 
 %       selection method is applied with Rmin = 1.
 %   * The solution method is iteratively re-weighted least squares (IRLS)
 %       with Cauchy weight function and tuning parameter 2.385, the Matlab
@@ -108,11 +108,11 @@ function coef = ut_solv(tin,uin,vin,lat,cnstit,varargin)
 %   after all other arguments. As shown below, some options require an 
 %   associated parameter. See report for more complete explanations.
 %
-%   ‘NoTrend’
+%   ï¿½NoTrendï¿½
 %
 %       * Omit the linear/secular trend term from the model. 
 %
-%   ‘PreFilt’, PreFilt 
+%   ï¿½PreFiltï¿½, PreFilt 
 %
 %       * Implement the correction for pre-filtering applied to raw inputs.
 %           PreFilt.P = np x 1  vector of P values.
@@ -121,7 +121,7 @@ function coef = ut_solv(tin,uin,vin,lat,cnstit,varargin)
 %
 %   One of the following:
 %
-%       ‘NodsatLinT’ 
+%       ï¿½NodsatLinTï¿½ 
 %           * Use linearized times in nodal/satellite corrections.
 %
 %       'NodsatNone'
@@ -133,10 +133,10 @@ function coef = ut_solv(tin,uin,vin,lat,cnstit,varargin)
 %           * Use linearized times in astronomical argument when computing
 %               Greenwich phase lags.
 %
-%       ‘GwchNone’
+%       ï¿½GwchNoneï¿½
 %           * Report raw (not Greenwich-referenced) phase lags.
 %
-%   ‘Infer’,Infer
+%   ï¿½Inferï¿½,Infer
 %
 %       * Include nI inference constituents in model.
 %           Infer.infnam = cell array (nI x 1) of 4-character names 
@@ -149,51 +149,51 @@ function coef = ut_solv(tin,uin,vin,lat,cnstit,varargin)
 %                   2nI x 1 with the + (-) values in the first (last) nI 
 %                   elements; in the 1D case they are nI x 1.
 %
-%   ‘InferAprx’
+%   ï¿½InferAprxï¿½
 %
 %       * Implement approximate method for inference calculation. Ignored 
-%           unless ‘Infer’ also selected. 
+%           unless ï¿½Inferï¿½ also selected. 
 %
-%   ‘Rmin’, Rmin
+%   ï¿½Rminï¿½, Rmin
 %
 %       * Specify Rmin value (minimum conventional Rayleigh criterion) to 
 %           be used with the automated constituent selection. Default is 1. 
-%           Ignored if cnstit is not ‘auto’. 
+%           Ignored if cnstit is not ï¿½autoï¿½. 
 %
 %   One of the following:
 %
-%       ‘OLS’ 
+%       ï¿½OLSï¿½ 
 %           * Use ordinary least squares solution method.
 %
-%       ‘Andrews’,‘Bisquare’,‘Fair’,‘Huber’,‘Logistic’,‘Talwar’, OR ‘Welsch’ 
+%       ï¿½Andrewsï¿½,ï¿½Bisquareï¿½,ï¿½Fairï¿½,ï¿½Huberï¿½,ï¿½Logisticï¿½,ï¿½Talwarï¿½, OR ï¿½Welschï¿½ 
 %           * Weight function for IRLS method. Default is 'Cauchy'. See
 %               Matlab documentation for robustfit().
 %
-%   ‘TunRdn’, TunRdn 
+%   ï¿½TunRdnï¿½, TunRdn 
 %
 %       * Reduce IRLS tuning parameter relative to Matlab default, for 
 %           the given weight function, by the tuning parameter reduction 
 %           factor TunRdn (tuning parameter used is default divided by 
-%           TunRdn). Default is TunRdn = 1. Ignored if using ‘OLS’.
+%           TunRdn). Default is TunRdn = 1. Ignored if using ï¿½OLSï¿½.
 %
-%   ‘LinCI’ 
+%   ï¿½LinCIï¿½ 
 %
 %       * Use linearized method to determine confidence intervals.
 %
-%   ‘White’ 
+%   ï¿½Whiteï¿½ 
 %
 %       * Use white noise floor assumption for confidence intervals.
 %
-%   ‘Nrlzn’, Nrlzn
+%   ï¿½Nrlznï¿½, Nrlzn
 %
 %       * Use Nrlzn realizations in Monte Carlo confidence interval 
-%           calculation. Default Nrlzn=200. Ignored if ‘LinCI’.
+%           calculation. Default Nrlzn=200. Ignored if ï¿½LinCIï¿½.
 %
-%   ‘LSFrqOSmp’, LSFrqOSmp
+%   ï¿½LSFrqOSmpï¿½, LSFrqOSmp
 %
 %       * Frequency oversampling factor in Lomb-Scargle. Default 1.
 %
-%   ‘DiagnMinSNR’, DiagnMinSNR
+%   ï¿½DiagnMinSNRï¿½, DiagnMinSNR
 %
 %       * Specify minimum SNR for constituents included in the 
 %           reconstructed fit used for TVsnrc and PTVsnrc diagnostics, and 
@@ -201,23 +201,23 @@ function coef = ut_solv(tin,uin,vin,lat,cnstit,varargin)
 %
 %   One of the following:
 %
-%       ‘NoDiagn’
+%       ï¿½NoDiagnï¿½
 %           * Skip diagnostics computations and diagnostic figures.
 %
 %       'DiagnPlots'
 %           * Generate plots in addition to calculating diagnostics;
 %               ignored if 'NoDiagn' is specified.
 %
-%   ‘OrderCnstit’, CnstitSeq
+%   ï¿½OrderCnstitï¿½, CnstitSeq
 %
 %       * Override default PE-ranked ordering of constituent-based 
 %           parameters in output structure coef.
 %               CnstitSeq is one of the following:
-%                   * ‘snr’, to order by decreasing SNR, OR
-%                   * ‘frq’, to order by increasing frequency, OR
+%                   * ï¿½snrï¿½, to order by decreasing SNR, OR
+%                   * ï¿½frqï¿½, to order by increasing frequency, OR
 %                   * a cell array of 4-character strings that, if it 
 %                       differs from cnstit, only differs by the order of 
-%                       its rows (allowed only for cnstit not ‘auto’).
+%                       its rows (allowed only for cnstit not ï¿½autoï¿½).
 %   
 %   'RunTimeDisp', RunTimeDisp
 %
@@ -379,6 +379,7 @@ function coef = ut_solv(tin,uin,vin,lat,cnstit,varargin)
 % UTide v1p0 9/2011 d.codiga@gso.uri.edu
 
 if isequal(sum(size(uin)>2),1)  % single record
+    fprintf('First if Statement\n');
     coef = ut_solv1(tin,uin,vin,lat,cnstit,varargin{:});    
 else % group of records
     % n_t = number of times in each sequence in the group

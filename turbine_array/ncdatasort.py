@@ -55,4 +55,4 @@ def ncdatasort(x, y, time, trinodes, lon=None, lat=None):
         uvnodell = uvnodexy
 
     return (nodexy, uvnodexy, dt, deltat, hour, thour,
-            TP, rho, g, period, nodell, uvnodell, time)
+            TP, rho, g, period, nodell, uvnodell, time, trinodes)

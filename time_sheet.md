@@ -108,6 +108,50 @@
     [] dictionaries
 
     Time for matlab is 1052s for cf_u_rated_turbs.
+    Time for python is 2m52s.
+
++ 11:00-15:56 --
+    Meeting with Dr. K, then lunch, then a second meeting. Talked about turbine
+    analysis, and then validation of runs, and then UTides.
+
++ 15:56 - 16:30ish --
+    Looking into U Tides.
+    Running it on matlab to get coef.
+
+    Computer crashed since I used all ram up.
+
+- 2014/05/01
++ 7:45-9 --
+    Run matlba code to get coef.
+
++ 9:10:46 --
+    Trying to save pythonTurbines as an nc file and test to see that it loads
+    into MatLab. Have Matlab coef and turbines saved to.mat files, and have
+    python turbines saved so no code has to be run.
+
+    Saving to nc requires all of the ram. I had 200 Mb when I started to save,
+    and it jumped to 7.4 Gb to save. Crashed computer again, then redid it and
+    got the file saved.
+    When trying to load in the nc file, Matlab throws OutofMemory Error.
+
+    Started workig on converting ut_solv.
+    Got all converted up to ut_solv, and have done testing on some variables in
+    ut_solv for comparison.
+
++ 10:46-13:00 --
+    Starting UTide conversion (brace yourself).
+    Got:
+    [] ut_solv
+    [] ut_solv1
+    [x] ut_slvinit
+
++ 13:00 - 13:27 --
+    Lunch
+
++ 13:28- --
+    Back to working on code, specifically ut_solv1.
+
+
 
 
 
