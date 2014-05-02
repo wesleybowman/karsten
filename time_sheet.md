@@ -157,7 +157,9 @@
     way too long today. Should start to go faster, since I am learning where
     the problems are.
 
-
+- 2014/05/02
++ 14:00-16:00 --
+    Conference call with Joel and the crew talking about GIS
 
 
 
