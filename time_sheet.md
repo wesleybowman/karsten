@@ -157,6 +157,7 @@
     way too long today. Should start to go faster, since I am learning where
     the problems are.
 
+<<<<<<< HEAD
 - 2014/05/03
 + 11:00-11:23 --
     Emailed Codiga about UTides, and emailed Travis Oliphant about robustfit.
@@ -183,6 +184,11 @@
     Finishing up FUV. Finsihed. Worked when I did everything by hand, so once I
     run it all it should work.
     Got B finished, which is where we need to be. Will continue tomorrow.
+=======
+- 2014/05/02
++ 14:00-16:00 --
+    Conference call with Joel and the crew talking about GIS
+>>>>>>> 77eed1b35c95e4df655d27d8da3716d68689f7da
 
 
 
