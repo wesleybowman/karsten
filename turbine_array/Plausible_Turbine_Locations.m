@@ -1,6 +1,7 @@
 if 1==1
 dd=cd;
     [x,y,ua,va,trinodes,el,h,time,siglev,siglay,nbe,a1u,a2u,nele,aw0,awx,awy,node,long,lat]=loadnc2d_matlab_RK(dd,'/smallcape_0001.nc');
+    [x,y,ua,va,trinodes,el,h,time,siglev,siglay,nbe,a1u,a2u,aw0,awx,awy,nele,node,long,lat] = loadnc2d_matlab_RK('/home/wesley/github/aidan-projects/grid','/dngrid_0001.nc');
 [nodexy,uvnode,dt,deltat,hour,thour,TP,rho,g,period,nodell,uvllnode]=ncdatasort(x,y,time*24*3600,trinodes,long,lat);
 time=mjd2num(time);
 end

@@ -157,7 +157,32 @@
     way too long today. Should start to go faster, since I am learning where
     the problems are.
 
+- 2014/05/03
++ 11:00-11:23 --
+    Emailed Codiga about UTides, and emailed Travis Oliphant about robustfit.
+    I am pretty sure we don't need robustfit immediately, but for eventual
+    completeness it will be nice.
 
++ 11:24-12:35 --
+    Started converting code.
+    Got to ut_FUV, and its a little longer, so lunch time.
+
++ 12:35 - 13:40 -- 
+    Lunch
+
++ 13:40 -16:10 --
+    Back to code.
+    Got to the bottom on ut_FUV. Had problems with getting numbers to look the
+    same. Usually small mistakes with the variables.
+
++ 16:10 - 16:19 --
+    Got the issue. Indices can be a pain in the ass. Finished ut_FUV... not
+    finished, but have F and U calculated. Still need to do V.
+
++ 16:20 -17:41 --
+    Finishing up FUV. Finsihed. Worked when I did everything by hand, so once I
+    run it all it should work.
+    Got B finished, which is where we need to be. Will continue tomorrow.
 
 
 

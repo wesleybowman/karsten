@@ -1629,7 +1629,6 @@ load('ut_constants.mat','const','shallow');
 ii = isfinite(const.ishallow); %#ok
 const.freq(~ii) = const.doodson(~ii,:)*ader/24;
 for k = find(ii)'
-    k
     ik = const.ishallow(k) + (0:const.nshallow(k)-1);
     const.freq(k)=sum(const.freq(shallow.iname(ik)).*shallow.coef(ik));
 end
@@ -1879,7 +1878,10 @@ if ngflgs(2) && ngflgs(4)
 else
     [F,U,V] = ut_FUV(t,tref,lind,lat,ngflgs);
 end
+
 E = F.*exp(1i*(U+V)*2*pi);
+E
+
 if ~isempty(prefilt)
     P=interp1(prefilt.frq,prefilt.P,frq)';
     P( P>max(prefilt.rng) | P<min(prefilt.rng) | isnan(P) )=1;
@@ -1923,10 +1925,11 @@ else
     end
     slat=sin(pi*lat/180);
     rr=sat.amprat;
+
     j=find(sat.ilatfac==1);
     rr(j)=rr(j).*0.36309.*(1.0-5.0.*slat.*slat)./slat;
     j=find(sat.ilatfac==2);
-    rr(j)=rr(j).*2.59808.*slat; 
+    rr(j)=rr(j).*2.59808.*slat;
     uu=rem( sat.deldood*astro(4:6,:)+sat.phcorr(:,ones(1,ntt)), 1);
     nfreq=length(const.isat); %#ok
     mat = rr(:,ones(1,ntt)).*exp(1i*2*pi*uu);
@@ -1954,6 +1957,7 @@ else
 end
 %% gwch (astron arg)
 if ngflgs(4) % none (raw phase lags not greenwich phase lags)
+    NOPE = 4
     if ~exist('const','var')
         load('ut_constants.mat','const');
     end
@@ -1990,7 +1994,9 @@ else
         V(k,:) = sum(V(j,:).*exp1(:,ones(ntt,1)),1);
     end
     V=V(lind,:)';
+    V
     if ngflgs(3)    % linearized times
+        NOPE=3
         [~,ader] = ut_astron(tref);
         ii=isfinite(const.ishallow);
         const.freq(~ii) = (const.doodson(~ii,:)*ader)/(24);
