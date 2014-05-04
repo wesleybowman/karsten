@@ -16,9 +16,6 @@ filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
  nbe, a1u, a2u, aw0, awx, awy,
  lon, lat, nele, node) = loadnc2d(filename)
 
-#(nodexy,uvnode,dt,deltat,
-# hour,thour,TP,rho,g,period,
-# nodell,uvllnode)=ncdatasort(x,y,time*24*3600,trinodes,lon,lat)
 (nodexy, uvnodexy, dt, deltat,
  hour, thour, TP, rho, g, period,
  nodell, uvnodell, trinodes) = ncdatasort(x,y,time*24*3600,trinodes,lon,lat)
@@ -29,16 +26,12 @@ min_depth=30
 max_depth=80
 
 #power station location
-#ps_loc=[-64.4031,45.3710];
-#ps_loc(2,:)=[-64.4031,45.3710];
 ps_loc = np.array([[-64.4031,45.3710],[-64.4031,45.3710]])
-#psi=closest_point(ps_loc,[long,lat]);
 psi=closest_point(ps_loc,lon,lat);
-#xc=mean(x[trinodes],2);
-#yc=mean(y[trinodes],2);
+
 xc = np.mean(x[trinodes],axis=1)
 yc = np.mean(y[trinodes],axis=1)
-#distance=sqrt( (xc-x(psi(1))).^2+(yc-y(psi(1))).^2);
+
 distance = np.sqrt( (xc - x[psi[0]])**2+(yc-y[psi[0]])**2)
 
 x=x-x[psi[0]];
@@ -64,8 +57,6 @@ turbines = np.load('../pythonTurbines')
 
 meanP = turbines.meanP
 capacity_factor=turbines.cf
-#a = np.isnan(capacity_factor)
-#capacity_factor[a]=0
 capacity_factor[np.isnan(capacity_factor)]=0
 
 tp = turbines.Prated
@@ -89,16 +80,41 @@ score=20*(1-meanP/1e6)
 turbine_score=score
 #Find best location
 
-loci = np.argmin(turbine_score)
+
+#for ii=1:N
+for ii in xrange(N):
+    #ii = 0
+   #% [~,loci(ii)]=max(turbine_power);
+    #[~,loci(ii)]=min(turbine_score);
+    loci = np.argmin(turbine_score)
+
+    # do u_tide analysis at loc
+    coef = ut_solv(time, ua[:,loci], va[:,loci], uvnodell[loci,1],
+                  'auto', Rayleigh[0],'NoTrend','Rmin', 'OLS',
+                  'NoDiagn', 'LinCI')
+
+    cx = np.cos(coef['theta'][0]*np.pi/180)
+    cy = np.sin(coef['theta'][0]*np.pi/180)
+
+    #find new xy as distance from location, and in direction of M2 ellipse
+    newx = (xc-xc[loci]) *cx+(yc-yc[loci])*cy
+    newy = -(xc-xc[loci])*cy+(yc-yc[loci])*cx
+
+    #a=find(abs(newx)<spacing_along & abs(newy)<spacing_across);
+    #a = np.argwhere(np.abs(newx)< spacing_along & np.abs(newy) < spacing_across)
+    #a = np.where(np.abs(newx)< spacing_along & np.abs(newy) < spacing_across)
+    a = np.argwhere(np.logical_and((np.abs(newx) < spacing_along),
+                                   (np.abs(newy) < spacing_across)))[0]
+
+    # turbine_power(a)=0;
+    turbine_score[a] = 100
 
 
-nt, t, u, v, tref, lor, elor, opt, tgd, uvgd = ut_solv(time, ua[:,loci], va[:,loci],
-               uvnodell[loci,1], 'auto',Rayleigh[0],'NoTrend','Rmin',
-               'OLS','NoDiagn','LinCI')
+#loci = np.argmin(turbine_score)
 
-'''
-coef = ut_solv(time, ua[:,loci], va[:,loci],
-               uvnodell[loci,1], 'auto','NoTrend','Rmin',
-               Rayleigh[0],'OLS','NoDiagn','LinCI');
 
-'''
+    coef= ut_solv(time, ua[:,loci], va[:,loci], uvnodell[loci,1],
+                  'auto', Rayleigh[0],'NoTrend','Rmin', 'OLS',
+                  'NoDiagn', 'LinCI')
+
+

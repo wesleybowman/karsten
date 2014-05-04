@@ -829,6 +829,8 @@ fprintf('matrix prep ... ');
 ngflgs = [opt.nodsatlint opt.nodsatnone opt.gwchlint opt.gwchnone];
 E = ut_E(t,tref,cnstit.NR.frq,cnstit.NR.lind,lat,ngflgs,opt.prefilt);
 B = [E conj(E)];
+save('optTest','opt')
+
 if ~isempty(opt.infer)
     Etilp = nan*ones(nt,nR);
     Etilm = Etilp;
@@ -877,6 +879,7 @@ end
 if isequal(opt.method,'ols')
     m = B\xraw;
     W = sparse(1:nt,1:nt,1);
+    save('testBm','B','xraw','m','W','nNR','nR')
 else
     lastwarn('');
     [m,solnstats] = robustfit(B,ctranspose(xraw),...
@@ -1880,7 +1883,8 @@ else
 end
 
 E = F.*exp(1i*(U+V)*2*pi);
-E
+save('FUVtest.mat', 'F','U','V','E')
+
 
 if ~isempty(prefilt)
     P=interp1(prefilt.frq,prefilt.P,frq)';
@@ -1994,7 +1998,6 @@ else
         V(k,:) = sum(V(j,:).*exp1(:,ones(ntt,1)),1);
     end
     V=V(lind,:)';
-    V
     if ngflgs(3)    % linearized times
         NOPE=3
         [~,ader] = ut_astron(tref);
@@ -2007,6 +2010,8 @@ else
         end
         V = V(ones(1,nt),:) + 24*(t-tref)*const.freq(lind)';
     end
+   
+    
 end
 
 %%--------------------------------------------------------- 
@@ -2079,6 +2084,8 @@ epsp = angle(ap)*180/pi;
 epsm = angle(am)*180/pi;
 theta = mod((epsp+epsm)/2,180);
 g = mod(-epsp+theta,360);
+
+save('cs2cep.mat','Xu','Yu','Xv','Yv','ap','am','Ap','Am','Lsmaj','Lsmin','epsp','epsm','theta','g')
 
 %%--------------------------------------------------------- 
 function P = ut_pdgm(t,e,cfrq,equi,frqosmp)

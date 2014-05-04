@@ -1,12 +1,12 @@
 import numpy as np
 import scipy.io as sio
+import scipy.sparse
 
 def ut_solv(tin, uin, vin, lat, cnstit, Rayleigh, *varargin):
 
-    print varargin
-    nt, t, u, v, tref, lor, elor, opt, tgd, uvgd = ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin)
-    #coef = ut_solv1(tin,uin,vin,lat,cnstit,varargin)
-    return nt, t, u, v, tref, lor, elor, opt, tgd, uvgd
+    coef = ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin)
+
+    return coef
 
 
 def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
@@ -20,28 +20,141 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
 
     # a function we don't need
     # coef.aux.rundescr = ut_rundescr(opt,nNR,nR,nI,t,tgd,uvgd,lat)
+
     coef['aux']['opt'] = opt
     coef['aux']['lat'] = lat
-    #coef.aux.opt = opt;
-    #coef.aux.lat = lat;
 
     print 'matrix prep ... '
 
     ngflgs = [opt['nodsatlint'], opt['nodsatnone'],
-               opt['gwchlint'], opt['gwchnone']]
+              opt['gwchlint'], opt['gwchnone']]
 
     #ngflgs = [opt.nodsatlint, opt.nodsatnone opt.gwchlint opt.gwchnone];
 
-    E = ut_E(t,tref,cnstit.NR.frq,cnstit.NR.lind,lat,ngflgs,opt.prefilt);
+    E = ut_E(t,tref,cnstit['NR']['frq'],cnstit['NR']['lind'],lat,ngflgs,opt['prefilt'])
 
     B = np.hstack((E,E.conj()))
 
+    # more infer stuff
+
+    if opt['notrend']:
+        B = np.hstack((B,np.ones((nt,1))))
+        nm = 2 * (nNR + nR) + 1
+    else:
+        B = np.hstack((B, np.ones((nt,1)), (t-tref)/lor))
+        nm = 2*(nNR + nR) + 2
+
+    print 'Solution ...'
+
+    xraw = u
+
+    if opt['twodim']:
+        #xraw = complex(u,v);
+        xraw = u+v*1j
+
+    if opt['method']=='ols':
+        #m = B\xraw;
+        m = np.linalg.lstsq(B, xraw)[0]
+        #W = sparse(1:nt,1:nt,1);
+        W = scipy.sparse.identity(nt)
+#    else:
+#        lastwarn('');
+#        [m,solnstats] = robustfit(B,ctranspose(xraw),...
+#            opt.method,opt.tunconst,'off');
+#        if isequal(lastwarn,'Iteration limit reached.')
+#            # nan-fill, create coef.results, reorder coef fields,
+#            % do runtime display
+#            coef = ut_finish(coef,nNR,nR,nI,elor,cnstit);
+#            % abort remainder of calcs
+#            return;
+#        W = sparse(1:nt,1:nt,solnstats.w);
+
+    xmod = B*m
+    xmod = np.dot(B, m)
+
+    if not opt['twodim']:
+        xmod = np.real(xmod)
+
+    e = W*(xraw-xmod)
+
+    nc = nNR+nR
+    ap = m[np.hstack((np.arange(nNR), 2*nNR+np.arange(nR)))]
+    am = m[np.hstack((nNR+np.arange(nNR), 2*nNR+nR+np.arange(nR)))]
+
+    Xu = np.real(ap + am)
+    Yu = -np.imag(ap - am)
+
+    if not opt['twodim']:
+        #XY = np.hstack((Xu, Yu))
+        coef['A'], _ , _ ,coef['g '] = ut_cs2cep(Xu, Yu)
+        #coef['A'], _ , _ ,coef['g '] = ut_cs2cep(XY)
+
+    else:
+        Xv = np.imag(ap+am)
+        Yv = np.real(ap-am)
+        #XY = np.vstack((Xu, Yu, Xv, Yv))
+        coef['Lsmaj'], coef['Lsmin'], coef['theta'], coef['g'] = ut_cs2cep(Xu, Yu, Xv, Yv)
+        #coef['Lsmaj'], coef['Lsmin'], coef['theta'], coef['g '] = ut_cs2cep(XY)
+
+    ## mean and trend
+    if opt['twodim']:
+        if opt['notrend']:
+            coef['umean'] = np.real(m[-1])
+            coef['vmean'] = np.imag(m[-1])
+        else:
+            coef['umean'] = np.real(m[-1-1])
+            coef['vmean'] = np.imag(m[-1-1])
+            coef['uslope'] = np.real(m[-1])/lor
+            coef['vslope'] = np.imag(m[-1])/lor
+    else:
+        if opt['notrend']:
+            coef['mean'] = np.real(m[-1])
+        else:
+            coef['mean'] = np.real(m[-1-1])
+            coef['slope'] = np.real(m[-1])/lor
+
+    if opt['twodim']:
+        PE = np.sum(coef['Lsmaj']**2+coef['Lsmin']**2)
+        PE = 100* (coef['Lsmaj']**2+coef['Lsmin']**2)/PE
+
+    ind = PE.argsort()[::-1]
+    coef['Lsmaj'] = coef['Lsmaj'][ind]
+    coef['Lsmin'] = coef['Lsmin'][ind]
+    coef['theta'] = coef['theta'][ind]
+
+    return coef
 
 
+#def ut_cs2cep(XY):
+def ut_cs2cep(Xu, Yu, Xv=np.array([False]), Yv=np.array([False])):
 
+    #Xu = XY[:, 0]
+    #Yu = XY[:, 1]
 
+    if not Xv.all():
+        Xv = np.zeros(Xu.shape)
+        Yv = np.zeros(Yu.shape)
 
-    return nt, t, u, v, tref, lor, elor, opt, tgd, uvgd
+#    if XY.shape[-1] > 2:
+#        Xv = XY[:, 3]
+#        Yv = XY[:, 4]
+#    else:
+#        Xv = np.zeros(Xu.shape)
+#        Yv = np.zeros(Yu.shape)
+
+    ap = ((Xu+Yv)+1j*(Xv-Yu))/2
+    am = ((Xu-Yv)+1j*(Xv+Yu))/2
+    Ap = np.abs(ap)
+    Am = np.abs(am)
+    Lsmaj = Ap+Am
+    Lsmin = Ap-Am
+    epsp = np.angle(ap)*180/np.pi
+    epsm = np.angle(am)*180/np.pi
+
+    theta = ((epsp+epsm)/2) % 180
+    g = (-epsp+theta) % 360
+
+    return Lsmaj,Lsmin,theta,g
 
 
 def ut_E(t,tref,frq,lind,lat,ngflgs,prefilt):
@@ -55,8 +168,7 @@ def ut_E(t,tref,frq,lind,lat,ngflgs,prefilt):
     else:
         F, U, V = ut_FUV(t,tref,lind,lat,ngflgs);
 
-    #E = F.*exp(1i*(U+V)*2*pi);
-    E = F * np.exp(1j*(U*V)*2*np.pi)
+    E = F * np.exp(1j*(U+V)*2*np.pi)
 
     #if ~isempty(prefilt)
 #    if len(prefilt)!=0:
@@ -235,7 +347,7 @@ def ut_cnstitsel(tref,minres,incnstit,infer):
     # skipped some stuff here cause they involve infer
 
     cnstit['NR']['frq'] = const.freq[cnstit['NR']['lind']]
-    cnstit['NR']['name'] = const.name[lind]
+    cnstit['NR']['name'] = const.name[cnstit['NR']['lind']]
     nNR = len(cnstit['NR']['frq'])
 
     ## cnstit.R
@@ -378,7 +490,7 @@ def ut_astron(jd):
     (copy of t_astron.m from t_tide, Pawlowicz et al 2002)
     '''
 
-    #jd = np.array([jd])
+    jd = np.array([jd])
     # datenum(1899,12,31,12,0,0)
     daten = 693961.500000000
     d = jd[:] - daten

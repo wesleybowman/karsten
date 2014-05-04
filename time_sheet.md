@@ -157,7 +157,10 @@
     way too long today. Should start to go faster, since I am learning where
     the problems are.
 
-<<<<<<< HEAD
+- 2014/05/02
++ 14:00-16:00 --
+    Conference call with Joel and the crew talking about GIS
+
 - 2014/05/03
 + 11:00-11:23 --
     Emailed Codiga about UTides, and emailed Travis Oliphant about robustfit.
@@ -184,13 +187,18 @@
     Finishing up FUV. Finsihed. Worked when I did everything by hand, so once I
     run it all it should work.
     Got B finished, which is where we need to be. Will continue tomorrow.
-=======
-- 2014/05/02
-+ 14:00-16:00 --
-    Conference call with Joel and the crew talking about GIS
->>>>>>> 77eed1b35c95e4df655d27d8da3716d68689f7da
 
+- 2014/05/04
++ 9:36 -10:45 --
+    Started working on code.
 
++ 14:00-14:30 --
+    Code now produces correct coef.Lsmaj. Right now its not presented in the
+    way MatLab does, but it does work.
 
++ 14:30 - 15:17 --
+    Finished all Plausible_turbine_locations code. Now can be run in python.
+    Still very rough, but is the backbone for more features to be added.
+    Still need to get plots in.
 
 ```
