@@ -202,9 +202,13 @@
     Still need to get plots in.
 
 - 2014/05/05
-+ 08:15 - --
++ 08:15 - 15:48 --
     Started running the matlab plausible_turbine_locations to get time. Then am
     going to run the python version and compare. Also working on getting plots
     up.
+
+    Did some plotting work, and got all things timed.
+    Long meeting with Karston.
+    Also worked on ut_reconstr and got a barebones version in.
 
 ```
