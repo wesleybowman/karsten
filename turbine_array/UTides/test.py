@@ -52,8 +52,8 @@ turb = createTurbines(1)
 turb = fillTurbines(turb, 10, 0.4, 1025, 1,2.5,5,0,0.4)
 
 
-#turbines = cf_u_rated_turbs(speed, turb, u_rated)
-turbines = np.load('../pythonTurbines')
+turbines = cf_u_rated_turbs(speed, turb, u_rated)
+#turbines = np.load('../pythonTurbines')
 
 meanP = turbines.meanP
 capacity_factor=turbines.cf

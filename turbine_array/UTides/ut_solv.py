@@ -223,7 +223,6 @@ def ut_FUV(t, tref, lind, lat, ngflgs):
 
         F = np.ones((nfreq, ntt)) + 0j
         ind = np.unique(sat.iconst)
-        #F[ind-1, :] = 1 + np.sum(mat[sat.iconst==ind,:],axis=1)
 
         for i in xrange(len(ind)):
             F[ind[i]-1, :] = 1+np.sum(mat[sat.iconst==ind[i],:], axis=0)

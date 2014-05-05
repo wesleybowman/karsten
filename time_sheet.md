@@ -201,4 +201,10 @@
     Still very rough, but is the backbone for more features to be added.
     Still need to get plots in.
 
+- 2014/05/05
++ 08:15 - --
+    Started running the matlab plausible_turbine_locations to get time. Then am
+    going to run the python version and compare. Also working on getting plots
+    up.
+
 ```
