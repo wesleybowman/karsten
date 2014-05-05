@@ -131,4 +131,4 @@ def ut_rcninit(tin,args):
 #        end
 #    end
 
-    return t, opts
+    return t, opt
