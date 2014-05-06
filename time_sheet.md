@@ -211,4 +211,21 @@
     Long meeting with Karston.
     Also worked on ut_reconstr and got a barebones version in.
 
+- 2014/05/06
++ 9:18 -10:21 --
+    Looked into some of Brian Polagye's code. Started writing the matlab/python
+    comparison script.
+
++ 10:21 - 11:13 --
+    Running matlab to get a coef to compare to.
+    Got comparison to work.
+
+    Editted the code to only show things that are not equal, that way its
+    easier to see what is wrong.
+
++ Rest of day:
+    Worked a bit on plotting the turbines, and trying to get them to work so we
+    can make a movie.
+
+
 ```

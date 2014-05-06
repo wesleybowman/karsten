@@ -121,6 +121,11 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
     coef['Lsmaj'] = coef['Lsmaj'][ind]
     coef['Lsmin'] = coef['Lsmin'][ind]
     coef['theta'] = coef['theta'][ind]
+    coef['g'] = coef['g'][ind]
+    coef['name'] = coef['name'][ind]
+
+    coef['aux']['frq'] = coef['aux']['frq'][ind]
+    coef['aux']['lind'] = coef['aux']['lind'][ind]
 
     return coef
 
