@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 from ut_solv import ut_solv
 import scipy.io as sio
 import cPickle as pickle
+import sys
+#sys.path.append('/home/wesley/github/')
+#from UTide.ut_solv.master import *
 
 
 filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'

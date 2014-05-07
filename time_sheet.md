@@ -227,5 +227,21 @@
     Worked a bit on plotting the turbines, and trying to get them to work so we
     can make a movie.
 
+- 2014/05/07
++ 08:30-09:37 --
+    Starting making UTide github page. Made file hierarchy of how I want the
+    package structured, this is tenative. Started __init__.py
+
++ 9:37-10:14 -- 
+    Got the package structure going. Put the functions in their respective
+    directories as specified by the hierarchy.
+
++ 10:14 - 12:24 --
+    Packaging didn't work. Resorted back to old. made sure 1D data worked.
+    Lunch.
+
++ 12:24 - --
+    Confidence interval stuff.
+
 
 ```

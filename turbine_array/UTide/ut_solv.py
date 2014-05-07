@@ -1,6 +1,8 @@
 import numpy as np
 import scipy.io as sio
 import scipy.sparse
+import scipy.signal
+import matplotlib.mlab as mlab
 
 def ut_solv(tin, uin, vin, lat, cnstit, Rayleigh, *varargin):
 
@@ -113,24 +115,283 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
             coef['mean'] = np.real(m[-1-1])
             coef['slope'] = np.real(m[-1])/lor
 
-    if opt['twodim']:
-        PE = np.sum(coef['Lsmaj']**2+coef['Lsmin']**2)
-        PE = 100* (coef['Lsmaj']**2+coef['Lsmin']**2)/PE
+    # Confidence Intervals
 
-    ind = PE.argsort()[::-1]
-    coef['Lsmaj'] = coef['Lsmaj'][ind]
-    coef['Lsmin'] = coef['Lsmin'][ind]
-    coef['theta'] = coef['theta'][ind]
+    #varMSM = real((ctranspose(xraw)*W*xraw - ctranspose(m)*ctranspose(B)*W*xraw)/(nt-nm))
+    varMSM = np.real((np.conj(xraw).T * W * xraw -
+                      np.conj(m).T * np.conj(B).T * W * xraw)/(nt-nm))
+
+    #gamC = inv(ctranspose(B)*W*B)*varMSM
+    gamC = np.linalg.inv(np.conj(B).T * W * B) * varMSM
+    #gamP = inv(transpose(B)*W*B)*((transpose(xraw)*W*xraw - transpose(m)*transpose(B)*W*xraw)/(nt-nm))
+    gamP = np.linalg.inv(B.T * W * B) * ((xraw.T * W * xraw - m.T * B.T * W *
+                                          xraw) / (nt-nm))
+
+    Gall = gamC + gamP
+    Hall = gamC - gamP
+
+    coef['g_ci']= np.nan*np.ones(coef['g'].shape)
+    if opt['twodim']:
+        coef['Lsmaj_ci']= coef['g_ci']
+        coef['Lsmin_ci']= coef['g_ci']
+        coef['theta_ci']= coef['g_ci']
+        varcov_mCw = np.nan*np.ones((nc,4,4))
+    else:
+        coef['A_ci']= coef['g_ci']
+        varcov_mCw = np.nan*np.ones((nc,2,2))
+
+    if not opt['white']:
+        varcov_mCc = varcov_mCw
+
+    #for c=1:nc
+    for c in np.arange(nc):
+        #G = [Gall(c,c) Gall(c,c+nc); Gall(c+nc,c) Gall(c+nc,c+nc);];
+        G = np.array([[Gall[c,c], Gall[c,c+nc]],[Gall[c+nc,c], Gall[c+nc,c+nc]]])
+        H = np.array([[Hall[c,c], Hall[c,c+nc]],[Hall[c+nc,c], Hall[c+nc,c+nc]]])
+        #H = [Hall(c,c) Hall(c,c+nc); Hall(c+nc,c) Hall(c+nc,c+nc);];
+        varXu = np.real(G[0,0]+G[1,1]+2*G[0,1])/2
+        varYu = np.real(H[0,0]+H[1,1]-2*H[0,1])/2
+
+        if opt['twodim']:
+            varXv = np.real(G[0,0]+G[1,1]+2*G[0,1])/2
+            varYv = np.real(H[0,0]+H[1,1]-2*H[0,1])/2
+            #varXv = real(H(1,1)+H(2,2)+2*H(1,2))/2;
+            #varYv = real(G(1,1)+G(2,2)-2*G(1,2))/2;
+
+        if opt['linci']: # linearized
+            if not opt['twodim']:
+                varcov_mCw[c,:,:] = np.diag(np.array([varXu, varYu]))
+                if not opt['white']:
+                    den = varXu + varYu
+                    varXu = Puu[c]*varXu/den
+                    varYu = Puu[c]*varYu/den
+                    varcov_mCc[c,:,:] = np.diag(np.array([varXu, varYu]))
+                sig1,sig2 = ut_linci(Xu[c],Yu[c],np.sqrt(varXu),np.sqrt(varYu))
+                coef['A_ci'][c] = 1.96*sig1
+                coef['g_ci'][c] = 1.96*sig2
+            else:
+                varcov_mCw[c,:,:] = np.diag(np.array([varXu varYu varXv varYv]))
+                if not opt['white']:
+                    den = varXv + varYv
+                    varXv = Pvv[c]*varXv/den
+                    varYv = Pvv[c]*varYv/den
+                    varcov_mCc[c,:,:] = np.diag(np.array([varXu, varYu, varXv,
+                                                          varYv]))
+                sig1,sig2 = ut_linci(Xu[c]+1j*Xv[c],Yu[c]+1j*Yv[c],
+                                       np.sqrt(varXu)+1j*np.sqrt(varXv),
+                                       np.sqrt(varYu)+1j*np.sqrt(varYv))
+                coef['Lsmaj_ci'][c] = 1.96*np.real(sig1)
+                coef['Lsmin_ci'][c] = 1.96*np.imag(sig1)
+                coef['g_ci'][c] = 1.96*np.real(sig2)
+                coef['theta_ci'][c] = 1.96*np.imag(sig2)
+
+        else: # monte carlo
+            pass
+
+
+        if opt['twodim']:
+            PE = np.sum(coef['Lsmaj']**2+coef['Lsmin']**2)
+            PE = 100* (coef['Lsmaj']**2+coef['Lsmin']**2)/PE
+        else:
+            PE = 100*coef['A']**2/np.sum(coef['A']**2)
+
+        ind = PE.argsort()[::-1]
+    if opt['twodim']:
+        coef['Lsmaj'] = coef['Lsmaj'][ind]
+        #coef['Lsmaj_ci'] = coef['Lsmaj_ci'][ind]
+        coef['Lsmin'] = coef['Lsmin'][ind]
+        #coef['Lsmin_ci'] = coef['Lsmin_ci'][ind]
+        coef['theta'] = coef['theta'][ind]
+        #coef['theta_ci'] = coef['theta_ci'][ind]
+    else:
+        coef['A'] = coef['A'][ind]
+        #coef['A_ci'] = coef['A_ci'][ind]
+
     coef['g'] = coef['g'][ind]
     coef['name'] = coef['name'][ind]
-
     coef['aux']['frq'] = coef['aux']['frq'][ind]
     coef['aux']['lind'] = coef['aux']['lind'][ind]
 
     return coef
 
 
-#def ut_cs2cep(XY):
+def ut_pdgm(t,e,cfrq,equi,frqosmp):
+
+    P = {}
+    nt = len(e)
+    hn = np.hanning(nt)
+
+    if equi:
+        Puuls, allfrq = scipy.signal.welch(np.imag(e), t, hn, frqosmp)
+    else:
+        # ut_lmbscga
+        pass
+
+    fac = (nt-1)/(2*np.pi*(t[-1]-t[0])*24) # conv fac: rad/sample to cph
+    allfrq = allfrq*fac # to [cycle/hour] from [rad/samp]
+    Puu1s = Puu1s/fac # to [e units^2/cph] from [e units^2/(rad/samp)]
+    P['Puu'],P['fbnd']= ut_fbndavg(Puu1s,allfrq,cfrq)
+
+    if not np.isreal(e):
+
+        if equi:
+            #Pvv1s, _ = pwelch(np.imag(e),hn,0,nt)
+            Pvv1s, _ = scipy.signal.welch(np.imag(e),window=hn, noverlap=0,
+                                          nfft=nt)
+            # should be able to use mlab.csd
+            #Puv1s, _ = cpsd(np.real(e),np.imag(e),hn,0,nt)
+            Puv1s, _ = mlab.csd(np.real(e),np.imag(e),0,nt, window=hn)
+        else:
+            #Pvv1s, _ = ut_lmbscga(imag(e),t,hn,frqosmp);
+            #Puv1s, _ = ut_lmbscgc(real(e),imag(e),t,hn,frqosmp);
+            pass
+
+        Pvv1s = Pvv1s/fac
+        P['Pvv'], _ = ut_fbndavg(Pvv1s,allfrq,cfrq)
+        Puv1s = real(Puv1s)/fac
+        P['Puv'], _ = ut_fbndavg(Puv1s,allfrq,cfrq)
+        P['Puv '] = np.abs(P.Puv)
+
+
+    return P
+
+def ut_fbndavg(P,allfrq,cfrq):
+    # UT_FBNDAVG()
+    # line-decimate and band-average spectra
+    # inputs
+    # P = periodogram to treat [e units^2/cph]
+    # allfrq = frequency values of (equispaced) P estimates [cph]
+    # cfrq = frequencies of constituents [cph] (nc x 1)
+    # outputs
+    # avP = line-decimated and band-averaged spectrum [e units^2/cph] (9 x 1)
+    # fbnd = frequencies [cph] at edges of averaged bands (9 x 2)
+    # UTide v1p0 9/2011 d.codiga@gso.uri.edu
+    # (based on residual_spectrum.m of t_tide, Pawlowicz et al 2002)
+
+    df=allfrq[2]-allfrq[1]
+    P[round(cfrq/df)+1] = np.nan
+
+    fbnd =np.array([[.00010, .00417],
+                    [.03192, .04859],
+                    [.07218, .08884],
+                    [.11243, .12910],
+                    [.15269, .16936],
+                    [.19295, .20961],
+                    [.23320, .25100],
+                    [.26000, .29000],
+                    [.30000, .50000]])
+
+    #nfbnd=size(fbnd,1);
+    nfbnd=fbnd.shape[0]
+    avP=zeros(nfbnd,1)
+    avP = np.zeros((nfbnd,1))
+
+    for k in np.arange(nfbnd-1,-1,-1):
+    #for k=nfbnd:-1:1,
+        b1 = np.where(allfrq>=fbnd[k,0])
+        b2 = np.where(allfrq<=fbnd[k,1])
+        b3 = np.where(np.isfinite(P))
+        #b1 = find(allfrq>=fbnd(k,1));
+        #b2 = find(allfrq<=fbnd(k,2));
+        #b3 = find(isfinite(P));
+        #jbnd=intersect(intersect(b1,b2),b3)
+        jbnd = np.intersect1d(np.intersect1d(b1, b2), b3)
+        if jbnd.any():
+        #if any(jbnd),
+            avP[k]=np.mean(P[jbnd])
+        elif k < nfbnd:
+            avP[k]=P[k+1]
+
+return avP, fbnd
+
+
+#%---------------------------------------------------------
+def ut_linci(X,Y,sigX,sigY):
+    # UT_LINCI()
+    # current ellipse parameter uncertainties from cosine/sine coefficient
+    # uncertainties, by linearized relations w/ correlations presumed zero
+    # inputs: (two-dim case complex, one-dim case real)
+    # X = Xu + i*Xv
+    # Y = Yu + i*Yv
+    # for Xu =real(X) = u cosine coeff; Yu =real(Y) = u sine coeff
+    # Xv =imag(X) = v cosine coeff; Yv =imag(Y) = v sine coeff
+    # sigX = sigXu + i*sigXv
+    # sigY = sigYu + i*sigYv
+    # for sigXu =real(sigX) =stddev(Xu); sigYu =real(sigY) =stddev(Yu)
+    # sigXv =imag(sigX) =stddev(Xv); sigYv =imag(sigY) =stddev(Yv)
+    # outputs:
+    # two-dim case, complex
+    # sig1 = sig_Lsmaj +1i*sig_Lsmin [same units as inputs]
+    # sig2 = sig_g + 1i*sig_theta [degrees]
+    # one-dim case, real
+    # sig1 = sig_A [same units as inputs]
+    # sig2 = sig_g [degrees]
+    # UTide v1p0 9/2011 d.codiga@gso.uri.edu
+    # (adapted from errell.m of t_tide, Pawlowicz et al 2002)
+
+    Xu = np.real(X[:])
+    sigXu = np.real(sigX)
+    Yu = np.real(Y[:])
+    sigYu = np.real(sigY)
+
+    Xv = np.imag(X[:])
+    sigXv = np.imag(sigX[:])
+    Yv = np.imag(Y[:])
+    sigYv = np.imag(sigY[:])
+
+    rp=.5*np.sqrt((Xu+Yv)**2+(Xv-Yu)**2)
+    rm=.5*np.sqrt((Xu-Yv)**2+(Xv+Yu)**2)
+    sigXu2=sigXu**2
+    sigYu2=sigYu**2
+    sigXv2=sigXv**2
+    sigYv2=sigYv**2
+
+    ex=(Xu+Yv)/rp
+    fx=(Xu-Yv)/rm
+    gx=(Yu-Xv)/rp
+    hx=(Yu+Xv)/rm
+
+    # major axis
+    dXu2=(.25*(ex+fx))**2
+    dYu2=(.25*(gx+hx))**2
+    dXv2=(.25*(hx-gx))**2
+    dYv2=(.25*(ex-fx))**2
+    sig1 = np.sqrt(dXu2*sigXu2+dYu2*sigYu2+dXv2*sigXv2+dYv2*sigYv2)
+
+    # phase
+    rn=2*(Xu*Yu+Xv*Yv)
+    rd=Xu**2-Yu**2+Xv**2-Yv**2
+    den=rn**2+rd**2
+    dXu2=((rd*Yu-rn*Xu)/den)**2
+    dYu2=((rd*Xu+rn*Yu)/den)**2
+    dXv2=((rd*Yv-rn*Xv)/den)**2
+    dYv2=((rd*Xv+rn*Yv)/den)**2
+    sig2 = (180/np.pi)*np.sqrt(dXu2*sigXu2+dYu2*sigYu2+dXv2*sigXv2+dYv2*sigYv2)
+
+    #if ~isreal(X)
+    if not np.isreal(X):
+        # minor axis
+        dXu2=(.25*(ex-fx))**2
+        dYu2=(.25*(gx-hx))**2
+        dXv2=(.25*(hx+gx))**2
+        dYv2=(.25*(ex+fx))**2
+        sig1 = sig1 + 1j*np.sqrt(dXu2*sigXu2+dYu2*sigYu2+dXv2*sigXv2+dYv2*sigYv2)
+
+        # orientation
+        rn=2.*(Xu*Xv+Yu*Yv)
+        rd=Xu**2+Yu**2-(Xv**2+Yv**2)
+        den=rn**2+rd**2
+        dXu2=((rd*Xv-rn*Xu)/den)**2
+        dYu2=((rd*Yv-rn*Yu)/den)**2
+        dXv2=((rd*Xu+rn*Xv)/den)**2
+        dYv2=((rd*Yu+rn*Yv)/den)**2
+        sig2 = sig2 + 1j*(180/np.pi)*sqrt(dXu2*sigXu2+dYu2*sigYu2 + dXv2*sigXv2+dYv2*sigYv2)
+
+    return sig1, sig2
+
+
+
+
 def ut_cs2cep(Xu, Yu, Xv=np.array([False]), Yv=np.array([False])):
 
     #Xu = XY[:, 0]
