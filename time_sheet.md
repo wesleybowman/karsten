@@ -240,8 +240,17 @@
     Packaging didn't work. Resorted back to old. made sure 1D data worked.
     Lunch.
 
-+ 12:24 - --
++ 12:24 -15:09 --
     Confidence interval stuff.
+    Got everything coded, just need to test all of it and get it working.
+
+    Right now, pwelch is the problem.
+
++ 15:09-15:28 --
+    Got welch to maybe work, havent compared. Waiting for code to run before
+    doing comparison.
+
+    Figured out a good way to debug. Much better than before. Much faster.
 
 
 ```

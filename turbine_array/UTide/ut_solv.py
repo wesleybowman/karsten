@@ -117,15 +117,66 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
 
     # Confidence Intervals
 
+    print 'conf. int''vls... '
+
+    if not opt['white']:
+        # band-averaged (ba) spectral densities
+        if opt['equi']:
+            if np.sum(tgd) > np.sum(uvgd):
+                efill = np.interp1(t,e,tin(tgd))
+                if np.any(np.isnan(efill)): # fill start&/end nans w/ nearest good
+                    ind = np.where(np.isnan(efill))[0]
+                    #ind2 = ind(ind<find(~isnan(efill),1,'first'));
+                    ind2 = ind[ind < np.where(~np.isnan(efill),1,'first')]
+                    efill[ind2] = efill[np.max(ind2)+1]
+                    ind2 = ind[ind>np.where(~np.isnan(efill),1,'last')]
+                    efill[ind2] = efill[np.min(ind2)-1]
+
+                ba = ut_pdgm(tin[tgd],efill,coef['aux']['frq'],1,0)
+            else:
+                ba = ut_pdgm(tin[tgd],e,coef['aux']['frq'],1,0)
+
+        else:
+
+            ba = ut_pdgm(t,e,coef.aux.frq,0,opt.lsfrqosmp);
+
+        # power [ (e units)^2 ] from spectral density [ (e units)^2 / cph ]
+        df = 1/(elor*24)
+        ba['Puu ']= ba['Puu']*df
+
+        if opt['twodim']:
+            ba['Pvv ']= ba['Pvv']*df
+            ba['Puv ']= ba['Puv']*df
+
+        # assign band-avg power values to NR & R freqs
+        #Puu = np.zeros(size(coef.aux.frq));
+        Puu = np.zeros(coef['aux']['frq'].shape)
+        if opt['twodim']:
+            Pvv = Puu
+            Puv = Pvv
+
+        #for i = 1:length(ba.Puu)
+        for i in xrange(len(ba['Puu'])):
+            #ind = find(coef.aux.frq>=ba.fbnd(i,1) & coef.aux.frq<=ba.fbnd(i,2))
+            ind = np.where(np.logical_and(coef['aux']['frq']>=ba['fbnd'][i,0],
+                           coef['aux']['frq']<=ba['fbnd'][i,0]))
+
+            Puu[ind] = ba['Puu'][i]
+            if opt['twodim']:
+                Pvv[ind] = ba['Pvv'][i]
+                Puv[ind] = ba['Puv'][i]
+
+
+
     #varMSM = real((ctranspose(xraw)*W*xraw - ctranspose(m)*ctranspose(B)*W*xraw)/(nt-nm))
     varMSM = np.real((np.conj(xraw).T * W * xraw -
-                      np.conj(m).T * np.conj(B).T * W * xraw)/(nt-nm))
+                      np.conj(m).T[:,None] * np.conj(B).T * W * xraw)/(nt-nm))
 
     #gamC = inv(ctranspose(B)*W*B)*varMSM
-    gamC = np.linalg.inv(np.conj(B).T * W * B) * varMSM
+    gamC = np.dot(np.linalg.inv(np.dot(np.conj(B).T * W, B)), varMSM)
     #gamP = inv(transpose(B)*W*B)*((transpose(xraw)*W*xraw - transpose(m)*transpose(B)*W*xraw)/(nt-nm))
-    gamP = np.linalg.inv(B.T * W * B) * ((xraw.T * W * xraw - m.T * B.T * W *
-                                          xraw) / (nt-nm))
+    gamP = np.dot(np.linalg.inv(np.dot(B.T * W, B)), ((xraw.T * W * xraw - m.T[:,None] * B.T * W *
+                                          xraw) / (nt-nm)))
 
     Gall = gamC + gamP
     Hall = gamC - gamP
@@ -170,7 +221,7 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
                 coef['A_ci'][c] = 1.96*sig1
                 coef['g_ci'][c] = 1.96*sig2
             else:
-                varcov_mCw[c,:,:] = np.diag(np.array([varXu varYu varXv varYv]))
+                varcov_mCw[c,:,:] = np.diag(np.array([varXu, varYu, varXv, varYv]))
                 if not opt['white']:
                     den = varXv + varYv
                     varXv = Pvv[c]*varXv/den
@@ -222,17 +273,21 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
     hn = np.hanning(nt)
 
     if equi:
-        Puuls, allfrq = scipy.signal.welch(np.imag(e), t, hn, frqosmp)
+        # matlab pwelch
+        # pwelch(x,window,noverlap,nfft)
+        Puu1s, allfrq = scipy.signal.welch(np.imag(e), window=hn, noverlap=0,
+                                           nfft=nt)
+        print Puu1s
     else:
         # ut_lmbscga
         pass
 
     fac = (nt-1)/(2*np.pi*(t[-1]-t[0])*24) # conv fac: rad/sample to cph
     allfrq = allfrq*fac # to [cycle/hour] from [rad/samp]
-    Puu1s = Puu1s/fac # to [e units^2/cph] from [e units^2/(rad/samp)]
-    P['Puu'],P['fbnd']= ut_fbndavg(Puu1s,allfrq,cfrq)
+    Puu1s = Puu1s / fac  # to [e units^2/cph] from [e units^2/(rad/samp)]
+    P['Puu'], P['fbnd'] = ut_fbndavg(Puu1s, allfrq, cfrq)
 
-    if not np.isreal(e):
+    if not np.isreal(e).all():
 
         if equi:
             #Pvv1s, _ = pwelch(np.imag(e),hn,0,nt)
@@ -240,7 +295,7 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
                                           nfft=nt)
             # should be able to use mlab.csd
             #Puv1s, _ = cpsd(np.real(e),np.imag(e),hn,0,nt)
-            Puv1s, _ = mlab.csd(np.real(e),np.imag(e),0,nt, window=hn)
+            Puv1s, _ = mlab.csd(np.real(e),np.imag(e), noverlap=0, NFFT=nt, window=hn)
         else:
             #Pvv1s, _ = ut_lmbscga(imag(e),t,hn,frqosmp);
             #Puv1s, _ = ut_lmbscgc(real(e),imag(e),t,hn,frqosmp);
@@ -248,9 +303,9 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
 
         Pvv1s = Pvv1s/fac
         P['Pvv'], _ = ut_fbndavg(Pvv1s,allfrq,cfrq)
-        Puv1s = real(Puv1s)/fac
+        Puv1s = np.real(Puv1s)/fac
         P['Puv'], _ = ut_fbndavg(Puv1s,allfrq,cfrq)
-        P['Puv '] = np.abs(P.Puv)
+        P['Puv'] = np.abs(P['Puv'])
 
 
     return P
@@ -269,7 +324,7 @@ def ut_fbndavg(P,allfrq,cfrq):
     # (based on residual_spectrum.m of t_tide, Pawlowicz et al 2002)
 
     df=allfrq[2]-allfrq[1]
-    P[round(cfrq/df)+1] = np.nan
+    P[np.round(cfrq/df).astype(int)+1] = np.nan
 
     fbnd =np.array([[.00010, .00417],
                     [.03192, .04859],
@@ -283,26 +338,28 @@ def ut_fbndavg(P,allfrq,cfrq):
 
     #nfbnd=size(fbnd,1);
     nfbnd=fbnd.shape[0]
-    avP=zeros(nfbnd,1)
+    avP= np.zeros((nfbnd,1))
     avP = np.zeros((nfbnd,1))
 
     for k in np.arange(nfbnd-1,-1,-1):
     #for k=nfbnd:-1:1,
-        b1 = np.where(allfrq>=fbnd[k,0])
-        b2 = np.where(allfrq<=fbnd[k,1])
-        b3 = np.where(np.isfinite(P))
+        b1 = np.where(allfrq>=fbnd[k,0])[0][0]
+        b2 = np.where(allfrq<=fbnd[k,1])[0][0]
+        b3 = np.where(np.isfinite(P))[0][0]
         #b1 = find(allfrq>=fbnd(k,1));
         #b2 = find(allfrq<=fbnd(k,2));
         #b3 = find(isfinite(P));
         #jbnd=intersect(intersect(b1,b2),b3)
+        #jbnd = np.intersect1d(np.intersect1d(b1, b2), b3)
         jbnd = np.intersect1d(np.intersect1d(b1, b2), b3)
+        #jbnd = np.unique(np.unique(b1,b2), b3)
         if jbnd.any():
         #if any(jbnd),
             avP[k]=np.mean(P[jbnd])
         elif k < nfbnd:
             avP[k]=P[k+1]
 
-return avP, fbnd
+    return avP, fbnd
 
 
 #%---------------------------------------------------------
@@ -329,6 +386,10 @@ def ut_linci(X,Y,sigX,sigY):
     # UTide v1p0 9/2011 d.codiga@gso.uri.edu
     # (adapted from errell.m of t_tide, Pawlowicz et al 2002)
 
+    X = np.array([X])
+    Y = np.array([Y])
+    sigX = np.array([sigX])
+    sigY = np.array([sigY])
     Xu = np.real(X[:])
     sigXu = np.real(sigX)
     Yu = np.real(Y[:])
@@ -385,7 +446,7 @@ def ut_linci(X,Y,sigX,sigY):
         dYu2=((rd*Yv-rn*Yu)/den)**2
         dXv2=((rd*Xu+rn*Xv)/den)**2
         dYv2=((rd*Yu+rn*Yv)/den)**2
-        sig2 = sig2 + 1j*(180/np.pi)*sqrt(dXu2*sigXu2+dYu2*sigYu2 + dXv2*sigXv2+dYv2*sigYv2)
+        sig2 = sig2 + 1j*(180/np.pi)*np.sqrt(dXu2*sigXu2+dYu2*sigYu2 + dXv2*sigXv2+dYv2*sigYv2)
 
     return sig1, sig2
 
