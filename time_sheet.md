@@ -252,5 +252,31 @@
 
     Figured out a good way to debug. Much better than before. Much faster.
 
+- 2014/05/08
++ 8:50 -9:13 --
+    Making package work. Fast and easy solution, nothing complicated. K.I.S.S.
+
+    from UTide import * now works with both ut_solv and ut_reconstr. There are
+    some things to look into for the future, but for now it works as a package.
+    It is not the most up to date version, but it is a working version for
+    plausible_turbine_locations. May just start an unstable branch in that
+    repository.
+
++ 9:13 -17:12  --
+    Working on debugging the CI stuff.
+    Got some of it done. Pwelch causing an issue. Worked for one of them, but
+    for the second its off, and because its off, that error propagates, since
+    we use that value in means and whatnot.
+
+    Had a 2h K meeting with Joel and the crew. 
+
+    Looked some more at CI. Can't see what is wrong.
+
++ 17:13 - 17:58 --
+    Looked some more into CI, and then figured out what was causing differences
+    between frq, turns out matlab reads in 4 decimals and python reads in more
+    than that, causing the small discrepancy.
+
+
 
 ```

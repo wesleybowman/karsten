@@ -3,6 +3,7 @@ import scipy.io as sio
 import scipy.sparse
 import scipy.signal
 import matplotlib.mlab as mlab
+import matplotlib.pyplot as plt
 
 def ut_solv(tin, uin, vin, lat, cnstit, Rayleigh, *varargin):
 
@@ -119,6 +120,8 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
 
     print 'conf. int''vls... '
 
+    #import pdb; pdb.set_trace()
+
     if not opt['white']:
         # band-averaged (ba) spectral densities
         if opt['equi']:
@@ -169,14 +172,23 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
 
 
     #varMSM = real((ctranspose(xraw)*W*xraw - ctranspose(m)*ctranspose(B)*W*xraw)/(nt-nm))
-    varMSM = np.real((np.conj(xraw).T * W * xraw -
-                      np.conj(m).T[:,None] * np.conj(B).T * W * xraw)/(nt-nm))
+#    varMSM = np.real((np.conj(xraw).T * W * xraw -
+#                      np.conj(m).T[:,None] * np.conj(B).T * W * xraw)/(nt-nm))
+
+    varMSM = np.real((np.dot(np.conj(xraw[:,None]).T * W, xraw[:,None]) -
+                      np.dot(np.dot(np.conj(m[:,None]).T, np.conj(B).T) * W,
+                             xraw[:,None]))/(nt-nm))
 
     #gamC = inv(ctranspose(B)*W*B)*varMSM
-    gamC = np.dot(np.linalg.inv(np.dot(np.conj(B).T * W, B)), varMSM)
+    gamC = np.linalg.inv(np.dot(np.conj(B).T * W, B)) * varMSM
     #gamP = inv(transpose(B)*W*B)*((transpose(xraw)*W*xraw - transpose(m)*transpose(B)*W*xraw)/(nt-nm))
-    gamP = np.dot(np.linalg.inv(np.dot(B.T * W, B)), ((xraw.T * W * xraw - m.T[:,None] * B.T * W *
-                                          xraw) / (nt-nm)))
+#    gamP = np.dot(np.linalg.inv(np.dot(B.T * W, B)), ((xraw.T * W * xraw - m.T[:,None] * B.T * W *
+#                                          xraw) / (nt-nm)))
+
+    gamP = np.linalg.inv(np.dot(B.T * W, B)) * \
+            (np.dot(xraw[:,None].T * W, xraw[:,None]) -
+             np.dot(np.dot(m[:,None].T, B.T)*W, xraw[:,None]))/(nt-nm)
+
 
     Gall = gamC + gamP
     Hall = gamC - gamP
@@ -204,11 +216,12 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
         varYu = np.real(H[0,0]+H[1,1]-2*H[0,1])/2
 
         if opt['twodim']:
-            varXv = np.real(G[0,0]+G[1,1]+2*G[0,1])/2
-            varYv = np.real(H[0,0]+H[1,1]-2*H[0,1])/2
+            varXv = np.real(H[0,0]+H[1,1]+2*H[0,1])/2
+            varYv = np.real(G[0,0]+G[1,1]-2*G[0,1])/2
             #varXv = real(H(1,1)+H(2,2)+2*H(1,2))/2;
             #varYv = real(G(1,1)+G(2,2)-2*G(1,2))/2;
 
+        '''Doesn't work cause Pvv1s is not working in ut_pdgm '''
         if opt['linci']: # linearized
             if not opt['twodim']:
                 varcov_mCw[c,:,:] = np.diag(np.array([varXu, varYu]))
@@ -235,6 +248,7 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
                 coef['Lsmin_ci'][c] = 1.96*np.imag(sig1)
                 coef['g_ci'][c] = 1.96*np.real(sig2)
                 coef['theta_ci'][c] = 1.96*np.imag(sig2)
+                #import pdb; pdb.set_trace()
 
         else: # monte carlo
             pass
@@ -249,19 +263,21 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
         ind = PE.argsort()[::-1]
     if opt['twodim']:
         coef['Lsmaj'] = coef['Lsmaj'][ind]
-        #coef['Lsmaj_ci'] = coef['Lsmaj_ci'][ind]
+        coef['Lsmaj_ci'] = coef['Lsmaj_ci'][ind]
         coef['Lsmin'] = coef['Lsmin'][ind]
-        #coef['Lsmin_ci'] = coef['Lsmin_ci'][ind]
+        coef['Lsmin_ci'] = coef['Lsmin_ci'][ind]
         coef['theta'] = coef['theta'][ind]
-        #coef['theta_ci'] = coef['theta_ci'][ind]
+        coef['theta_ci'] = coef['theta_ci'][ind]
     else:
         coef['A'] = coef['A'][ind]
-        #coef['A_ci'] = coef['A_ci'][ind]
+        coef['A_ci'] = coef['A_ci'][ind]
 
     coef['g'] = coef['g'][ind]
     coef['name'] = coef['name'][ind]
     coef['aux']['frq'] = coef['aux']['frq'][ind]
     coef['aux']['lind'] = coef['aux']['lind'][ind]
+
+    #import pdb; pdb.set_trace()
 
     return coef
 
@@ -275,27 +291,42 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
     if equi:
         # matlab pwelch
         # pwelch(x,window,noverlap,nfft)
-        Puu1s, allfrq = scipy.signal.welch(np.imag(e), window=hn, noverlap=0,
-                                           nfft=nt)
-        print Puu1s
+        #[Puu1s,allfrq] = pwelch(real(e),hn,0,nt);
+#        Puu1s, allfrq = scipy.signal.welch(np.real(e), window='hanning',
+#                                           noverlap=0, nfft=nt, fs=2*np.pi)
+        allfrq, Puu1s = scipy.signal.welch(np.real(e), window='hanning',
+                                           noverlap=0, nfft=nt, fs=2*np.pi)
+
+        allfrq, Puu1s = scipy.signal.welch(np.real(e), window=hn,
+                                           noverlap=0, nfft=nt, fs=2*np.pi)
+        #hn = mlab.window_hanning(t)
+#        Puu1s, allfrq = mlab.psd(np.real(e), window=hn,
+#                                 noverlap=0, NFFT=nt)
     else:
         # ut_lmbscga
         pass
 
+    #import pdb; pdb.set_trace()
+
     fac = (nt-1)/(2*np.pi*(t[-1]-t[0])*24) # conv fac: rad/sample to cph
     allfrq = allfrq*fac # to [cycle/hour] from [rad/samp]
     Puu1s = Puu1s / fac  # to [e units^2/cph] from [e units^2/(rad/samp)]
+
+    #import pdb; pdb.set_trace()
+
     P['Puu'], P['fbnd'] = ut_fbndavg(Puu1s, allfrq, cfrq)
 
     if not np.isreal(e).all():
 
         if equi:
             #Pvv1s, _ = pwelch(np.imag(e),hn,0,nt)
-            Pvv1s, _ = scipy.signal.welch(np.imag(e),window=hn, noverlap=0,
-                                          nfft=nt)
+            temp, Pvv1s = scipy.signal.welch(np.imag(e),window=hn, noverlap=0, nfft=nt, fs=2*np.pi)
+            temp, Pvv1s = scipy.signal.welch(np.imag(e),window=hn, noverlap=0, nfft=nt, fs=2*np.pi)
             # should be able to use mlab.csd
             #Puv1s, _ = cpsd(np.real(e),np.imag(e),hn,0,nt)
-            Puv1s, _ = mlab.csd(np.real(e),np.imag(e), noverlap=0, NFFT=nt, window=hn)
+            Pvv1s, temp = mlab.psd(np.imag(e), window=hn, noverlap=0, NFFT=nt, Fs=2*np.pi, sides='default')
+            Puv1s, temp = mlab.csd(np.real(e),np.imag(e), noverlap=0, NFFT=nt, window=hn, Fs=2*np.pi)
+
         else:
             #Pvv1s, _ = ut_lmbscga(imag(e),t,hn,frqosmp);
             #Puv1s, _ = ut_lmbscgc(real(e),imag(e),t,hn,frqosmp);
@@ -324,7 +355,9 @@ def ut_fbndavg(P,allfrq,cfrq):
     # (based on residual_spectrum.m of t_tide, Pawlowicz et al 2002)
 
     df=allfrq[2]-allfrq[1]
-    P[np.round(cfrq/df).astype(int)+1] = np.nan
+    #P[np.round(cfrq/df).astype(int)+1] = np.nan
+    np.round(cfrq/df).astype(int)
+    P[np.round(cfrq/df).astype(int)] = np.nan
 
     fbnd =np.array([[.00010, .00417],
                     [.03192, .04859],
@@ -336,25 +369,23 @@ def ut_fbndavg(P,allfrq,cfrq):
                     [.26000, .29000],
                     [.30000, .50000]])
 
+
     #nfbnd=size(fbnd,1);
     nfbnd=fbnd.shape[0]
-    avP= np.zeros((nfbnd,1))
     avP = np.zeros((nfbnd,1))
+
+    #import pdb; pdb.set_trace()
 
     for k in np.arange(nfbnd-1,-1,-1):
     #for k=nfbnd:-1:1,
-        b1 = np.where(allfrq>=fbnd[k,0])[0][0]
-        b2 = np.where(allfrq<=fbnd[k,1])[0][0]
-        b3 = np.where(np.isfinite(P))[0][0]
-        #b1 = find(allfrq>=fbnd(k,1));
-        #b2 = find(allfrq<=fbnd(k,2));
-        #b3 = find(isfinite(P));
-        #jbnd=intersect(intersect(b1,b2),b3)
-        #jbnd = np.intersect1d(np.intersect1d(b1, b2), b3)
+        b1 = np.where(allfrq>=fbnd[k,0])[0]
+        b2 = np.where(allfrq<=fbnd[k,1])[0]
+        b3 = np.where(np.isfinite(P))[0]
         jbnd = np.intersect1d(np.intersect1d(b1, b2), b3)
-        #jbnd = np.unique(np.unique(b1,b2), b3)
+
+        #Issue is here, taking the mean of Pvv1s when Pvv1s is already off.
         if jbnd.any():
-        #if any(jbnd),
+            #avP[k]=np.mean(P[jbnd-1])
             avP[k]=np.mean(P[jbnd])
         elif k < nfbnd:
             avP[k]=P[k+1]
@@ -672,6 +703,8 @@ def ut_cnstitsel(tref,minres,incnstit,infer):
 
     # skipped some stuff here cause they involve infer
 
+    '''Here, MatLab only loads in 4 decimals, so python is more accurate, but
+    therefore causes some differences'''
     cnstit['NR']['frq'] = const.freq[cnstit['NR']['lind']]
     cnstit['NR']['name'] = const.name[cnstit['NR']['lind']]
     nNR = len(cnstit['NR']['frq'])

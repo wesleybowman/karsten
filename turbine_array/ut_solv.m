@@ -1034,6 +1034,7 @@ for c=1:nc
         else
             varcov_mCw(c,:,:) = diag([varXu varYu varXv varYv]);
             if ~opt.white
+                opt.white
                 den = varXv + varYv;
                 varXv = Pvv(c)*varXv/den;
                 varYv = Pvv(c)*varYv/den;
@@ -1045,6 +1046,7 @@ for c=1:nc
             coef.Lsmin_ci(c) = 1.96*imag(sig1);
             coef.g_ci(c) = 1.96*real(sig2);
             coef.theta_ci(c) = 1.96*imag(sig2);
+            
         end
     else % monte carlo
         covXuYu = imag(H(1,1)-H(1,2)+H(2,1)-H(2,2))/2;
@@ -1143,6 +1145,7 @@ if ~isempty(opt.infer)
     end
     % conf ints
     if opt.linci % linearized
+        opt.linci
         for k=1:nR
             if opt.white
                 if ~opt.twodim
@@ -1165,6 +1168,7 @@ if ~isempty(opt.infer)
                         varcov_mCc(nNR+k,3,3));
                 end
             end
+            
             varXuHH = (real(cnstit.R{k}.I.Rp).^2 + ...
                 real(cnstit.R{k}.I.Rm).^2)*varReap + ...
                 (imag(cnstit.R{k}.I.Rp).^2 + ...
@@ -1188,8 +1192,10 @@ if ~isempty(opt.infer)
                     coef.Lsmin_ci = [coef.Lsmin_ci; 1.96*imag(sig1);];
                     coef.g_ci = [coef.g_ci; 1.96*real(sig2);];
                     coef.theta_ci = [coef.theta_ci; 1.96*imag(sig2);];
+                    
                 end
             end
+            
         end
     else % monte carlo
         ind = 0;
@@ -1349,6 +1355,8 @@ else
 end
 coef.aux.frq = coef.aux.frq(ind);
 coef.aux.lind = coef.aux.lind(ind);
+
+
 fprintf('done.\n');
 
 %% create coef.results, reorder coef fields, do runtime display
@@ -2112,6 +2120,7 @@ if equi
 else
     [Puu1s,allfrq] = ut_lmbscga(real(e),t,hn,frqosmp);
 end
+
 fac = (nt-1)/(2*pi*(t(end)-t(1))*24); % conv fac: rad/sample to cph
 allfrq = allfrq*fac; % to [cycle/hour] from [rad/samp]
 Puu1s = Puu1s/fac; % to [e units^2/cph] from [e units^2/(rad/samp)]
@@ -2360,15 +2369,18 @@ fbnd =[.00010 .00417;
 nfbnd=size(fbnd,1);
 avP=zeros(nfbnd,1);
 for k=nfbnd:-1:1,
+    k
     b1 = find(allfrq>=fbnd(k,1));
     b2 = find(allfrq<=fbnd(k,2));
     b3 = find(isfinite(P));
     jbnd=intersect(intersect(b1,b2),b3); 
+    jbnd
     if any(jbnd),
         avP(k)=mean(P(jbnd));
     elseif k<nfbnd,
         avP(k)=P(k+1);   
     end
+    avP(k)
 end
 
 %%--------------------------------------------------------- 

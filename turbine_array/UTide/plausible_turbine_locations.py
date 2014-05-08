@@ -11,6 +11,8 @@ import cPickle as pickle
 import sys
 #sys.path.append('/home/wesley/github/')
 #from UTide.ut_solv.master import *
+#from UTide.ut_solv import ut_solv
+#from UTide import ut_solv
 
 
 filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
