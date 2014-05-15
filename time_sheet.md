@@ -280,9 +280,10 @@
 + GRADUATION, missed a few days
 
 + 2014/05/15
-- 9:00 -9:23 --
+- 9:00 - 9:23 --
     Got ADCP data and signed the doodle for the volunteering at the conference.
 
+- 9:23 - --
 
 
 ```
