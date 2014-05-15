@@ -107,7 +107,7 @@ Rayleigh = np.array([0.97, 1])
 
 
 
-adcp = np.load('adcpLonLat.plk')
+adcp = np.load('adcpLonLat.pkl')
 index = closest_point(adcp, lon, lat)
 
 for ii in index:

@@ -2,5 +2,7 @@
 *.nc
 *.mat
 *.html
+*.p
+*.pkl
 # Rope
 .ropeproject
