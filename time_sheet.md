@@ -283,7 +283,11 @@
 - 9:00 - 9:23 --
     Got ADCP data and signed the doodle for the volunteering at the conference.
 
-- 9:23 - --
+- 9:23 - 10:08 --
+    Converted all adcp data into useable data with Pandas and with numpy.
+
+- 10:08 - --
+
 
 
 ```

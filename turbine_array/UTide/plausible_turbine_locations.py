@@ -5,14 +5,14 @@ from mjd2num import mjd2num
 from closest_point import closest_point
 from cf_u_rated_turbs import *
 import matplotlib.pyplot as plt
-from ut_solv import ut_solv
 import scipy.io as sio
 import cPickle as pickle
 import sys
-#sys.path.append('/home/wesley/github/')
+sys.path.append('/home/wesley/github/')
 #from UTide.ut_solv.master import *
 #from UTide.ut_solv import ut_solv
 #from UTide import ut_solv
+from ut_solv import ut_solv
 
 
 filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
@@ -87,11 +87,8 @@ turbine_score = score
 
 
 loci = np.empty((N))
-#for ii=1:N
 for ii in xrange(N):
-    #ii = 0
-   #% [~,loci(ii)]=max(turbine_power);
-    #[~,loci(ii)]=min(turbine_score);
+
     loci[ii] = np.argmin(turbine_score)
 
     # do u_tide analysis at loc
