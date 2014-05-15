@@ -286,8 +286,20 @@
 - 9:23 - 10:08 --
     Converted all adcp data into useable data with Pandas and with numpy.
 
-- 10:08 - --
+- 10:08 - 11:28 --
+    Trying to get lon lat to work, since ADCP isnt as precise as fvcom
 
+    Remembered I had code to do this in plausible_turbine_locations, got that,
+    made a .plk for the lonlat of the adcp, and got the index of where they are
+    closest.
 
++ LUNCH
+- Forgot to write down time
+    Also had a small meeting with K. Got all .mat files to work with the
+    setup.py in UTide. This will help on installation. Need top get Andy to
+    test.
+
+    Andy's harmonic analysis seems to work now with a given nc file. Is not yet
+    comparing to anything.
 
 ```
