@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 import scipy.io as sio
 import scipy.sparse
@@ -145,11 +146,11 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
 
         # power [ (e units)^2 ] from spectral density [ (e units)^2 / cph ]
         df = 1/(elor*24)
-        ba['Puu ']= ba['Puu']*df
+        ba['Puu']= ba['Puu']*df
 
         if opt['twodim']:
-            ba['Pvv ']= ba['Pvv']*df
-            ba['Puv ']= ba['Puv']*df
+            ba['Pvv']= ba['Pvv']*df
+            ba['Puv']= ba['Puv']*df
 
         # assign band-avg power values to NR & R freqs
         #Puu = np.zeros(size(coef.aux.frq));
@@ -295,18 +296,23 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
 #        Puu1s, allfrq = scipy.signal.welch(np.real(e), window='hanning',
 #                                           noverlap=0, nfft=nt, fs=2*np.pi)
         allfrq, Puu1s = scipy.signal.welch(np.real(e), window='hanning',
-                                           noverlap=0, nfft=nt, fs=2*np.pi)
+                                           noverlap=0, nfft=nt, fs=2*np.pi,
+                                           detrend='constant',
+                                           scaling='density')
 
-        allfrq, Puu1s = scipy.signal.welch(np.real(e), window=hn,
-                                           noverlap=0, nfft=nt, fs=2*np.pi)
+#        allfrq, Puu1s = scipy.signal.periodogram(np.real(e), window='hanning',
+#                                           nfft=nt, fs=2*np.pi,
+#                                           detrend='constant',
+#                                           scaling='density')
+#        allfrq, Puu1s = scipy.signal.welch(np.real(e), window=hn, noverlap=0,
+#                                           nfft=nt, fs=2*np.pi)
         #hn = mlab.window_hanning(t)
-#        Puu1s, allfrq = mlab.psd(np.real(e), window=hn,
-#                                 noverlap=0, NFFT=nt)
+        Puu1s, allfrq = mlab.psd(np.real(e), window=hn, noverlap=0, NFFT=nt, Fs=2*np.pi)
     else:
         # ut_lmbscga
         pass
 
-    #import pdb; pdb.set_trace()
+    import pdb; pdb.set_trace()
 
     fac = (nt-1)/(2*np.pi*(t[-1]-t[0])*24) # conv fac: rad/sample to cph
     allfrq = allfrq*fac # to [cycle/hour] from [rad/samp]
@@ -321,10 +327,12 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
         if equi:
             #Pvv1s, _ = pwelch(np.imag(e),hn,0,nt)
             temp, Pvv1s = scipy.signal.welch(np.imag(e),window=hn, noverlap=0, nfft=nt, fs=2*np.pi)
-            temp, Pvv1s = scipy.signal.welch(np.imag(e),window=hn, noverlap=0, nfft=nt, fs=2*np.pi)
+            #temp, Pvv1s = scipy.signal.welch(np.imag(e),window=hn, noverlap=0, nfft=nt, fs=2*np.pi)
+
             # should be able to use mlab.csd
             #Puv1s, _ = cpsd(np.real(e),np.imag(e),hn,0,nt)
-            Pvv1s, temp = mlab.psd(np.imag(e), window=hn, noverlap=0, NFFT=nt, Fs=2*np.pi, sides='default')
+            #Pvv1s, temp = mlab.psd(np.imag(e), window=hn, noverlap=0, NFFT=nt, Fs=2*np.pi, sides='default')
+
             Puv1s, temp = mlab.csd(np.real(e),np.imag(e), noverlap=0, NFFT=nt, window=hn, Fs=2*np.pi)
 
         else:
@@ -692,7 +700,7 @@ def ut_cnstitsel(tref,minres,incnstit,infer):
     for k in ii.nonzero()[0]:
         ik = const.ishallow[k]+np.arange(const.nshallow[k])
         ik = ik.astype(int)-1
-        const.freq[k] = np.sum(const.freq[shallow.iname[ik]]*shallow.coef[ik])
+        const.freq[k] = np.sum(const.freq[shallow.iname[ik]-1]*shallow.coef[ik])
 
     ## cnstit.NR
     cnstit['NR'] = {}
@@ -703,8 +711,7 @@ def ut_cnstitsel(tref,minres,incnstit,infer):
 
     # skipped some stuff here cause they involve infer
 
-    '''Here, MatLab only loads in 4 decimals, so python is more accurate, but
-    therefore causes some differences'''
+    #import pdb; pdb.set_trace()
     cnstit['NR']['frq'] = const.freq[cnstit['NR']['lind']]
     cnstit['NR']['name'] = const.name[cnstit['NR']['lind']]
     nNR = len(cnstit['NR']['frq'])

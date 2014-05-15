@@ -82,6 +82,7 @@ def closest_point(points, lon, lat):
 
     return closest_point_indexes
 
+
 filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
 
 data = nc.Dataset(filename, 'r')

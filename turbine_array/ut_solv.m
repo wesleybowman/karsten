@@ -1675,6 +1675,7 @@ if ~isempty(infer)
         cnstit.NR.lind(ind(tst)) = [];
     end
 end
+
 cnstit.NR.frq = const.freq(cnstit.NR.lind);
 cnstit.NR.name = cellstr(const.name(cnstit.NR.lind,:));
 nNR = length(cnstit.NR.frq); 
