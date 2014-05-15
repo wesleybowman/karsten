@@ -102,10 +102,10 @@
     Looking into timing python and matlab scripts that were written yesterday.
     Also, while those are running, testing more ways to handle structures from
     matlab. Specifically:
-    [] structured arrays
-    [] recarrays
-    [] pandas panels/dataframe
-    [] dictionaries
+    - [ ] structured arrays
+    - [ ] recarrays
+    - [ ] pandas panels/dataframe
+    - [ ] dictionaries
 
     Time for matlab is 1052s for cf_u_rated_turbs.
     Time for python is 2m52s.
@@ -141,9 +141,9 @@
 + 10:46-13:00 --
     Starting UTide conversion (brace yourself).
     Got:
-    [] ut_solv
-    [] ut_solv1
-    [x] ut_slvinit
+    - [x] ut_solv
+    - [x] ut_solv1
+    - [x] ut_slvinit
 
 + 13:00 - 13:27 --
     Lunch
@@ -276,6 +276,12 @@
     Looked some more into CI, and then figured out what was causing differences
     between frq, turns out matlab reads in 4 decimals and python reads in more
     than that, causing the small discrepancy.
+
++ GRADUATION, missed a few days
+
++ 2014/05/15
+- 9:00 -9:23 --
+    Got ADCP data and signed the doodle for the volunteering at the conference.
 
 
 
