@@ -312,7 +312,7 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
         # ut_lmbscga
         pass
 
-    import pdb; pdb.set_trace()
+    #import pdb; pdb.set_trace()
 
     fac = (nt-1)/(2*np.pi*(t[-1]-t[0])*24) # conv fac: rad/sample to cph
     allfrq = allfrq*fac # to [cycle/hour] from [rad/samp]
