@@ -1,5 +1,7 @@
+import shutil
 
 
+standardRunDir = './test/'
 gridName = 'dngrid'
 start_date = '2012-01-01 00:00:00'
 end_date = '2012-02-01 00:00:00'
@@ -247,7 +249,9 @@ OUT_INTERVAL= 'seconds=1000.0'
                 turbine_file, bottom_roughness)
 
 
-    outputFile = '{0}_run_{1}.nml'.format(gridName, bottom_roughness)
+    newFile = '{0}'.format(bottom_roughness)
+    shutil.copytree(standardRunDir, newFile)
+    outputFile = '{0}/{1}_run.nml'.format(newFile, gridName)
 
     top = top.split('\n')
 
