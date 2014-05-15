@@ -302,4 +302,14 @@
     Andy's harmonic analysis seems to work now with a given nc file. Is not yet
     comparing to anything.
 
+    Trying to figure out how this ADCP data is organized.
+
+    Need to know where all ADCP data is, need K for this.
+
+    Worked some more on UTide. Got the frq part fixed that I thought was
+    broken. It wasn't, just found an index error in the code that I had missed.
+
++ 4:00 - Rest of Day --
+    Meeting with K and Andy
+
 ```
