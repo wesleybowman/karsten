@@ -124,7 +124,7 @@ for ii=1:N
     
     % do u_tide analysis at loc
     coef = ut_solv(time, double(ua(:,loci(ii))), double(va(:,loci(ii))), uvllnode(loci(ii),2), 'auto','NoTrend','Rmin',analysis.annual.Rayleigh(1),'OLS','NoDiagn','LinCI');
-    %save coef.m coef
+    save coef.m coef
     cx=cos(coef.theta(1)*pi/180);
     cy=sin(coef.theta(1)*pi/180);    
     %find new xy as distance from location, and in direction of M2 ellipse

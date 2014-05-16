@@ -4,7 +4,7 @@ import scipy.io as sio
 import scipy.sparse
 import scipy.signal
 import matplotlib.mlab as mlab
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 def ut_solv(tin, uin, vin, lat, cnstit, Rayleigh, *varargin):
 
@@ -206,7 +206,7 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
         coef['Lsmaj_ci']= np.nan*np.ones(coef['g'].shape)
         coef['Lsmin_ci']= np.nan*np.ones(coef['g'].shape)
         coef['theta_ci']= np.nan*np.ones(coef['g'].shape)
-
+        # same issue with copying
         #coef['Lsmaj_ci']= coef['g_ci']
         #coef['Lsmin_ci']= coef['g_ci']
         #coef['theta_ci']= coef['g_ci']
@@ -235,7 +235,6 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
             #varXv = real(H(1,1)+H(2,2)+2*H(1,2))/2;
             #varYv = real(G(1,1)+G(2,2)-2*G(1,2))/2;
 
-        '''Doesn't work cause Pvv1s is not working in ut_pdgm '''
         if opt['linci']: # linearized
             if not opt['twodim']:
                 varcov_mCw[c,:,:] = np.diag(np.array([varXu, varYu]))
@@ -302,6 +301,8 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
     #import pdb; pdb.set_trace()
     P = {}
     nt = len(e)
+    # matches MatLab hann
+    # want to switch to this in future
     #hn = np.hanning(nt)
     # Matches matlab hanning
     hn = np.hanning(nt+2)
@@ -322,13 +323,13 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
 #                                           nfft=nt, fs=2*np.pi,
 #                                           detrend='constant',
 #                                           scaling='density')
-        allfrq, Puu1s = scipy.signal.welch(np.real(e), window=hn, noverlap=0, nfft=nt, fs=2*np.pi)
+        allfrq, Puu1s = scipy.signal.welch(np.real(e), window=hn, noverlap=0,
+                                           nfft=nt, fs=2*np.pi)
         #hn = mlab.window_hanning(t)
         #Puu1s, allfrq = mlab.psd(np.real(e), window=hn, noverlap=0, NFFT=nt, Fs=2*np.pi)
     else:
         # ut_lmbscga
         pass
-    #import pdb; pdb.set_trace()
 
     #import pdb; pdb.set_trace()
 
@@ -344,7 +345,8 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
 
         if equi:
             #Pvv1s, _ = pwelch(np.imag(e),hn,0,nt)
-            temp, Pvv1s = scipy.signal.welch(np.imag(e),window=hn, noverlap=0, nfft=nt, fs=2*np.pi)
+            temp, Pvv1s = scipy.signal.welch(np.imag(e),window=hn, noverlap=0,
+                                             nfft=nt, fs=2*np.pi)
             #temp, Pvv1s = scipy.signal.welch(np.imag(e),window=hn, noverlap=0, nfft=nt, fs=2*np.pi)
 
             # should be able to use mlab.csd
@@ -364,6 +366,7 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
         P['Puv'], _ = ut_fbndavg(Puv1s,allfrq,cfrq)
         P['Puv'] = np.abs(P['Puv'])
 
+    #import pdb; pdb.set_trace()
 
     return P
 

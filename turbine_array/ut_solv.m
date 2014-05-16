@@ -2122,6 +2122,7 @@ function P = ut_pdgm(t,e,cfrq,equi,frqosmp)
 
 nt = length(e);
 hn = hanning(nt);
+% Future we want to switch to hann
 %hn = hann(nt);
 if equi
     [Puu1s,allfrq] = pwelch(real(e),hn,0,nt);
