@@ -979,9 +979,13 @@ if ~opt.white
         Puv = Pvv;
     end
     for i = 1:length(ba.Puu)
+        i
         ind = find(coef.aux.frq>=ba.fbnd(i,1) & ...
             coef.aux.frq<=ba.fbnd(i,2));
+        ind
+        ba.Puu(i)
         Puu(ind) = ba.Puu(i);
+        Puu
         if opt.twodim
             Pvv(ind) = ba.Pvv(i);
             Puv(ind) = ba.Puv(i);
@@ -2117,8 +2121,8 @@ function P = ut_pdgm(t,e,cfrq,equi,frqosmp)
 % (band-averaging and line decimating from t_tide, Pawlowicz et al 2002)
 
 nt = length(e);
-%hn = hanning(nt);
-hn = hann(nt);
+hn = hanning(nt);
+%hn = hann(nt);
 if equi
     [Puu1s,allfrq] = pwelch(real(e),hn,0,nt);
 else

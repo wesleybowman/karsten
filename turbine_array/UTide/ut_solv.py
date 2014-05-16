@@ -302,7 +302,10 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
     #import pdb; pdb.set_trace()
     P = {}
     nt = len(e)
-    hn = np.hanning(nt)
+    #hn = np.hanning(nt)
+    # Matches matlab hanning
+    hn = np.hanning(nt+2)
+    hn = hn[1:-1]
 
     if equi:
         # matlab pwelch
@@ -325,6 +328,7 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
     else:
         # ut_lmbscga
         pass
+    #import pdb; pdb.set_trace()
 
     #import pdb; pdb.set_trace()
 
