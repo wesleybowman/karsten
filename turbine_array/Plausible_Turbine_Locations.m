@@ -1,10 +1,10 @@
-if 1==1
-dd=cd;
+%if 1==1
+%dd=cd;
     %[x,y,ua,va,trinodes,el,h,time,siglev,siglay,nbe,a1u,a2u,nele,aw0,awx,awy,node,long,lat]=loadnc2d_matlab_RK(dd,'/smallcape_0001.nc');
     [x,y,ua,va,trinodes,el,h,time,siglev,siglay,nbe,a1u,a2u,aw0,awx,awy,nele,node,long,lat] = loadnc2d_matlab_RK('/home/wesley/github/aidan-projects/grid','/dngrid_0001.nc');
 [nodexy,uvnode,dt,deltat,hour,thour,TP,rho,g,period,nodell,uvllnode]=ncdatasort(x,y,time*24*3600,trinodes,long,lat);
 time=mjd2num(time);
-end
+%end
 %depth restrictions
 min_depth=30
 max_depth=80
@@ -47,17 +47,18 @@ turbine.meanP=0;
 turbine.cf=0.40;
 u_rated=0:0.25:8;
 
-turbines=cf_u_rated_turbs(speed,turbine,u_rated);
+load('turbines.mat')
+%turbines=cf_u_rated_turbs(speed,turbine,u_rated);
 
-if 1==1
-figure
-patch('Vertices',[x,y],'Faces',trinodes,'FaceVertexCdata',[turbines.rated]')
-shading flat;
-axis(plot_range)
-colorbar
-caxis([0 5])
-drawnow
-end
+% if 1==1
+% figure
+% patch('Vertices',[x,y],'Faces',trinodes,'FaceVertexCdata',[turbines.rated]')
+% shading flat;
+% axis(plot_range)
+% colorbar
+% caxis([0 5])
+% drawnow
+% end
 
 % for jj=1:length(urated)
 % %turbine characteristics
@@ -73,25 +74,25 @@ meanP=[turbines.meanP];
 capacity_factor=[turbines.cf];
 capacity_factor(isnan(capacity_factor))=0;
 tp=[turbines.Prated];
-if 1==1
-figure
-patch('Vertices',[x,y],'Faces',trinodes,'FaceVertexCdata',meanP')
-shading flat;
-colorbar
-axis(plot_range)
-
-figure
-patch('Vertices',[x,y],'Faces',trinodes,'FaceVertexCdata',capacity_factor')
-shading flat;
-colorbar
-axis(plot_range)
-
-figure
-patch('Vertices',[x,y],'Faces',trinodes,'FaceVertexCdata',tp')
-shading flat;
-colorbar
-axis(plot_range)
-end
+% if 1==1
+% figure
+% patch('Vertices',[x,y],'Faces',trinodes,'FaceVertexCdata',meanP')
+% shading flat;
+% colorbar
+% axis(plot_range)
+% 
+% figure
+% patch('Vertices',[x,y],'Faces',trinodes,'FaceVertexCdata',capacity_factor')
+% shading flat;
+% colorbar
+% axis(plot_range)
+% 
+% figure
+% patch('Vertices',[x,y],'Faces',trinodes,'FaceVertexCdata',tp')
+% shading flat;
+% colorbar
+% axis(plot_range)
+% end
 
 %U_tide_data
 analysis.annual.run = 0;        
@@ -115,6 +116,7 @@ score=20*(1-meanP/1e6);
 turbine_score=score;
 %Find best location
 %figure
+ii=1
 
 for ii=1:N
 %    [~,loci(ii)]=max(turbine_power);
@@ -122,6 +124,7 @@ for ii=1:N
     
     % do u_tide analysis at loc
     coef = ut_solv(time, double(ua(:,loci(ii))), double(va(:,loci(ii))), uvllnode(loci(ii),2), 'auto','NoTrend','Rmin',analysis.annual.Rayleigh(1),'OLS','NoDiagn','LinCI');
+    %save coef.m coef
     cx=cos(coef.theta(1)*pi/180);
     cy=sin(coef.theta(1)*pi/180);    
     %find new xy as distance from location, and in direction of M2 ellipse

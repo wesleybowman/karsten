@@ -144,6 +144,7 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
 
             ba = ut_pdgm(t,e,coef.aux.frq,0,opt.lsfrqosmp);
 
+        #import pdb; pdb.set_trace()
         # power [ (e units)^2 ] from spectral density [ (e units)^2 / cph ]
         df = 1/(elor*24)
         ba['Puu']= ba['Puu']*df
@@ -153,23 +154,28 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
             ba['Puv']= ba['Puv']*df
 
         # assign band-avg power values to NR & R freqs
-        #Puu = np.zeros(size(coef.aux.frq));
         Puu = np.zeros(coef['aux']['frq'].shape)
         if opt['twodim']:
-            Pvv = Puu
-            Puv = Pvv
+            Pvv = np.zeros(coef['aux']['frq'].shape)
+            Puv = np.zeros(coef['aux']['frq'].shape)
+            # This was creating a copy of Puu and not a new array, so Puu was
+            # getting overridden
+            #Pvv = Puu
+            #Puv = Pvv
 
-        #for i = 1:length(ba.Puu)
-        for i in xrange(len(ba['Puu'])):
-            #ind = find(coef.aux.frq>=ba.fbnd(i,1) & coef.aux.frq<=ba.fbnd(i,2))
+        #import pdb; pdb.set_trace()
+        for i in xrange(ba['Puu'].shape[0]):
+
             ind = np.where(np.logical_and(coef['aux']['frq']>=ba['fbnd'][i,0],
-                           coef['aux']['frq']<=ba['fbnd'][i,0]))
+                                          coef['aux']['frq']<=ba['fbnd'][i,1]))[0]
 
             Puu[ind] = ba['Puu'][i]
+
             if opt['twodim']:
                 Pvv[ind] = ba['Pvv'][i]
                 Puv[ind] = ba['Puv'][i]
 
+        #import pdb; pdb.set_trace()
 
 
     #varMSM = real((ctranspose(xraw)*W*xraw - ctranspose(m)*ctranspose(B)*W*xraw)/(nt-nm))
@@ -285,6 +291,7 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
 
 def ut_pdgm(t,e,cfrq,equi,frqosmp):
 
+    #import pdb; pdb.set_trace()
     P = {}
     nt = len(e)
     hn = np.hanning(nt)
@@ -295,19 +302,18 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
         #[Puu1s,allfrq] = pwelch(real(e),hn,0,nt);
 #        Puu1s, allfrq = scipy.signal.welch(np.real(e), window='hanning',
 #                                           noverlap=0, nfft=nt, fs=2*np.pi)
-        allfrq, Puu1s = scipy.signal.welch(np.real(e), window='hanning',
-                                           noverlap=0, nfft=nt, fs=2*np.pi,
-                                           detrend='constant',
-                                           scaling='density')
+#        allfrq, Puu1s = scipy.signal.welch(np.real(e), window='hanning',
+#                                           noverlap=0, nfft=nt, fs=2*np.pi,
+#                                           detrend='constant',
+#                                           scaling='density')
 
 #        allfrq, Puu1s = scipy.signal.periodogram(np.real(e), window='hanning',
 #                                           nfft=nt, fs=2*np.pi,
 #                                           detrend='constant',
 #                                           scaling='density')
-#        allfrq, Puu1s = scipy.signal.welch(np.real(e), window=hn, noverlap=0,
-#                                           nfft=nt, fs=2*np.pi)
+        allfrq, Puu1s = scipy.signal.welch(np.real(e), window=hn, noverlap=0, nfft=nt, fs=2*np.pi)
         #hn = mlab.window_hanning(t)
-        Puu1s, allfrq = mlab.psd(np.real(e), window=hn, noverlap=0, NFFT=nt, Fs=2*np.pi)
+        #Puu1s, allfrq = mlab.psd(np.real(e), window=hn, noverlap=0, NFFT=nt, Fs=2*np.pi)
     else:
         # ut_lmbscga
         pass
