@@ -201,17 +201,24 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
     Hall = gamC - gamP
 
     coef['g_ci']= np.nan*np.ones(coef['g'].shape)
+    #import pdb; pdb.set_trace()
     if opt['twodim']:
-        coef['Lsmaj_ci']= coef['g_ci']
-        coef['Lsmin_ci']= coef['g_ci']
-        coef['theta_ci']= coef['g_ci']
+        coef['Lsmaj_ci']= np.nan*np.ones(coef['g'].shape)
+        coef['Lsmin_ci']= np.nan*np.ones(coef['g'].shape)
+        coef['theta_ci']= np.nan*np.ones(coef['g'].shape)
+
+        #coef['Lsmaj_ci']= coef['g_ci']
+        #coef['Lsmin_ci']= coef['g_ci']
+        #coef['theta_ci']= coef['g_ci']
         varcov_mCw = np.nan*np.ones((nc,4,4))
     else:
-        coef['A_ci']= coef['g_ci']
+        coef['A_ci']= np.nan*np.ones(coef['g'].shape)
+        #coef['A_ci']= coef['g_ci']
         varcov_mCw = np.nan*np.ones((nc,2,2))
 
     if not opt['white']:
-        varcov_mCc = varcov_mCw
+        varcov_mCc = np.copy(varcov_mCw)
+        #varcov_mCc = varcov_mCw
 
     #for c=1:nc
     for c in np.arange(nc):
@@ -280,6 +287,7 @@ def ut_solv1(tin,uin,vin,lat,cnstit,Rayleigh,varargin):
         coef['A_ci'] = coef['A_ci'][ind]
 
     coef['g'] = coef['g'][ind]
+    coef['g_ci'] = coef['g_ci'][ind]
     coef['name'] = coef['name'][ind]
     coef['aux']['frq'] = coef['aux']['frq'][ind]
     coef['aux']['lind'] = coef['aux']['lind'][ind]
