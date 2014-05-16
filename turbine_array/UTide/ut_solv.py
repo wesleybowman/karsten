@@ -329,6 +329,8 @@ def ut_pdgm(t,e,cfrq,equi,frqosmp):
         #Puu1s, allfrq = mlab.psd(np.real(e), window=hn, noverlap=0, NFFT=nt, Fs=2*np.pi)
     else:
         # ut_lmbscga
+        # Here I think scipy.signal.lombscargle(x,y,freqs) should work. Look
+        # into it.
         pass
 
     #import pdb; pdb.set_trace()
