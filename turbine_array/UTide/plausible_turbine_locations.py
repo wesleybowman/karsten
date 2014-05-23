@@ -17,6 +17,7 @@ from ut_solv import ut_solv
 
 filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
 
+# only variables used are: x,y, time, trinodes, lat, lon, h
 (x, y, ua, va, trinodes,
  el, h, time, siglev, siglay,
  nbe, a1u, a2u, aw0, awx, awy,

@@ -1,7 +1,8 @@
 from __future__ import division
 import numpy as np
+import pandas as pd
 import netCDF4 as nc
-import pprint
+from datetime import datetime, timedelta
 import sys
 sys.path.append('/home/wesley/github/UTide/')
 from utide import ut_solv
@@ -83,6 +84,14 @@ def closest_point(points, lon, lat):
     return closest_point_indexes
 
 
+def datetime2matlabdn(dt):
+    # ordinal = dt.toordinal()
+    mdn = dt + timedelta(days=366)
+    frac = (dt-datetime(dt.year, dt.month, dt.day, 0, 0, 0)).seconds / \
+        (24.0 * 60.0 * 60.0)
+    return mdn.toordinal() + frac
+
+
 filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
 
 data = nc.Dataset(filename, 'r')
@@ -104,16 +113,51 @@ time = mjd2num(time)
 
 Rayleigh = np.array([0.97, 1])
 
+adcp = pd.read_csv('/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt')
+lonlat = np.array([adcp['Longitude'], adcp['Latitude']]).T
 
+index = closest_point(lonlat, lon, lat)
+adcpData = pd.Series()
+runData = pd.Series()
+# runData = pd.DataFrame()
 
+for i, ii in enumerate(index):
 
-adcp = np.load('adcpLonLat.pkl')
-index = closest_point(adcp, lon, lat)
+    path = adcp.iloc[i, -1]
+    if path != 'None':
+        ADCP = pd.read_csv(path, index_col=0)
+        ADCP.index = pd.to_datetime(ADCP.index)
 
-for ii in index:
+        adcpTime = np.empty(ADCP.index.shape)
 
-    coef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
-                   'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
-                   'NoDiagn', 'LinCI')
+        for j, jj in enumerate(ADCP.index):
+            adcpTime[j] = datetime2matlabdn(jj)
 
-    pprint.pprint(coef)
+        adcpCoef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
+                           'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
+                           'NoDiagn', 'LinCI')
+
+        a = pd.Series(adcpCoef)
+        a['aux'] = pd.Series(a['aux'])
+
+        nameSpacer = pd.Series({'ADCP_Location': [adcp.iloc[i, 0]]})
+        adcpData = pd.concat([adcpData, nameSpacer])
+        adcpData = pd.concat([adcpData, a])
+
+        coef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
+                       'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
+                       'NoDiagn', 'LinCI')
+
+        c = pd.Series(coef)
+        c['aux'] = pd.Series(c['aux'])
+
+        runData = pd.concat([runData, nameSpacer])
+        runData = pd.concat([adcpData, c])
+
+# name = '{0}'.format(adcp.iloc[i,0])
+# adcpData.to_hdf('adcpData.h5', name, mode='a')
+
+runData.to_hdf('runData.h5', 'runData', mode='a')
+runData.to_csv('runData.csv')
+adcpData.to_hdf('adcpData.h5', 'runData', mode='a')
+adcpData.to_csv('adcpData.csv')
