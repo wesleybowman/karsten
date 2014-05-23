@@ -117,8 +117,10 @@ adcp = pd.read_csv('/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt')
 lonlat = np.array([adcp['Longitude'], adcp['Latitude']]).T
 
 index = closest_point(lonlat, lon, lat)
-adcpData = pd.Series()
-runData = pd.Series()
+
+# Need to do DataFrame instead of Series
+adcpData = pd.DataFrame()
+runData = pd.DataFrame()
 # runData = pd.DataFrame()
 
 for i, ii in enumerate(index):
@@ -137,10 +139,16 @@ for i, ii in enumerate(index):
                            'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
                            'NoDiagn', 'LinCI')
 
-        a = pd.Series(adcpCoef)
-        a['aux'] = pd.Series(a['aux'])
+        adcpAUX = adcpCoef['aux']
+        del adcpAUX['opt']
+        del adcpCoef['aux']
 
-        nameSpacer = pd.Series({'ADCP_Location': [adcp.iloc[i, 0]]})
+        adcpAUX = pd.DataFrame(adcpAUX)
+        a = pd.DataFrame(adcpCoef)
+        a = pd.concat([a, adcpAUX], axis=1)
+        # a['aux'] = pd.Series(a['aux'])
+
+        nameSpacer = pd.DataFrame({'ADCP_Location': [adcp.iloc[i, 0]]})
         adcpData = pd.concat([adcpData, nameSpacer])
         adcpData = pd.concat([adcpData, a])
 
@@ -148,11 +156,17 @@ for i, ii in enumerate(index):
                        'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
                        'NoDiagn', 'LinCI')
 
-        c = pd.Series(coef)
-        c['aux'] = pd.Series(c['aux'])
+        aux = coef['aux']
+        del aux['opt']
+        del coef['aux']
+
+        aux = pd.DataFrame(aux)
+        c = pd.DataFrame(coef)
+        c = pd.concat([c, aux], axis=1)
+        # c['aux'] = pd.Series(c['aux'])
 
         runData = pd.concat([runData, nameSpacer])
-        runData = pd.concat([adcpData, c])
+        runData = pd.concat([runData, c])
 
 # name = '{0}'.format(adcp.iloc[i,0])
 # adcpData.to_hdf('adcpData.h5', name, mode='a')
