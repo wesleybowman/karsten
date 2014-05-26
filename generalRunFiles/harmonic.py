@@ -92,7 +92,8 @@ def datetime2matlabdn(dt):
     return mdn.toordinal() + frac
 
 
-filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
+#filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
+filename = '/home/abalzer/scratch/standard_run_directory/0.0015/output/dngrid_0001.nc'
 
 data = nc.Dataset(filename, 'r')
 x = data.variables['x'][:]
@@ -113,7 +114,12 @@ time = mjd2num(time)
 
 Rayleigh = np.array([0.97, 1])
 
-adcp = pd.read_csv('/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt')
+#adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
+adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
+
+adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
+adcp = pd.read_csv(adcpFilename)
+
 lonlat = np.array([adcp['Longitude'], adcp['Latitude']]).T
 
 index = closest_point(lonlat, lon, lat)
