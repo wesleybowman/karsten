@@ -163,7 +163,7 @@ for i, ii in enumerate(index):
 
         #nameSpacer = pd.DataFrame({'ADCP_Location': [adcp.iloc[i, 0]]})
         #adcpData = pd.concat([adcpData, nameSpacer])
-        print nameSpacer
+        print adcp.iloc[i,0]
         #cat = pd.concat([cat, nameSpacer])
         cat = cat.set_index('ADCP_Location')
         adcpData = pd.concat([adcpData, cat])
