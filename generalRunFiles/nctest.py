@@ -92,17 +92,21 @@ def datetime2matlabdn(dt):
     return mdn.toordinal() + frac
 
 
-#filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
+filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
+filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
 #filename = '/home/abalzer/scratch/standard_run_directory/0.0015/output/dngrid_0001.nc'
-filename = '/home/abalzer/standard_run_directory/0.0015/output/dngrid_0001.nc'
 
 data = nc.Dataset(filename, 'r')
 x = data.variables['x'][:]
 y = data.variables['y'][:]
 lon = data.variables['lon'][:]
 lat = data.variables['lat'][:]
+lonc = data.variables['lonc'][:]
+latc = data.variables['latc'][:]
 ua = data.variables['ua']
 va = data.variables['va']
+#ua = data.variables['ua'][:]
+#va = data.variables['va'][:]
 time = data.variables['time'][:]
 trinodes = data.variables['nv'][:]
 
@@ -113,72 +117,54 @@ trinodes = data.variables['nv'][:]
 
 time = mjd2num(time)
 
-#Rayleigh = np.array([0.97, 1])
 Rayleigh = np.array([1])
 
-#adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
-
-adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
-adcp = pd.read_csv(adcpFilename)
-
-lonlat = np.array([adcp['Longitude'], adcp['Latitude']]).T
-
-index = closest_point(lonlat, lon, lat)
+# adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
+#adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
+#adcp = pd.read_csv(adcpFilename)
+#
+#lonlat = np.array([adcp['Longitude'], adcp['Latitude']]).T
+#
+#index = closest_point(lonlat, lon, lat)
 
 # Need to do DataFrame instead of Series
-adcpData = pd.DataFrame()
-runData = pd.DataFrame()
+#adcpData = pd.DataFrame()
+#runData = pd.DataFrame()
 # runData = pd.DataFrame()
 
-for i, ii in enumerate(index):
 
-    path = adcp.iloc[i, -1]
-    if path != 'None':
-        ADCP = pd.read_csv(path, index_col=0)
-        ADCP.index = pd.to_datetime(ADCP.index)
+#nameSpacer = pd.DataFrame({'ADCP_Location': [adcp.iloc[i, 0]]})
 
-        adcpTime = np.empty(ADCP.index.shape)
+ii = 122468
 
-        for j, jj in enumerate(ADCP.index):
-            adcpTime[j] = datetime2matlabdn(jj)
+coef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
+                'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
+                'NoDiagn', 'LinCI')
 
-        adcpCoef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
-                           'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
-                           'NoDiagn', 'LinCI')
 
-        adcpAUX = adcpCoef['aux']
-        del adcpAUX['opt']
-        del adcpCoef['aux']
+opt = pd.DataFrame(coef['aux']['opt'].items())
+del coef['aux']['opt']
+aux = pd.DataFrame(coef['aux'])
+del coef['aux']
+c = pd.DataFrame(coef)
 
-        adcpAUX = pd.DataFrame(adcpAUX)
-        a = pd.DataFrame(adcpCoef)
-        a = pd.concat([a, adcpAUX], axis=1)
-        # a['aux'] = pd.Series(a['aux'])
 
-        nameSpacer = pd.DataFrame({'ADCP_Location': [adcp.iloc[i, 0]]})
-        adcpData = pd.concat([adcpData, nameSpacer])
-        adcpData = pd.concat([adcpData, a])
+#aux = coef['aux']
+#del aux['opt']
+#del coef['aux']
+#
+#aux = pd.DataFrame(aux)
+#c = pd.DataFrame(coef)
+#c = pd.concat([c, aux], axis=1)
+# c['aux'] = pd.Series(c['aux'])
 
-        coef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
-                       'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
-                       'NoDiagn', 'LinCI')
-
-        aux = coef['aux']
-        del aux['opt']
-        del coef['aux']
-
-        aux = pd.DataFrame(aux)
-        c = pd.DataFrame(coef)
-        c = pd.concat([c, aux], axis=1)
-        # c['aux'] = pd.Series(c['aux'])
-
-        runData = pd.concat([runData, nameSpacer])
-        runData = pd.concat([runData, c])
+#runData = pd.concat([runData, nameSpacer])
+#runData = pd.concat([runData, c])
 
 # name = '{0}'.format(adcp.iloc[i,0])
 # adcpData.to_hdf('adcpData.h5', name, mode='a')
 
-runData.to_hdf('runData.h5', 'runData', mode='a')
-runData.to_csv('runData.csv')
-adcpData.to_hdf('adcpData.h5', 'runData', mode='a')
-adcpData.to_csv('adcpData.csv')
+#runData.to_hdf('runData.h5', 'runData', mode='a')
+#runData.to_csv('runData.csv')
+#adcpData.to_hdf('adcpData.h5', 'runData', mode='a')
+#adcpData.to_csv('adcpData.csv')

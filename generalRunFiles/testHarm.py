@@ -92,17 +92,16 @@ def datetime2matlabdn(dt):
     return mdn.toordinal() + frac
 
 
-#filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
+filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
 #filename = '/home/abalzer/scratch/standard_run_directory/0.0015/output/dngrid_0001.nc'
-filename = '/home/abalzer/standard_run_directory/0.0015/output/dngrid_0001.nc'
 
 data = nc.Dataset(filename, 'r')
 x = data.variables['x'][:]
 y = data.variables['y'][:]
 lon = data.variables['lon'][:]
 lat = data.variables['lat'][:]
-ua = data.variables['ua']
-va = data.variables['va']
+ua = data.variables['ua'][:]
+va = data.variables['va'][:]
 time = data.variables['time'][:]
 trinodes = data.variables['nv'][:]
 
@@ -113,11 +112,9 @@ trinodes = data.variables['nv'][:]
 
 time = mjd2num(time)
 
-#Rayleigh = np.array([0.97, 1])
-Rayleigh = np.array([1])
+Rayleigh = np.array([0.97, 1])
 
-#adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
-
+# adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
 adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
 adcp = pd.read_csv(adcpFilename)
 
