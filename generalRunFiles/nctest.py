@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import sys
 sys.path.append('/home/wesley/github/UTide/')
 from utide import ut_solv
+from coefNC import coefNC2D
 
 
 def ncdatasort(x, y, time, trinodes, lon=None, lat=None):
@@ -92,6 +93,17 @@ def datetime2matlabdn(dt):
     return mdn.toordinal() + frac
 
 
+def chunk(size, n):
+    """ Yield successive n-sized chunks from l.
+    """
+    l = range(size)
+    for i in xrange(0, size, n):
+        if i+n in l:
+            yield i, i+n
+        else:
+            yield i, l[-1]
+
+
 filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
 filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
 #filename = '/home/abalzer/scratch/standard_run_directory/0.0015/output/dngrid_0001.nc'
@@ -99,16 +111,21 @@ filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
 data = nc.Dataset(filename, 'r')
 x = data.variables['x'][:]
 y = data.variables['y'][:]
+xc = data.variables['xc'][:]
+yc = data.variables['yc'][:]
 lon = data.variables['lon'][:]
 lat = data.variables['lat'][:]
 lonc = data.variables['lonc'][:]
 latc = data.variables['latc'][:]
+h = data.variables['h'][:]
 ua = data.variables['ua']
 va = data.variables['va']
 #ua = data.variables['ua'][:]
 #va = data.variables['va'][:]
 time = data.variables['time'][:]
 trinodes = data.variables['nv'][:]
+siglay = data.variables['siglay'][:]
+siglev = data.variables['siglev'][:]
 
 (nodexy, uvnodexy, dt, deltat,
  hour, thour, TP, rho, g, period,
@@ -119,34 +136,78 @@ time = mjd2num(time)
 
 Rayleigh = np.array([1])
 
-# adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
-#adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
-#adcp = pd.read_csv(adcpFilename)
-#
-#lonlat = np.array([adcp['Longitude'], adcp['Latitude']]).T
-#
-#index = closest_point(lonlat, lon, lat)
+lonlat = np.array([lon, lat]).T
+lonclatc = np.array([lonc, latc]).T
 
-# Need to do DataFrame instead of Series
-#adcpData = pd.DataFrame()
-#runData = pd.DataFrame()
-# runData = pd.DataFrame()
+#size = lonclatc.shape[0]
+#chunks = list(chunk(s,80000))
 
 
-#nameSpacer = pd.DataFrame({'ADCP_Location': [adcp.iloc[i, 0]]})
+#coefName = 'coef{0}'.format(i)
+data = nc.Dataset('coef.nc', 'w', format='NETCDF4')
+data.createDimension('dim', None)
+data.createDimension('dimx', len(x))
+data.createDimension('dimtime', len(time))
+data.createDimension('dimtri', trinodes.shape[-1])
+data.createDimension('dimsig', siglay.shape[0])
 
-ii = 122468
+newx = data.createVariable('x', 'f8', ('dimx',))
+newx[:] = x
+newy = data.createVariable('y', 'f8', ('dimx',))
+newy[:] = y
+newxc = data.createVariable('xc', 'f8', ('dim',))
+newxc[:] = xc
+newyc = data.createVariable('yc', 'f8', ('dim',))
+newyc[:] = yc
+newlon = data.createVariable('lon', 'f8', ('dimx',))
+newlon[:] = lon
+newlat = data.createVariable('lat', 'f8', ('dimx',))
+newlat[:] = lat
+newlonc = data.createVariable('lonc', 'f8', ('dim',))
+newlonc[:] = lonc
+newlatc = data.createVariable('latc', 'f8', ('dim',))
+newlatc[:] = latc
+newh = data.createVariable('h', 'f8', ('dimx',))
+newh[:] = h
+newtime = data.createVariable('time', 'f8', ('dimtime',))
+newtime[:] = time
+newtrinodes = data.createVariable('trinodes', 'f8', ('dim','dimtri'))
+newtrinodes[:] = trinodes
 
-coef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
-                'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
-                'NoDiagn', 'LinCI')
+for i, (lonc,latc) in enumerate(lonclatc):
+#for i in range(0,10):
+    print i
+
+    coef = ut_solv(time, ua[:, i], va[:, i], uvnodell[i, 1],
+                    'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
+                    'NoDiagn', 'LinCI')
 
 
-opt = pd.DataFrame(coef['aux']['opt'].items())
-del coef['aux']['opt']
-aux = pd.DataFrame(coef['aux'])
-del coef['aux']
-c = pd.DataFrame(coef)
+    opt = pd.DataFrame(coef['aux']['opt'].items())
+    del coef['aux']['opt']
+    aux = pd.DataFrame(coef['aux'])
+    del coef['aux']
+    c = pd.DataFrame(coef)
+
+    cat = pd.concat([c,aux], axis=1)
+    #coefnc = data.createVariable('coef', 'f8', ('dim',))
+    #coefnc[:] = cat
+    try:
+        data.createDimension('dim2', cat['Lsmaj'].shape[0])
+        Lsmaj = data.createVariable('Lsmaj', 'f8', ('dim','dim2'))
+        Lsmin = data.createVariable('Lsmin', 'f8', ('dim','dim2'))
+        g = data.createVariable('g', 'f8', ('dim','dim2'))
+        theta = data.createVariable('theta', 'f8', ('dim','dim2'))
+    except RuntimeError:
+        pass
+
+    Lsmaj[i,:] = c['Lsmaj'].values
+    Lsmin[i,:] = c['Lsmin'].values
+    g[i,:] = c['g'].values
+    theta[i,:] = c['theta'].values
+
+#coefName = 'coef{0}'.format(i)
+#coefNC2D(cat, coefName)
 
 
 #aux = coef['aux']
