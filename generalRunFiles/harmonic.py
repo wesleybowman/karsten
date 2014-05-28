@@ -92,10 +92,10 @@ def datetime2matlabdn(dt):
     return mdn.toordinal() + frac
 
 
-#filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
-#filename = '/home/abalzer/scratch/standard_run_directory/0.0015/output/dngrid_0001.nc'
+# filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
+# filename = '/home/abalzer/scratch/standard_run_directory/0.0015/output/dngrid_0001.nc'
+# filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
 filename = '/home/abalzer/standard_run_directory/0.0015/output/dngrid_0001.nc'
-#filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
 
 data = nc.Dataset(filename, 'r')
 x = data.variables['x'][:]
@@ -114,11 +114,11 @@ trinodes = data.variables['nv'][:]
 
 time = mjd2num(time)
 
-#Rayleigh = np.array([0.97, 1])
+# Rayleigh = np.array([0.97, 1])
 Rayleigh = np.array([1])
 
-#adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
-#adcpFilename = '/home/wesley/github/karsten/adcp/testADCP.txt'
+# adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
+# adcpFilename = '/home/wesley/github/karsten/adcp/testADCP.txt'
 
 adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
 adcp = pd.read_csv(adcpFilename)
@@ -161,13 +161,13 @@ for i, ii in enumerate(index):
         cat = pd.concat([a, adcpAUX, nameSpacer], axis=1)
         # a['aux'] = pd.Series(a['aux'])
 
-        #nameSpacer = pd.DataFrame({'ADCP_Location': [adcp.iloc[i, 0]]})
-        #adcpData = pd.concat([adcpData, nameSpacer])
-        print adcp.iloc[i,0]
-        #cat = pd.concat([cat, nameSpacer])
+        # nameSpacer = pd.DataFrame({'ADCP_Location': [adcp.iloc[i, 0]]})
+        # adcpData = pd.concat([adcpData, nameSpacer])
+        print adcp.iloc[i, 0]
+        # cat = pd.concat([cat, nameSpacer])
         cat = cat.set_index('ADCP_Location')
+        # cat.index.name = 'ADCP_Location'
         adcpData = pd.concat([adcpData, cat])
-
 
         coef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
                        'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
@@ -181,15 +181,18 @@ for i, ii in enumerate(index):
         c = pd.DataFrame(coef)
         ccat = pd.concat([c, aux, nameSpacer], axis=1)
         ccat = ccat.set_index('ADCP_Location')
+        # ccat.index.name = 'ADCP_Location'
         # c['aux'] = pd.Series(c['aux'])
 
-        #runData = pd.concat([runData, nameSpacer])
+        # runData = pd.concat([runData, nameSpacer])
         runData = pd.concat([runData, ccat])
 
 # name = '{0}'.format(adcp.iloc[i,0])
 # adcpData.to_hdf('adcpData.h5', name, mode='a')
 
-#runData.to_hdf('runData.h5', 'runData', mode='a')
-runData.to_csv('runData.csv')
-#adcpData.to_hdf('adcpData.h5', 'runData', mode='a')
-adcpData.to_csv('adcpData.csv')
+outputName = 'runData{0}.csv'.format(filename.split('/')[-3])
+runData.to_csv(outputName, index_label='ADCP_Location')
+outputName = 'adcpData{0}.csv'.format(filename.split('/')[-3])
+adcpData.to_csv(outputName, index_label='ADCP_Location')
+# adcpData.to_hdf('adcpData.h5', 'runData', mode='a')
+# runData.to_hdf('runData.h5', 'runData', mode='a')
