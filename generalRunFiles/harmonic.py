@@ -155,9 +155,12 @@ for i, ii in enumerate(index):
         a = pd.concat([a, adcpAUX], axis=1)
         # a['aux'] = pd.Series(a['aux'])
 
-        nameSpacer = pd.DataFrame({'ADCP_Location': [adcp.iloc[i, 0]]})
+        size = a.shape[0]
+        #nameSpacer = pd.DataFrame({'ADCP_Location': [adcp.iloc[i, 0]]})
+        nameSpacer = pd.DataFrame({'ADCP_Location': np.repeat(adcp.iloc[i, 0],
+                                                              size)})
         adcpData = pd.concat([adcpData, nameSpacer])
-        adcpData = pd.concat([adcpData, a])
+        adcpData = pd.concat([adcpData, a],axis=1)
 
         coef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
                        'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
@@ -173,7 +176,7 @@ for i, ii in enumerate(index):
         # c['aux'] = pd.Series(c['aux'])
 
         runData = pd.concat([runData, nameSpacer])
-        runData = pd.concat([runData, c])
+        runData = pd.concat([runData, c], axis=1)
 
 # name = '{0}'.format(adcp.iloc[i,0])
 # adcpData.to_hdf('adcpData.h5', name, mode='a')
