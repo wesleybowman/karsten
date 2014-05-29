@@ -131,6 +131,7 @@ index = closest_point(lonlat, lon, lat)
 adcpData = pd.DataFrame()
 runData = pd.DataFrame()
 # runData = pd.DataFrame()
+bottomfriction = '{0}'.format(filename.split('/')[-3])
 
 for i, ii in enumerate(index):
 
@@ -159,7 +160,9 @@ for i, ii in enumerate(index):
         nameSpacer = pd.DataFrame({'ADCP_Location': np.repeat(adcp.iloc[i, 0],
                                                               size)})
 
-        cat = pd.concat([a, adcpAUX, nameSpacer], axis=1)
+        bottomName = pd.DataFrame({'bottomFriction': np.repeat(bottomfriction,
+                                                              size)})
+        cat = pd.concat([a, adcpAUX, nameSpacer, bottomName], axis=1)
         # a['aux'] = pd.Series(a['aux'])
 
         # nameSpacer = pd.DataFrame({'ADCP_Location': [adcp.iloc[i, 0]]})
@@ -180,7 +183,7 @@ for i, ii in enumerate(index):
 
         aux = pd.DataFrame(aux)
         c = pd.DataFrame(coef)
-        ccat = pd.concat([c, aux, nameSpacer], axis=1)
+        ccat = pd.concat([c, aux, nameSpacer, bottomName], axis=1)
         ccat = ccat.set_index('ADCP_Location')
         # ccat.index.name = 'ADCP_Location'
         # c['aux'] = pd.Series(c['aux'])

@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import sys
 sys.path.append('/home/wesley/github/UTide/')
 from utide import ut_solv
-from coefNC import coefNC2D
+#from coefNC import coefNC2D
 
 
 def ncdatasort(x, y, time, trinodes, lon=None, lat=None):
@@ -142,14 +142,12 @@ lonclatc = np.array([lonc, latc]).T
 #size = lonclatc.shape[0]
 #chunks = list(chunk(s,80000))
 
-
 #coefName = 'coef{0}'.format(i)
 data = nc.Dataset('coef.nc', 'w', format='NETCDF4')
 data.createDimension('dim', None)
 data.createDimension('dimx', len(x))
 data.createDimension('dimtime', len(time))
 data.createDimension('dimtri', trinodes.shape[-1])
-data.createDimension('dimsig', siglay.shape[0])
 
 newx = data.createVariable('x', 'f8', ('dimx',))
 newx[:] = x
