@@ -104,9 +104,6 @@ def chunk(size, n):
             yield i, l[-1]
 
 
-comm = MPI.COMM_WORLD
-size = comm.Get_size()
-rank = comm.Get_rank()
 
 filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
 #filename = '/home/abalzer/scratch/standard_run_directory/0.0015/output/dngrid_0001.nc'
@@ -127,6 +124,7 @@ va = data.variables['va']
 #va = data.variables['va'][:]
 time = data.variables['time'][:]
 trinodes = data.variables['nv'][:]
+elev = data.variables['zeta']
 #siglay = data.variables['siglay'][:]
 #siglev = data.variables['siglev'][:]
 
@@ -199,6 +197,10 @@ for i, (lonc,latc) in enumerate(lonclatc):
         Lsmin = data.createVariable('Lsmin', 'f8', ('dim','dim2'))
         g = data.createVariable('g', 'f8', ('dim','dim2'))
         theta = data.createVariable('theta', 'f8', ('dim','dim2'))
+        name = data.createVariable('name', 'c', ('dim','dim2'))
+        A = data.createVariable('A', 'f8', ('dim','dim2'))
+        gA = data.createVariable('gA', 'f8', ('dim','dim2'))
+        nameA = data.createVariable('nameA', 'c', ('dim','dim2'))
     except RuntimeError:
         pass
 
@@ -207,26 +209,17 @@ for i, (lonc,latc) in enumerate(lonclatc):
     g[i,:] = c['g'].values
     theta[i,:] = c['theta'].values
 
-#coefName = 'coef{0}'.format(i)
-#coefNC2D(cat, coefName)
+    coef = ut_solv(time, elev[:, i], [], uvnodell[i, 1],
+                    'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
+                    'NoDiagn', 'LinCI')
 
 
-#aux = coef['aux']
-#del aux['opt']
-#del coef['aux']
-#
-#aux = pd.DataFrame(aux)
-#c = pd.DataFrame(coef)
-#c = pd.concat([c, aux], axis=1)
-# c['aux'] = pd.Series(c['aux'])
-
-#runData = pd.concat([runData, nameSpacer])
-#runData = pd.concat([runData, c])
-
-# name = '{0}'.format(adcp.iloc[i,0])
-# adcpData.to_hdf('adcpData.h5', name, mode='a')
-
-#runData.to_hdf('runData.h5', 'runData', mode='a')
-#runData.to_csv('runData.csv')
-#adcpData.to_hdf('adcpData.h5', 'runData', mode='a')
-#adcpData.to_csv('adcpData.csv')
+    opt = pd.DataFrame(coef['aux']['opt'].items())
+    del coef['aux']['opt']
+    aux = pd.DataFrame(coef['aux'])
+    del coef['aux']
+    c = pd.DataFrame(coef)
+    cat = pd.concat([c,aux], axis=1)
+    A[i, :] = cat['A'].values
+    gA[i, :] = cat['g'].values
+    nameA[i, :] = cat['name'].values
