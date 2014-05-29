@@ -114,7 +114,6 @@ trinodes = data.variables['nv'][:]
 
 time = mjd2num(time)
 
-# Rayleigh = np.array([0.97, 1])
 Rayleigh = np.array([1])
 
 # adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
@@ -127,10 +126,8 @@ lonlat = np.array([adcp['Longitude'], adcp['Latitude']]).T
 
 index = closest_point(lonlat, lon, lat)
 
-# Need to do DataFrame instead of Series
 adcpData = pd.DataFrame()
 runData = pd.DataFrame()
-# runData = pd.DataFrame()
 bottomfriction = '{0}'.format(filename.split('/')[-3])
 
 for i, ii in enumerate(index):
@@ -163,13 +160,8 @@ for i, ii in enumerate(index):
         bottomName = pd.DataFrame({'bottomFriction': np.repeat(bottomfriction,
                                                               size)})
         cat = pd.concat([a, adcpAUX, nameSpacer, bottomName], axis=1)
-        # a['aux'] = pd.Series(a['aux'])
 
-        # nameSpacer = pd.DataFrame({'ADCP_Location': [adcp.iloc[i, 0]]})
-        # adcpData = pd.concat([adcpData, nameSpacer])
-        # cat = pd.concat([cat, nameSpacer])
         cat = cat.set_index('ADCP_Location')
-        # cat.index.name = 'ADCP_Location'
         adcpData = pd.concat([adcpData, cat])
         print adcp.iloc[i, 0]
 
@@ -183,16 +175,17 @@ for i, ii in enumerate(index):
 
         aux = pd.DataFrame(aux)
         c = pd.DataFrame(coef)
+        size = c.shape[0]
+        nameSpacer = pd.DataFrame({'ADCP_Location': np.repeat(adcp.iloc[i, 0],
+                                                              size)})
+
+        bottomName = pd.DataFrame({'bottomFriction': np.repeat(bottomfriction,
+                                                              size)})
         ccat = pd.concat([c, aux, nameSpacer, bottomName], axis=1)
         ccat = ccat.set_index('ADCP_Location')
-        # ccat.index.name = 'ADCP_Location'
-        # c['aux'] = pd.Series(c['aux'])
 
-        # runData = pd.concat([runData, nameSpacer])
         runData = pd.concat([runData, ccat])
 
-# name = '{0}'.format(adcp.iloc[i,0])
-# adcpData.to_hdf('adcpData.h5', name, mode='a')
 
 outputName = 'runData{0}.csv'.format(filename.split('/')[-3])
 runData.to_csv(outputName, index_label='ADCP_Location')

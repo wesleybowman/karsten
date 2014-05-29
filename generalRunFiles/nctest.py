@@ -104,7 +104,10 @@ def chunk(size, n):
             yield i, l[-1]
 
 
-filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
+comm = MPI.COMM_WORLD
+size = comm.Get_size()
+rank = comm.Get_rank()
+
 filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
 #filename = '/home/abalzer/scratch/standard_run_directory/0.0015/output/dngrid_0001.nc'
 
@@ -124,8 +127,8 @@ va = data.variables['va']
 #va = data.variables['va'][:]
 time = data.variables['time'][:]
 trinodes = data.variables['nv'][:]
-siglay = data.variables['siglay'][:]
-siglev = data.variables['siglev'][:]
+#siglay = data.variables['siglay'][:]
+#siglev = data.variables['siglev'][:]
 
 (nodexy, uvnodexy, dt, deltat,
  hour, thour, TP, rho, g, period,
