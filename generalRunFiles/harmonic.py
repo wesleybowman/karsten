@@ -94,8 +94,8 @@ def datetime2matlabdn(dt):
 
 # filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
 # filename = '/home/abalzer/scratch/standard_run_directory/0.0015/output/dngrid_0001.nc'
-# filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
-filename = '/home/abalzer/standard_run_directory/0.0015/output/dngrid_0001.nc'
+filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
+#filename = '/home/abalzer/standard_run_directory/0.0015/output/dngrid_0001.nc'
 
 data = nc.Dataset(filename, 'r')
 x = data.variables['x'][:]
@@ -118,9 +118,9 @@ time = mjd2num(time)
 Rayleigh = np.array([1])
 
 # adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
-# adcpFilename = '/home/wesley/github/karsten/adcp/testADCP.txt'
+adcpFilename = '/home/wesley/github/karsten/adcp/testADCP.txt'
 
-adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
+#adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
 adcp = pd.read_csv(adcpFilename)
 
 lonlat = np.array([adcp['Longitude'], adcp['Latitude']]).T
@@ -144,7 +144,8 @@ for i, ii in enumerate(index):
         for j, jj in enumerate(ADCP.index):
             adcpTime[j] = datetime2matlabdn(jj)
 
-        adcpCoef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
+
+        adcpCoef = ut_solv(adcpTime, ADCP['u'].values, ADCP['v'].values, uvnodell[ii, 1],
                            'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
                            'NoDiagn', 'LinCI')
 
@@ -163,11 +164,11 @@ for i, ii in enumerate(index):
 
         # nameSpacer = pd.DataFrame({'ADCP_Location': [adcp.iloc[i, 0]]})
         # adcpData = pd.concat([adcpData, nameSpacer])
-        print adcp.iloc[i, 0]
         # cat = pd.concat([cat, nameSpacer])
         cat = cat.set_index('ADCP_Location')
         # cat.index.name = 'ADCP_Location'
         adcpData = pd.concat([adcpData, cat])
+        print adcp.iloc[i, 0]
 
         coef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
                        'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
