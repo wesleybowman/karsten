@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Arch Linux) (format=pdflatex 2014.3.29)  27 MAY 2014 09:51
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Arch Linux) (format=pdflatex 2014.3.29)  29 MAY 2014 16:02
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -587,24 +587,37 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 46.
 
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) [1
+)
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 53.
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./proposal.aux) ) 
+(/usr/share/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 53.
+ [1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+Underfull \hbox (badness 10000) in paragraph at lines 112--116
+
+ []
+
+[2] (./proposal.aux) ) 
 Here is how much of TeX's memory you used:
- 14770 strings out of 493308
- 309018 string characters out of 6143616
+ 14788 strings out of 493308
+ 309309 string characters out of 6143616
  369865 words of memory out of 5000000
- 17941 multiletter control sequences out of 15000+600000
- 6836 words of font info for 27 fonts, out of 8000000 for 9000
+ 17956 multiletter control sequences out of 15000+600000
+ 7093 words of font info for 28 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  55i,6n,67p,408b,191s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/sh
-are/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-dist/
-fonts/type1/public/amsfonts/cm/cmr17.pfb>
-Output written on proposal.pdf (1 page, 28554 bytes).
+</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
+12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/sh
+are/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+Output written on proposal.pdf (2 pages, 38307 bytes).
 PDF statistics:
- 19 PDF objects out of 1000 (max. 8388607)
- 13 compressed objects within 1 object stream
+ 26 PDF objects out of 1000 (max. 8388607)
+ 18 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 
