@@ -116,54 +116,56 @@ score=20*(1-meanP/1e6);
 turbine_score=score;
 %Find best location
 %figure
-ii=1
-
-for ii=1:N
-%    [~,loci(ii)]=max(turbine_power);
-    [~,loci(ii)]=min(turbine_score);
+ii=100000
+coef = ut_solv(time, double(ua(:,ii)), double(va(:,ii)), uvllnode(ii,2), 'auto','NoTrend','Rmin',analysis.annual.Rayleigh(1),'OLS','NoDiagn','LinCI');
+save speedcoef.m coef
     
-    % do u_tide analysis at loc
-    %coef = ut_solv(time, double(ua(:,loci(ii))), double(va(:,loci(ii))), uvllnode(loci(ii),2), 'auto','NoTrend','Rmin',analysis.annual.Rayleigh(1),'OLS','NoDiagn','LinCI');
-    coef = ut_solv(time, double(ua(:,loci(ii))), [], uvllnode(loci(ii),2), 'auto','NoTrend','Rmin',analysis.annual.Rayleigh(1),'OLS','NoDiagn','LinCI');
-    if ii==1
-    save coef.mat coef
-    end
-    cx=cos(coef.theta(1)*pi/180);
-    cy=sin(coef.theta(1)*pi/180);    
-    %find new xy as distance from location, and in direction of M2 ellipse
-    newx=(xc-xc(loci(ii)))*cx+(yc-yc(loci(ii)))*cy;
-    newy=-(xc-xc(loci(ii)))*cy+(yc-yc(loci(ii)))*cx;
-    a=find(abs(newx)<spacing_along & abs(newy)<spacing_across);
-%    turbine_power(a)=0;    
-    turbine_score(a)=100;    
-if 1==1
-clf
-patch('Vertices',[x,y],'Faces',trinodes,'FaceVertexCdata',turbine_score')
-shading flat;
-axis(plot_range)
-colorbar
-caxis([0 40])
-drawnow
-end
+coef = ut_solv(time, double(ua(:,ii)), [], uvllnode(ii,2), 'auto','NoTrend','Rmin',analysis.annual.Rayleigh(1),'OLS','NoDiagn','LinCI');
+save elevcoef.m coef
 
-end
-
-
-total_power=sum(meanP(loci))/1e6
-
-if 1==1
-figure
-patch('Vertices',[x,y],'Faces',trinodes,'FaceVertexCdata',hc)
-shading flat;
-colorbar
-caxis([0 100])
-hold on
-plot(xc(loci),yc(loci),'.m')
-hold off
-axis(plot_range)
-end
-
-save plausible_P.mat loci turbine_power turbines x y long lat trinodes h distance
-
-
- 
+% for ii=1:N
+% %    [~,loci(ii)]=max(turbine_power);
+%     [~,loci(ii)]=min(turbine_score);
+% 
+%     % do u_tide analysis at loc
+%     coef = ut_solv(time, double(ua(:,loci(ii))), double(va(:,loci(ii))), uvllnode(loci(ii),2), 'auto','NoTrend','Rmin',analysis.annual.Rayleigh(1),'OLS','NoDiagn','LinCI');
+%     save coef.m coef
+%     cx=cos(coef.theta(1)*pi/180);
+%     cy=sin(coef.theta(1)*pi/180);    
+%     %find new xy as distance from location, and in direction of M2 ellipse
+%     newx=(xc-xc(loci(ii)))*cx+(yc-yc(loci(ii)))*cy;
+%     newy=-(xc-xc(loci(ii)))*cy+(yc-yc(loci(ii)))*cx;
+%     a=find(abs(newx)<spacing_along & abs(newy)<spacing_across);
+% %    turbine_power(a)=0;    
+%     turbine_score(a)=100;    
+% if 1==1
+% clf
+% patch('Vertices',[x,y],'Faces',trinodes,'FaceVertexCdata',turbine_score')
+% shading flat;
+% axis(plot_range)
+% colorbar
+% caxis([0 40])
+% drawnow
+% end
+% 
+% end
+% 
+% 
+% total_power=sum(meanP(loci))/1e6
+% 
+% if 1==1
+% figure
+% patch('Vertices',[x,y],'Faces',trinodes,'FaceVertexCdata',hc)
+% shading flat;
+% colorbar
+% caxis([0 100])
+% hold on
+% plot(xc(loci),yc(loci),'.m')
+% hold off
+% axis(plot_range)
+% end
+% 
+% save plausible_P.mat loci turbine_power turbines x y long lat trinodes h distance
+% 
+% 
+% 

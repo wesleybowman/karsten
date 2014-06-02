@@ -228,12 +228,18 @@ comm.Barrier()
 print 'written data'
 data = nc.Dataset('coef.nc', 'r', format='NETCDF4')
 Lsmaj = data.variables['Lsmaj'][:]
+Lsmaj_ci = data.variables['Lsmaj_ci'][:]
 Lsmin = data.variables['Lsmin'][:]
+Lsmin_ci = data.variables['Lsmin_ci'][:]
 g = data.variables['g'][:]
+g_ci = data.variables['g_ci'][:]
 theta = data.variables['theta'][:]
+theta_ci = data.variables['theta_ci'][:]
 name = data.variables['name'][:]
 A = data.variables['A'][:]
+A_ci = data.variables['A_ci'][:]
 gA = data.variables['gA'][:]
+gA_ci = data.variables['gA_ci'][:]
 nameA = data.variables['nameA'][:]
 
 #print 'before second for loop'
@@ -271,20 +277,26 @@ for i in xrange(rank, len(lonc), size):
     g[i,:] = cat['g'].values
     theta[i, :] = cat['theta'].values
     name[i, :] = cat['name'].values
+    Lsmaj_ci[i,:] = cat['Lsmaj_ci'].values
+    Lsmin_ci[i,:] = cat['Lsmin_ci'].values
+    theta_ci[i,:] = cat['theta_ci'].values
+    g_ci[i,:] = cat['g_ci'].values
 
-#    coefElev = ut_solv(time, elev[:, i], np.array([]), uvnodell[i, 1],
-#                    'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
-#                    'NoDiagn', 'LinCI')
-#
-#    opt = pd.DataFrame(coefElev['aux']['opt'].items())
-#    del coefElev['aux']['opt']
-#    aux = pd.DataFrame(coefElev['aux'])
-#    del coefElev['aux']
-#    c = pd.DataFrame(coef)
-#    cat = pd.concat([c,aux], axis=1)
-#    A[i, :] = cat['A'].values
-#    gA[i, :] = cat['g'].values
-#    nameA[i, :] = cat['name'].values
+    coefElev = ut_solv(time, elev[:, i], np.array([]), uvnodell[i, 1],
+                    'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
+                    'NoDiagn', 'LinCI')
+
+    opt = pd.DataFrame(coefElev['aux']['opt'].items())
+    del coefElev['aux']['opt']
+    aux = pd.DataFrame(coefElev['aux'])
+    del coefElev['aux']
+    c = pd.DataFrame(coef)
+    cat = pd.concat([c,aux], axis=1)
+    A[i, :] = cat['A'].values
+    gA[i, :] = cat['g'].values
+    nameA[i, :] = cat['name'].values
+    A_ci[i, :] = cat['A_ci'].values
+    gA_ci[i, :] = cat['gA_ci'].values
 
 comm.Barrier()
 #data = comm.gather(data, root=0)

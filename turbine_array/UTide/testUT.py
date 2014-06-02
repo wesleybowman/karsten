@@ -4,14 +4,14 @@ from ncdatasort import ncdatasort
 from mjd2num import mjd2num
 from closest_point import closest_point
 from cf_u_rated_turbs import *
-import matplotlib.pyplot as plt
-import scipy.io as sio
+#import matplotlib.pyplot as plt
+#import scipy.io as sio
 import cPickle as pickle
 import sys
-sys.path.append('/home/wesley/github/UTide/')
 #from UTide.ut_solv.master import *
 #from UTide.ut_solv import ut_solv
 #from UTide import ut_solv
+sys.path.append('/home/wesley/github/UTide/')
 from utide import ut_solv
 
 
@@ -86,43 +86,52 @@ score = 20 * (1 - meanP / 1e6)
 turbine_score = score
 #Find best location
 
+ii = 100000
 
-loci = np.empty((N))
-for ii in xrange(N):
+coef = ut_solv(time, ua[:,ii], va[:,ii], uvnodell[ii,1],
+                'auto', Rayleigh[0],'NoTrend','Rmin', 'OLS',
+                'NoDiagn', 'LinCI')
 
-    loci[ii] = np.argmin(turbine_score)
+pickle.dump(coef, open( "speedcoef.p", "wb"))
 
-    # do u_tide analysis at loc
+coef = ut_solv(time, ua[:,ii], np.array([]), uvnodell[ii,1],
+                'auto', Rayleigh[0],'NoTrend','Rmin', 'OLS',
+                'NoDiagn', 'LinCI')
+
+pickle.dump(coef, open( "elevcoef.p", "wb"))
+
+#loci = np.empty((N))
+#for ii in xrange(N):
+#
+#    loci[ii] = np.argmin(turbine_score)
+#
+#    # do u_tide analysis at loc
 #    coef = ut_solv(time, ua[:,loci[ii]], va[:,loci[ii]], uvnodell[loci[ii],1],
 #                  'auto', Rayleigh[0],'NoTrend','Rmin', 'OLS',
 #                  'NoDiagn', 'LinCI')
-
-    coef = ut_solv(time, ua[:,loci[ii]], np.array([]), uvnodell[loci[ii],1],
-                  'auto', Rayleigh[0],'NoTrend','Rmin', 'OLS',
-                  'NoDiagn', 'LinCI')
-
-    # for testing
-    if ii == 0:
-        pickle.dump(coef, open( "coef.p", "wb"))
-        #coef.dump('coef.dat')
-
-    cx = np.cos(coef['theta'][0]*np.pi/180)
-    cy = np.sin(coef['theta'][0]*np.pi/180)
-
-    #find new xy as distance from location, and in direction of M2 ellipse
-    newx = (xc-xc[loci[ii]]) * cx + (yc - yc[loci[ii]]) * cy
-    newy = -(xc-xc[loci[ii]]) * cy + (yc - yc[loci[ii]]) * cx
-
-    #a=find(abs(newx)<spacing_along & abs(newy)<spacing_across);
-    #a = np.argwhere(np.abs(newx)< spacing_along & np.abs(newy) < spacing_across)
-    #a = np.where(np.abs(newx)< spacing_along & np.abs(newy) < spacing_across)
-    a = np.argwhere(np.logical_and((np.abs(newx) < spacing_along),
-                                   (np.abs(newy) < spacing_across)))[0]
-
-    # turbine_power(a)=0;
-    turbine_score[a] = 100
-
-pickle.dump(loci, open('loci.p', 'wb'))
+#
+#    # for testing
+#    if ii == 0:
+#        pickle.dump(coef, open( "coef.p", "wb"))
+#        #coef.dump('coef.dat')
+#
+#    cx = np.cos(coef['theta'][0]*np.pi/180)
+#    cy = np.sin(coef['theta'][0]*np.pi/180)
+#
+#    #find new xy as distance from location, and in direction of M2 ellipse
+#    newx = (xc-xc[loci[ii]]) * cx + (yc - yc[loci[ii]]) * cy
+#    newy = -(xc-xc[loci[ii]]) * cy + (yc - yc[loci[ii]]) * cx
+#
+#    #a=find(abs(newx)<spacing_along & abs(newy)<spacing_across);
+#    #a = np.argwhere(np.abs(newx)< spacing_along & np.abs(newy) < spacing_across)
+#    #a = np.where(np.abs(newx)< spacing_along & np.abs(newy) < spacing_across)
+#    a = np.argwhere(np.logical_and((np.abs(newx) < spacing_along),
+#                                   (np.abs(newy) < spacing_across)))[0]
+#
+#    # turbine_power(a)=0;
+#    turbine_score[a] = 100
+#
+#pickle.dump(loci, open('loci.p', 'wb'))
 
 
 #loci = np.argmin(turbine_score)
