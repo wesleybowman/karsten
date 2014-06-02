@@ -74,45 +74,6 @@ size = comm.Get_size()
 rank = comm.Get_rank()
 filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
 
-#if rank ==0:
-#    data = nc.Dataset(filename, 'r')
-#    x = data.variables['x'][:]
-#    y = data.variables['y'][:]
-#    xc = data.variables['xc'][:]
-#    yc = data.variables['yc'][:]
-#    lon = data.variables['lon'][:]
-#    lat = data.variables['lat'][:]
-#    lonc = data.variables['lonc'][:]
-#    latc = data.variables['latc'][:]
-#    h = data.variables['h'][:]
-#    ua = data.variables['ua']
-#    va = data.variables['va']
-#    #ua = data.variables['ua'][:]
-#    #va = data.variables['va'][:]
-#    time = data.variables['time'][:]
-#    trinodes = data.variables['nv'][:]
-#    #siglay = data.variables['siglay'][:]
-#    #siglev = data.variables['siglev'][:]
-#else:
-#    data = None
-#    x = None
-#    y = None
-#    xc = None
-#    yc = None
-#    lon = None
-#    lat = None
-#    lonc = None
-#    latc = None
-#    h = None
-#    ua = None
-#    va = None
-#    #ua None
-#    #va None
-#    time = None
-#    trinodes = None
-#    #siglay None
-#    #siglev None
-
 data = nc.Dataset(filename, 'r')
 x = data.variables['x'][:]
 y = data.variables['y'][:]
@@ -131,19 +92,6 @@ elev = data.variables['zeta']
 
 print 'loaded'
 
-
-#comm.scatter(x, root=0)
-#x = comm.bcast(x, root=0)
-#y = comm.bcast(y, root=0)
-#lon = comm.bcast(lon, root=0)
-#lat = comm.bcast(lat, root=0)
-#time = comm.bcast(time, root=0)
-#trinodes = comm.bcast(trinodes, root=0)
-#lonc = comm.bcast(lonc, root=0)
-#latc = comm.bcast(latc, root=0)
-
-#for i in xrange(rank, len(lonc), size):
-
 (nodexy, uvnodexy, dt, deltat,
 hour, thour, TP, rho, g, period,
 nodell, uvnodell, trinodes) = ncdatasort(x, y, time*24*3600,
@@ -158,12 +106,6 @@ lonlat = np.array([lon, lat]).T
 lonclatc = np.array([lonc, latc]).T
 
 comm.Barrier()
-
-#data.createDimension('dim2', cat['Lsmaj'].shape[0])
-#Lsmaj = data.createVariable('Lsmaj', 'f8', ('dim','dim2'))
-#Lsmin = data.createVariable('Lsmin', 'f8', ('dim','dim2'))
-#g = data.createVariable('g', 'f8', ('dim','dim2'))
-
 
 if rank == 0:
     print 'inside rank 0'
@@ -210,18 +152,23 @@ if rank == 0:
 
     data.createDimension('dim2', cat['Lsmaj'].shape[0])
     Lsmaj = data.createVariable('Lsmaj', 'f8', ('dim','dim2'))
+    Lsmaj_ci = data.createVariable('Lsmaj_ci', 'f8', ('dim','dim2'))
     Lsmin = data.createVariable('Lsmin', 'f8', ('dim','dim2'))
+    Lsmin_ci = data.createVariable('Lsmin_ci', 'f8', ('dim','dim2'))
     g = data.createVariable('g', 'f8', ('dim','dim2'))
+    g_ci = data.createVariable('g_ci', 'f8', ('dim','dim2'))
     theta = data.createVariable('theta', 'f8', ('dim','dim2'))
+    theta_ci = data.createVariable('theta_ci', 'f8', ('dim','dim2'))
     name = data.createVariable('name', 'c', ('dim','dim2'))
     A = data.createVariable('A', 'f8', ('dim','dim2'))
+    A_ci = data.createVariable('A_ci', 'f8', ('dim','dim2'))
     gA = data.createVariable('gA', 'f8', ('dim','dim2'))
+    gA_ci = data.createVariable('gA_ci', 'f8', ('dim','dim2'))
     nameA = data.createVariable('nameA', 'c', ('dim','dim2'))
 
     data.close()
 
 else:
-    #data = nc.Dataset('coef.nc', 'r', format='NETCDF4')
     data = None
 
 comm.Barrier()
@@ -242,20 +189,6 @@ gA = data.variables['gA'][:]
 gA_ci = data.variables['gA_ci'][:]
 nameA = data.variables['nameA'][:]
 
-#print 'before second for loop'
-#for i in xrange(rank, len(lonc), size):
-#    newx[i] = x
-#    newy[i] = y
-#    newxc[i] = xc
-#    newyc[i] = yc
-#    newlon[i] = lon
-#    newlat[i] = lat
-#    newlonc[i] = lonc
-#    newlatc[i] = latc
-#    newh[i] = h
-#    newtime[i] = time
-#    newtrinodes[i] = trinodes
-
 print 'made most of nc'
 
 for i in xrange(rank, len(lonc), size):
@@ -270,7 +203,6 @@ for i in xrange(rank, len(lonc), size):
     del coef['aux']
     c = pd.DataFrame(coef)
     cat = pd.concat([c,aux], axis=1)
-    #print cat
 
     Lsmaj[i,:] = cat['Lsmaj'].values
     Lsmin[i,:] = cat['Lsmin'].values
@@ -299,19 +231,3 @@ for i in xrange(rank, len(lonc), size):
     gA_ci[i, :] = cat['gA_ci'].values
 
 comm.Barrier()
-#data = comm.gather(data, root=0)
-
-#if rank == 0:
-#    data = np.ones((8,1))
-#    #data = pd.DataFrame(data)
-#    print data
-#else:
-#   data = None
-#data = comm.bcast(data, root=0)
-##data = comm.scatter(data, root=0)
-##data[0] = (rank+1)
-#data = (rank+1)
-#comm.Barrier()
-#data = comm.gather(data, root=0)
-#if rank==0:
-#    print data

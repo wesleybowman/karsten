@@ -93,13 +93,13 @@ for ii in xrange(N):
     loci[ii] = np.argmin(turbine_score)
 
     # do u_tide analysis at loc
-#    coef = ut_solv(time, ua[:,loci[ii]], va[:,loci[ii]], uvnodell[loci[ii],1],
+    coef = ut_solv(time, ua[:,loci[ii]], va[:,loci[ii]], uvnodell[loci[ii],1],
+                  cnstit='auto', rmin=Rayleigh[0], notrend=True, method='ols',
+                  nodiagn=True, linci=True, conf_int=False)
+
+#    coef = ut_solv(time, ua[:,loci[ii]], np.array([]), uvnodell[loci[ii],1],
 #                  'auto', Rayleigh[0],'NoTrend','Rmin', 'OLS',
 #                  'NoDiagn', 'LinCI')
-
-    coef = ut_solv(time, ua[:,loci[ii]], np.array([]), uvnodell[loci[ii],1],
-                  'auto', Rayleigh[0],'NoTrend','Rmin', 'OLS',
-                  'NoDiagn', 'LinCI')
 
     # for testing
     if ii == 0:
