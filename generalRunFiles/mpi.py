@@ -72,8 +72,10 @@ def mjd2num(x):
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
 rank = comm.Get_rank()
-filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
+#filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
+filename = '/home/rkarsten/scratch/dn_coarse_2d_clean/output/dn_coarse_0001.nc'
 
+print 'Loading in Data'
 data = nc.Dataset(filename, 'r')
 x = data.variables['x'][:]
 y = data.variables['y'][:]
@@ -90,7 +92,7 @@ ua = data.variables['ua']
 va = data.variables['va']
 elev = data.variables['zeta']
 
-print 'loaded'
+print 'Data Loaded'
 
 (nodexy, uvnodexy, dt, deltat,
 hour, thour, TP, rho, g, period,
@@ -99,7 +101,7 @@ nodell, uvnodell, trinodes) = ncdatasort(x, y, time*24*3600,
 
 time = mjd2num(time)
 
-print 'done with ncdatasort'
+print 'Done with ncdatasort'
 Rayleigh = np.array([1])
 
 lonlat = np.array([lon, lat]).T
@@ -108,7 +110,7 @@ lonclatc = np.array([lonc, latc]).T
 comm.Barrier()
 
 if rank == 0:
-    print 'inside rank 0'
+    print 'Creating NC layout'
     data = nc.Dataset('coef.nc', 'w', format='NETCDF4')
     data.createDimension('dim', None)
     data.createDimension('dimx', len(x))
@@ -138,9 +140,14 @@ if rank == 0:
     newtrinodes = data.createVariable('trinodes', 'f8', ('dim','dimtri'))
     newtrinodes[:] = trinodes
 
+#    coef = ut_solv(time, ua[:, 0], va[:, 0], uvnodell[0, 1],
+#                    'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
+#                    'NoDiagn', 'LinCI')
+
     coef = ut_solv(time, ua[:, 0], va[:, 0], uvnodell[0, 1],
-                    'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
-                    'NoDiagn', 'LinCI')
+                    cnstit='auto', rmin=Rayleigh[0], notrend=True, method='ols',
+                    nodiagn=True, linci=True, conf_int=True)
+
 
     opt = pd.DataFrame(coef['aux']['opt'].items())
     del coef['aux']['opt']
@@ -172,7 +179,8 @@ else:
     data = None
 
 comm.Barrier()
-print 'written data'
+
+print 'Read in variables, starting calculations'
 data = nc.Dataset('coef.nc', 'r', format='NETCDF4')
 Lsmaj = data.variables['Lsmaj'][:]
 Lsmaj_ci = data.variables['Lsmaj_ci'][:]
@@ -189,13 +197,15 @@ gA = data.variables['gA'][:]
 gA_ci = data.variables['gA_ci'][:]
 nameA = data.variables['nameA'][:]
 
-print 'made most of nc'
-
 for i in xrange(rank, len(lonc), size):
     print i
+#    coef = ut_solv(time, ua[:, i], va[:, i], uvnodell[i, 1],
+#                    'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
+#                    'NoDiagn', 'LinCI')
+
     coef = ut_solv(time, ua[:, i], va[:, i], uvnodell[i, 1],
-                    'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
-                    'NoDiagn', 'LinCI')
+                    cnstit='auto', rmin=Rayleigh[0], notrend=True, method='ols',
+                    nodiagn=True, linci=True, conf_int=True)
 
     opt = pd.DataFrame(coef['aux']['opt'].items())
     del coef['aux']['opt']
@@ -214,20 +224,25 @@ for i in xrange(rank, len(lonc), size):
     theta_ci[i,:] = cat['theta_ci'].values
     g_ci[i,:] = cat['g_ci'].values
 
-    coefElev = ut_solv(time, elev[:, i], np.array([]), uvnodell[i, 1],
-                    'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
-                    'NoDiagn', 'LinCI')
+#    coefElev = ut_solv(time, elev[:, i], np.array([]), uvnodell[i, 1],
+#                    'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
+#                    'NoDiagn', 'LinCI')
+
+    coefElev = ut_solv(time, ua[:, i], [], uvnodell[i, 1],
+                    cnstit='auto', rmin=Rayleigh[0], notrend=True, method='ols',
+                    nodiagn=True, linci=True, conf_int=True)
+
 
     opt = pd.DataFrame(coefElev['aux']['opt'].items())
     del coefElev['aux']['opt']
     aux = pd.DataFrame(coefElev['aux'])
     del coefElev['aux']
-    c = pd.DataFrame(coef)
+    c = pd.DataFrame(coefElev)
     cat = pd.concat([c,aux], axis=1)
     A[i, :] = cat['A'].values
     gA[i, :] = cat['g'].values
     nameA[i, :] = cat['name'].values
     A_ci[i, :] = cat['A_ci'].values
-    gA_ci[i, :] = cat['gA_ci'].values
+    gA_ci[i, :] = cat['g_ci'].values
 
 comm.Barrier()

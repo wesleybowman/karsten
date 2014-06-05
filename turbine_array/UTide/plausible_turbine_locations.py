@@ -97,9 +97,15 @@ for ii in xrange(N):
                   cnstit='auto', rmin=Rayleigh[0], notrend=True, method='ols',
                   nodiagn=True, linci=True, conf_int=False)
 
+
+    coef = ut_solv(time, ua[:,loci[ii]], np.array([]), uvnodell[loci[ii],1],
+                  cnstit='auto', rmin=Rayleigh[0], notrend=True, method='ols',
+                  nodiagn=True, linci=True, conf_int=False)
 #    coef = ut_solv(time, ua[:,loci[ii]], np.array([]), uvnodell[loci[ii],1],
 #                  'auto', Rayleigh[0],'NoTrend','Rmin', 'OLS',
 #                  'NoDiagn', 'LinCI')
+
+    import pdb; pdb.set_trace()
 
     # for testing
     if ii == 0:

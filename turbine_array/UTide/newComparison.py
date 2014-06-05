@@ -3,11 +3,11 @@ import scipy.io as sio
 import numpy as np
 
 
-matCoef = sio.loadmat('../speedcoef.m', struct_as_record=False, squeeze_me=True)
+matCoef = sio.loadmat('../speedCoef.m', struct_as_record=False, squeeze_me=True)
 #matCoef = sio.loadmat('../elevcoef.m', struct_as_record=False, squeeze_me=True)
 mcoef = matCoef['coef']
 
-coef = pickle.load(open('speedcoef.p', 'rb'))
+coef = pickle.load(open('speedCoef.p', 'rb'))
 #coef = pickle.load(open('elevcoef.p', 'rb'))
 
 for k in coef.keys():
@@ -47,20 +47,23 @@ for k in coef.keys():
                     #print np.allclose(mat, pyth)
                 except TypeError:
                     for j in coef[k][i]:
-                        mat = eval('mcoef.' + k + '.' + i + '.' + j)
-                        pyth = coef[k][i][j]
-                        #print '\n' + k + ':' + i + ':' + j
-                        #print mat
-                        #print pyth
-                        if type(pyth) == str:
-                            #print mat == pyth
-                            if not mat == pyth:
-                                print mat
-                                print pyth
+                        try:
+                            mat = eval('mcoef.' + k + '.' + i + '.' + j)
+                            pyth = coef[k][i][j]
+                            #print '\n' + k + ':' + i + ':' + j
+                            #print mat
+                            #print pyth
+                            if type(pyth) == str:
+                                #print mat == pyth
+                                if not mat == pyth:
+                                    print mat
+                                    print pyth
 
-                        else:
-                            if not np.allclose(mat, pyth).all():
-                                print '\n' + k + ':' + i + ':' + j
-                                print mat
-                                print pyth
-                            #print np.allclose(mat, pyth)
+                            else:
+                                if not np.allclose(mat, pyth).all():
+                                    print '\n' + k + ':' + i + ':' + j
+                                    print mat
+                                    print pyth
+                                #print np.allclose(mat, pyth)
+                        except AttributeError:
+                            pass
