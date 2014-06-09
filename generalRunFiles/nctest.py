@@ -107,6 +107,7 @@ def chunk(size, n):
 
 filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
 #filename = '/home/abalzer/scratch/standard_run_directory/0.0015/output/dngrid_0001.nc'
+filename = '/array/data2/jculina/2014/GIS_project/lunar_month_sep142011/output/smallcape_force_0001.nc'
 
 data = nc.Dataset(filename, 'r')
 x = data.variables['x'][:]
@@ -120,13 +121,9 @@ latc = data.variables['latc'][:]
 h = data.variables['h'][:]
 ua = data.variables['ua']
 va = data.variables['va']
-#ua = data.variables['ua'][:]
-#va = data.variables['va'][:]
 time = data.variables['time'][:]
 trinodes = data.variables['nv'][:]
 elev = data.variables['zeta']
-#siglay = data.variables['siglay'][:]
-#siglev = data.variables['siglev'][:]
 
 (nodexy, uvnodexy, dt, deltat,
  hour, thour, TP, rho, g, period,
@@ -173,14 +170,43 @@ newtime[:] = time
 newtrinodes = data.createVariable('trinodes', 'f8', ('dim','dimtri'))
 newtrinodes[:] = trinodes
 
+coef = ut_solv(time, ua[:, 0], va[:, 0], uvnodell[0, 1],
+                cnstit='auto', rmin=Rayleigh[0], notrend=True, method='ols',
+                nodiagn=True, linci=True, conf_int=True)
+
+#opt = pd.DataFrame(coef['aux']['opt'].items())
+opt = coef['aux']['opt']
+del coef['aux']['opt']
+aux = pd.DataFrame(coef['aux'])
+del coef['aux']
+c = pd.DataFrame(coef)
+
+cat = pd.concat([c, aux], axis=1)
+
+data.createDimension('dim2', cat['Lsmaj'].shape[0])
+data.createDimension('optDim', len(opt))
+Lsmaj = data.createVariable('Lsmaj', 'f8', ('dim','dim2'))
+Lsmaj_ci = data.createVariable('Lsmaj_ci', 'f8', ('dim','dim2'))
+Lsmin = data.createVariable('Lsmin', 'f8', ('dim','dim2'))
+Lsmin_ci = data.createVariable('Lsmin_ci', 'f8', ('dim','dim2'))
+g = data.createVariable('g', 'f8', ('dim','dim2'))
+g_ci = data.createVariable('g_ci', 'f8', ('dim','dim2'))
+theta = data.createVariable('theta', 'f8', ('dim','dim2'))
+theta_ci = data.createVariable('theta_ci', 'f8', ('dim','dim2'))
+name = data.createVariable('name', 'c', ('dim','dim2'))
+A = data.createVariable('A', 'f8', ('dim','dim2'))
+A_ci = data.createVariable('A_ci', 'f8', ('dim','dim2'))
+gA = data.createVariable('gA', 'f8', ('dim','dim2'))
+gA_ci = data.createVariable('gA_ci', 'f8', ('dim','dim2'))
+nameA = data.createVariable('nameA', 'c', ('dim','dim2'))
+
+
 for i, (lonc,latc) in enumerate(lonclatc):
-#for i in range(0,10):
     print i
 
     coef = ut_solv(time, ua[:, i], va[:, i], uvnodell[i, 1],
-                    'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
-                    'NoDiagn', 'LinCI')
-
+                    cnstit='auto', rmin=Rayleigh[0], notrend=True, method='ols',
+                    nodiagn=True, linci=True, conf_int=True)
 
     opt = pd.DataFrame(coef['aux']['opt'].items())
     del coef['aux']['opt']
@@ -189,37 +215,30 @@ for i, (lonc,latc) in enumerate(lonclatc):
     c = pd.DataFrame(coef)
 
     cat = pd.concat([c,aux], axis=1)
-    #coefnc = data.createVariable('coef', 'f8', ('dim',))
-    #coefnc[:] = cat
-    try:
-        data.createDimension('dim2', cat['Lsmaj'].shape[0])
-        Lsmaj = data.createVariable('Lsmaj', 'f8', ('dim','dim2'))
-        Lsmin = data.createVariable('Lsmin', 'f8', ('dim','dim2'))
-        g = data.createVariable('g', 'f8', ('dim','dim2'))
-        theta = data.createVariable('theta', 'f8', ('dim','dim2'))
-        name = data.createVariable('name', 'c', ('dim','dim2'))
-        A = data.createVariable('A', 'f8', ('dim','dim2'))
-        gA = data.createVariable('gA', 'f8', ('dim','dim2'))
-        nameA = data.createVariable('nameA', 'c', ('dim','dim2'))
-    except RuntimeError:
-        pass
 
-    Lsmaj[i,:] = c['Lsmaj'].values
-    Lsmin[i,:] = c['Lsmin'].values
-    g[i,:] = c['g'].values
-    theta[i,:] = c['theta'].values
+    Lsmaj[i,:] = cat['Lsmaj'].values
+    Lsmin[i,:] = cat['Lsmin'].values
+    g[i,:] = cat['g'].values
+    theta[i, :] = cat['theta'].values
+    name[i, :] = cat['name'].values
+    Lsmaj_ci[i,:] = cat['Lsmaj_ci'].values
+    Lsmin_ci[i,:] = cat['Lsmin_ci'].values
+    theta_ci[i,:] = cat['theta_ci'].values
+    g_ci[i,:] = cat['g_ci'].values
 
-    coef = ut_solv(time, elev[:, i], [], uvnodell[i, 1],
-                    'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
-                    'NoDiagn', 'LinCI')
+    coefElev = ut_solv(time, ua[:, i], [], uvnodell[i, 1],
+                    cnstit='auto', rmin=Rayleigh[0], notrend=True, method='ols',
+                    nodiagn=True, linci=True, conf_int=True)
 
-
-    opt = pd.DataFrame(coef['aux']['opt'].items())
-    del coef['aux']['opt']
-    aux = pd.DataFrame(coef['aux'])
-    del coef['aux']
-    c = pd.DataFrame(coef)
+    opt = pd.DataFrame(coefElev['aux']['opt'].items())
+    del coefElev['aux']['opt']
+    aux = pd.DataFrame(coefElev['aux'])
+    del coefElev['aux']
+    c = pd.DataFrame(coefElev)
     cat = pd.concat([c,aux], axis=1)
+
     A[i, :] = cat['A'].values
     gA[i, :] = cat['g'].values
     nameA[i, :] = cat['name'].values
+    A_ci[i, :] = cat['A_ci'].values
+    gA_ci[i, :] = cat['g_ci'].values
