@@ -197,7 +197,9 @@ gA = data.variables['gA'][:]
 gA_ci = data.variables['gA_ci'][:]
 nameA = data.variables['nameA'][:]
 
-for i in xrange(rank, len(lonc), size):
+rows = [rank + size * i for i in range(int(len(lonc)/size)+1) if comm.rank + comm.size*i < 20]
+#for i in xrange(rank, len(lonc), size):
+for i in rows:
     print i
 #    coef = ut_solv(time, ua[:, i], va[:, i], uvnodell[i, 1],
 #                    'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
