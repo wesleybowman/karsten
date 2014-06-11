@@ -73,7 +73,8 @@ comm = MPI.COMM_WORLD
 size = comm.Get_size()
 rank = comm.Get_rank()
 #filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
-filename = '/home/rkarsten/scratch/dn_coarse_2d_clean/output/dn_coarse_0001.nc'
+#filename = '/home/rkarsten/scratch/dn_coarse_2d_clean/output/dn_coarse_0001.nc'
+filename = '/home/rkarsten/common_folder/dn_coarse_2d_clean/output/dn_coarse_0001.nc'
 
 print 'Loading in Data'
 data = nc.Dataset(filename, 'r')
@@ -197,7 +198,7 @@ gA = data.variables['gA'][:]
 gA_ci = data.variables['gA_ci'][:]
 nameA = data.variables['nameA'][:]
 
-rows = [rank + size * i for i in range(int(len(lonc)/size)+1) if comm.rank + comm.size*i < 20]
+rows = [rank + size * i for i in range(int(len(lonc)/size)+1) if comm.rank + comm.size*i < len(lonc)]
 #for i in xrange(rank, len(lonc), size):
 for i in rows:
     print i
