@@ -229,68 +229,69 @@ gA = fixDataframe(gA)
 gA_ci = fixDataframe(gA_ci)
 nameA = fixDataframe(nameA)
 
-data = nc.Dataset('coef.nc', 'w', format='NETCDF4')
-data.createDimension('dim', None)
-data.createDimension('dimx', len(x))
-data.createDimension('dimtime', len(time))
-data.createDimension('dimtri', trinodes.shape[-1])
+if rank == 0:
+    data = nc.Dataset('coef.nc', 'w', format='NETCDF4')
+    data.createDimension('dim', None)
+    data.createDimension('dimx', len(x))
+    data.createDimension('dimtime', len(time))
+    data.createDimension('dimtri', trinodes.shape[-1])
 
-newx = data.createVariable('x', 'f8', ('dimx',))
-newx[:] = x
-newy = data.createVariable('y', 'f8', ('dimx',))
-newy[:] = y
-newxc = data.createVariable('xc', 'f8', ('dim',))
-newxc[:] = xc
-newyc = data.createVariable('yc', 'f8', ('dim',))
-newyc[:] = yc
-newlon = data.createVariable('lon', 'f8', ('dimx',))
-newlon[:] = lon
-newlat = data.createVariable('lat', 'f8', ('dimx',))
-newlat[:] = lat
-newlonc = data.createVariable('lonc', 'f8', ('dim',))
-newlonc[:] = lonc
-newlatc = data.createVariable('latc', 'f8', ('dim',))
-newlatc[:] = latc
-newh = data.createVariable('h', 'f8', ('dimx',))
-newh[:] = h
-newtime = data.createVariable('time', 'f8', ('dimtime',))
-newtime[:] = time
-newtrinodes = data.createVariable('trinodes', 'f8', ('dim','dimtri'))
-newtrinodes[:] = trinodes
+    newx = data.createVariable('x', 'f8', ('dimx',))
+    newx[:] = x
+    newy = data.createVariable('y', 'f8', ('dimx',))
+    newy[:] = y
+    newxc = data.createVariable('xc', 'f8', ('dim',))
+    newxc[:] = xc
+    newyc = data.createVariable('yc', 'f8', ('dim',))
+    newyc[:] = yc
+    newlon = data.createVariable('lon', 'f8', ('dimx',))
+    newlon[:] = lon
+    newlat = data.createVariable('lat', 'f8', ('dimx',))
+    newlat[:] = lat
+    newlonc = data.createVariable('lonc', 'f8', ('dim',))
+    newlonc[:] = lonc
+    newlatc = data.createVariable('latc', 'f8', ('dim',))
+    newlatc[:] = latc
+    newh = data.createVariable('h', 'f8', ('dimx',))
+    newh[:] = h
+    newtime = data.createVariable('time', 'f8', ('dimtime',))
+    newtime[:] = time
+    newtrinodes = data.createVariable('trinodes', 'f8', ('dim','dimtri'))
+    newtrinodes[:] = trinodes
 
-data.createDimension('dim2', Lsmaj.shape[-1])
-#data.createDimension('optDim', len(opt))
-newLsmaj = data.createVariable('Lsmaj', 'f8', ('dim','dim2'))
-newLsmaj_ci = data.createVariable('Lsmaj_ci', 'f8', ('dim','dim2'))
-newLsmin = data.createVariable('Lsmin', 'f8', ('dim','dim2'))
-newLsmin_ci = data.createVariable('Lsmin_ci', 'f8', ('dim','dim2'))
-newg = data.createVariable('g', 'f8', ('dim','dim2'))
-newg_ci = data.createVariable('g_ci', 'f8', ('dim','dim2'))
-newtheta = data.createVariable('theta', 'f8', ('dim','dim2'))
-newtheta_ci = data.createVariable('theta_ci', 'f8', ('dim','dim2'))
-newname = data.createVariable('name', 'c', ('dim','dim2'))
+    data.createDimension('dim2', Lsmaj.shape[-1])
+    #data.createDimension('optDim', len(opt))
+    newLsmaj = data.createVariable('Lsmaj', 'f8', ('dim','dim2'))
+    newLsmaj_ci = data.createVariable('Lsmaj_ci', 'f8', ('dim','dim2'))
+    newLsmin = data.createVariable('Lsmin', 'f8', ('dim','dim2'))
+    newLsmin_ci = data.createVariable('Lsmin_ci', 'f8', ('dim','dim2'))
+    newg = data.createVariable('g', 'f8', ('dim','dim2'))
+    newg_ci = data.createVariable('g_ci', 'f8', ('dim','dim2'))
+    newtheta = data.createVariable('theta', 'f8', ('dim','dim2'))
+    newtheta_ci = data.createVariable('theta_ci', 'f8', ('dim','dim2'))
+    newname = data.createVariable('name', 'c', ('dim','dim2'))
 
-newA = data.createVariable('A', 'f8', ('dim','dim2'))
-newA_ci = data.createVariable('A_ci', 'f8', ('dim','dim2'))
-newgA = data.createVariable('gA', 'f8', ('dim','dim2'))
-newgA_ci = data.createVariable('gA_ci', 'f8', ('dim','dim2'))
-newnameA = data.createVariable('nameA', 'c', ('dim','dim2'))
+    newA = data.createVariable('A', 'f8', ('dim','dim2'))
+    newA_ci = data.createVariable('A_ci', 'f8', ('dim','dim2'))
+    newgA = data.createVariable('gA', 'f8', ('dim','dim2'))
+    newgA_ci = data.createVariable('gA_ci', 'f8', ('dim','dim2'))
+    newnameA = data.createVariable('nameA', 'c', ('dim','dim2'))
 
-newLsmaj[:] = Lsmaj.values
-newLsmaj_ci[:] = Lsmaj_ci.values
-newLsmin[:] = Lsmin.values
-newLsmin_ci[:] = Lsmin_ci.values
-newtheta[:] = theta.values
-newtheta_ci[:] = theta_ci.values
-newg[:] = g.values
-newg_ci[:] = g_ci.values
-newname = name.values
+    newLsmaj[:] = Lsmaj.values
+    newLsmaj_ci[:] = Lsmaj_ci.values
+    newLsmin[:] = Lsmin.values
+    newLsmin_ci[:] = Lsmin_ci.values
+    newtheta[:] = theta.values
+    newtheta_ci[:] = theta_ci.values
+    newg[:] = g.values
+    newg_ci[:] = g_ci.values
+    newname = name.values
 
-newA[:] = A.values
-newA_ci[:] = A_ci.values
-newgA[:] = gA.values
-newgA_ci = gA_ci.values
-newnameA = nameA.values
+    newA[:] = A.values
+    newA_ci[:] = A_ci.values
+    newgA[:] = gA.values
+    newgA_ci = gA_ci.values
+    newnameA = nameA.values
 
 
 #
