@@ -105,6 +105,7 @@ rank = comm.Get_rank()
 
 filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
 #filename = '/array/data2/jculina/2014/GIS_project/lunar_month_sep142011/output/smallcape_force_0001.nc'
+filename = '/home/rkarsten/common_folder/dn_coarse_2d_clean/output/dn_coarse_0001.nc'
 
 data = nc.Dataset(filename, 'r')
 x = data.variables['x'][:]
