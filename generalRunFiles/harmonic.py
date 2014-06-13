@@ -143,9 +143,9 @@ for i, ii in enumerate(index):
         for j, jj in enumerate(ADCP.index):
             adcpTime[j] = datetime2matlabdn(jj)
 
-        plt.plot(adcpTime,ADCP['v'].values)
-        plt.plot(time, va[:, ii])
-        plt.show()
+#        plt.plot(adcpTime,ADCP['v'].values)
+#        plt.plot(time, va[:, ii])
+#        plt.show()
 
 #        adcpCoef = ut_solv(adcpTime, ADCP['u'].values, ADCP['v'].values, uvnodell[ii, 1],
 #                           'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
