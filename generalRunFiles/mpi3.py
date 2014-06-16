@@ -172,9 +172,9 @@ rows = [rank + size * i for i in range(int(dim1/size)+1) if comm.rank +
 for i in rows:
     print i
 
-    coef = ut_solv(time, ua[:, 0], va[:, 0], uvnodell[0, 1],
+    coef = ut_solv(time, ua[:, i], va[:, i], uvnodell[i, 1],
                     cnstit='auto', rmin=Rayleigh[0], notrend=True, method='ols',
-                    nodiagn=True, linci=True, conf_int=True)
+                    nodiagn=True, linci=True, conf_int=False)
 
     opt = pd.DataFrame(coef['aux']['opt'].items())
     del coef['aux']['opt']
@@ -185,18 +185,18 @@ for i in rows:
     cat = pd.concat([c,aux], axis=1)
 
     Lsmaj.iloc[i] = coef['Lsmaj']
-    Lsmaj_ci.iloc[i] = coef['Lsmaj_ci']
+    #Lsmaj_ci.iloc[i] = coef['Lsmaj_ci']
     Lsmin.iloc[i] = coef['Lsmin']
-    Lsmin_ci.iloc[i] = coef['Lsmin_ci']
+    #Lsmin_ci.iloc[i] = coef['Lsmin_ci']
     theta.iloc[i] = coef['theta']
-    theta_ci.iloc[i] = coef['theta_ci']
+    #theta_ci.iloc[i] = coef['theta_ci']
     g.iloc[i] = coef['g']
-    g_ci.iloc[i] = coef['g_ci']
+    #g_ci.iloc[i] = coef['g_ci']
     name.iloc[i] = coef['name']
 
-    coefElev = ut_solv(time, ua[:, 0], [], uvnodell[0, 1],
+    coefElev = ut_solv(time, ua[:, i], [], uvnodell[i, 1],
                     cnstit='auto', rmin=Rayleigh[0], notrend=True, method='ols',
-                    nodiagn=True, linci=True, conf_int=True)
+                    nodiagn=True, linci=True, conf_int=False)
 
     opt = pd.DataFrame(coefElev['aux']['opt'].items())
     del coefElev['aux']['opt']
@@ -206,9 +206,9 @@ for i in rows:
     cat = pd.concat([c,aux], axis=1)
 
     A.iloc[i] = coefElev['A']
-    A_ci.iloc[i] = coefElev['A_ci']
+    #A_ci.iloc[i] = coefElev['A_ci']
     gA.iloc[i] = coefElev['g']
-    gA_ci.iloc[i] = coefElev['g_ci']
+    #gA_ci.iloc[i] = coefElev['g_ci']
     nameA.iloc[i] = coefElev['name']
 
 comm.Barrier()
