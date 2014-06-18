@@ -1,0 +1,16 @@
+Site,Longitude,Latitude,Mean_Depth(m),Start_Date(2012),End_Date(2012),Path
+DG1, -65.7668, 44.6901, 55.5z, Jan 30, Feb 16,/array/home/107002b/github/karsten/adcp/DG/FS1_2012_ADCP.csv
+DG2, -65.7641, 44.6819, 34.1*, Jan 30, Mar 5,/array/home/107002b/github/karsten/adcp/DG/FS2_2012_ADCP.csv
+DG3, -65.7618, 44.6819, 36.3*, Jan 30, Mar 16,/array/home/107002b/github/karsten/adcp/DG/FS3_2012_ADCP.csv
+DG4, -65.7633, 44.6803, 31.6, Jan 30, Mar 16,/array/home/107002b/github/karsten/adcp/DG/FS4_2012_ADCP.csv
+DG5, -65.7599, 44.6752, 67.4, Jan 30, Feb 29,/array/home/107002b/github/karsten/adcp/DG/FS5_2012_ADCP.csv
+GP1, -66.3379, 44.2848, y, Jul 26, Aug 27,None
+GP2, -66.3392, 44.2762, 22.5, Jul 26, Sep 6,None
+GP3, -66.3421, 44.2606, 17.8, Jul 26, Aug 27,/array/home/107002b/github/karsten/adcp/GP/FS3_2012_ADCP.csv
+GP4, -66.3354, 44.2605, 15.4, Jul 26, Aug 27,/array/home/107002b/github/karsten/adcp/GP/FS4_2012_ADCP.csv
+GP5, -66.3381, 44.2505, 31.2, Jul 26, Aug 27,/array/home/107002b/github/karsten/adcp/GP/FS5_2012_ADCP.csv
+PP1, -66.2114, 44.4067, 35*, Sep 17, Oct 17,/array/home/107002b/github/karsten/adcp/PP/FS1_2012_ADCP.csv
+PP2, -66.2102, 44.4016, 23.3, Sep 17, Oct 17,/array/home/107002b/github/karsten/adcp/PP/FS2_2012_ADCP.csv
+PP3, -66.2087, 44.3843, 31.4, Sep 17, Oct 17,/array/home/107002b/github/karsten/adcp/PP/FS3_2012_ADCP.csv
+PP4, -66.2105, 44.3716, 23.0, Sep 17, Oct 17,/array/home/107002b/github/karsten/adcp/PP/FS4_2012_ADCP.csv
+PP5, -66.2104, 44.3646, 31.9, Sep 17, Oct 17,/array/home/107002b/github/karsten/adcp/PP/FS5_2012_ADCP.csv
