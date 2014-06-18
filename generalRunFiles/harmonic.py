@@ -96,22 +96,17 @@ def datetime2matlabdn(dt):
 # filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
 # filename = '/home/abalzer/scratch/standard_run_directory/0.0015/output/dngrid_0001.nc'
 filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
-filename = '/home/abalzer/standard_run_directory/0.0015/output/dngrid_0001.nc'
+#filename = '/home/abalzer/standard_run_directory/0.0015/output/dngrid_0001.nc'
 
 data = nc.Dataset(filename, 'r')
 x = data.variables['x'][:]
 y = data.variables['y'][:]
-lon = data.variables['lon'][:]
-lat = data.variables['lat'][:]
+lonc = data.variables['lonc'][:]
+latc = data.variables['latc'][:]
 ua = data.variables['ua']
 va = data.variables['va']
 time = data.variables['time'][:]
 trinodes = data.variables['nv'][:]
-
-(nodexy, uvnodexy, dt, deltat,
- hour, thour, TP, rho, g, period,
- nodell, uvnodell, trinodes) = ncdatasort(x, y, time*24*3600,
-                                          trinodes, lon, lat)
 
 time = mjd2num(time)
 
@@ -120,12 +115,12 @@ Rayleigh = np.array([1])
 # adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
 adcpFilename = '/home/wesley/github/karsten/adcp/testADCP.txt'
 
-adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
+#adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
 adcp = pd.read_csv(adcpFilename)
 
-lonlat = np.array([adcp['Longitude'], adcp['Latitude']]).T
+lonclatc = np.array([adcp['Longitude'], adcp['Latitude']]).T
 
-index = closest_point(lonlat, lon, lat)
+index = closest_point(lonclatc, lonc, latc)
 
 adcpData = pd.DataFrame()
 runData = pd.DataFrame()
@@ -133,6 +128,7 @@ bottomfriction = '{0}'.format(filename.split('/')[-3])
 
 for i, ii in enumerate(index):
 
+    print adcp.iloc[i, 0]
     path = adcp.iloc[i, -1]
     if path != 'None':
         ADCP = pd.read_csv(path, index_col=0)
@@ -143,17 +139,14 @@ for i, ii in enumerate(index):
         for j, jj in enumerate(ADCP.index):
             adcpTime[j] = datetime2matlabdn(jj)
 
-#        plt.plot(adcpTime,ADCP['v'].values)
-#        plt.plot(time, va[:, ii])
-#        plt.show()
-
 #        adcpCoef = ut_solv(adcpTime, ADCP['u'].values, ADCP['v'].values, uvnodell[ii, 1],
 #                           'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
 #                           'NoDiagn', 'LinCI')
 
         order = ['M2','S2','N2','K2','K1','O1','P1','Q1']
 
-        adcpCoef = ut_solv(adcpTime, ADCP['u'].values, ADCP['v'].values, uvnodell[ii, 1],
+        adcpCoef = ut_solv(adcpTime, ADCP['u'].values, ADCP['v'].values,
+                           lonclatc[i, 1],
                            cnstit=order, rmin=Rayleigh[0], notrend=True,
                            method='ols', nodiagn=True, linci=True,
                            conf_int=False, ordercnstit='frq')
@@ -170,18 +163,21 @@ for i, ii in enumerate(index):
 
         bottomName = pd.DataFrame({'bottomFriction': np.repeat(bottomfriction,
                                                               size)})
-        cat = pd.concat([a, adcpAUX, nameSpacer, bottomName], axis=1)
+
+        longitude = pd.DataFrame({'lon':np.repeat(lonclatc[i, 0], 8)})
+
+        cat = pd.concat([a, adcpAUX, longitude, nameSpacer, bottomName], axis=1)
 
         cat = cat.set_index('ADCP_Location')
         adcpData = pd.concat([adcpData, cat])
-        print adcp.iloc[i, 0]
+
 
 #        coef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
 #                       'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
 #                       'NoDiagn', 'LinCI')
 
 
-        coef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
+        coef = ut_solv(time, ua[:, ii], va[:, ii], lonclatc[i, 1],
                         cnstit=order, rmin=Rayleigh[0], notrend=True, method='ols',
                         nodiagn=True, linci=True, conf_int=False,
                        ordercnstit='frq')
@@ -194,12 +190,13 @@ for i, ii in enumerate(index):
         aux = pd.DataFrame(aux)
         c = pd.DataFrame(coef)
         size = c.shape[0]
-        nameSpacer = pd.DataFrame({'ADCP_Location': np.repeat(adcp.iloc[i, 0],
-                                                              size)})
+#        nameSpacer = pd.DataFrame({'ADCP_Location': np.repeat(adcp.iloc[i, 0],
+#                                                              size)})
+#
+#        bottomName = pd.DataFrame({'bottomFriction': np.repeat(bottomfriction,
+#                                                              size)})
 
-        bottomName = pd.DataFrame({'bottomFriction': np.repeat(bottomfriction,
-                                                              size)})
-        ccat = pd.concat([c, aux, nameSpacer, bottomName], axis=1)
+        ccat = pd.concat([c, aux, longitude, nameSpacer, bottomName], axis=1)
         ccat = ccat.set_index('ADCP_Location')
 
         runData = pd.concat([runData, ccat])
