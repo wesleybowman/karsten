@@ -178,6 +178,8 @@ def main():
 
     struct = adcp(datafiles)
     struct = tideGauge(datafiles, struct)
+    pickle.dump(struct, open("structTest.p", "wb"))
+
 
 if __name__ == '__main__':
     main()
