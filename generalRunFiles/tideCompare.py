@@ -86,10 +86,6 @@ def tideGauge(datafiles, struct):
     return struct
 
 
-
-
-
-
 def adcp(datafiles):
 
     for filename in datafiles:
@@ -182,3 +178,6 @@ def main():
 
     struct = adcp(datafiles)
     struct = tideGauge(datafiles, struct)
+
+if __name__ == '__main__':
+    main()
