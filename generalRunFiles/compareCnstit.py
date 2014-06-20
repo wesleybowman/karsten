@@ -93,9 +93,9 @@ def datetime2matlabdn(dt):
     return mdn.toordinal() + frac
 
 
-filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
+#filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
 #filename = '/home/abalzer/standard_run_directory/0.0015/output/dngrid_0001.nc'
-#filename = '/array/data1/rkarsten/dncoarse_bctest/output/dn_coarse_0001.nc'
+filename = '/array/data1/rkarsten/dncoarse_bctest/output/dn_coarse_0001.nc'
 
 data = nc.Dataset(filename, 'r')
 x = data.variables['x'][:]
@@ -119,10 +119,10 @@ time = mjd2num(time)
 Rayleigh = np.array([1])
 
 # adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
-adcpFilename = '/home/wesley/github/karsten/adcp/testADCP.txt'
+#adcpFilename = '/home/wesley/github/karsten/adcp/testADCP.txt'
 
 #adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
-#adcpFilename = '/home/107002b/github/karsten/adcp/dngrid_adcp_2012.txt'
+adcpFilename = '/array/home/107002b/github/karsten/adcp/acadia_dngrid_adcp_2012.txt'
 adcp = pd.read_csv(adcpFilename)
 
 lonlat = np.array([adcp['Longitude'], adcp['Latitude']]).T
