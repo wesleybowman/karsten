@@ -109,10 +109,10 @@ va = data.variables['va']
 time = data.variables['time'][:]
 trinodes = data.variables['nv'][:]
 
-(nodexy, uvnodexy, dt, deltat,
- hour, thour, TP, rho, g, period,
- nodell, uvnodell, trinodes) = ncdatasort(x, y, time*24*3600,
-                                          trinodes, lon, lat)
+#(nodexy, uvnodexy, dt, deltat,
+# hour, thour, TP, rho, g, period,
+# nodell, uvnodell, trinodes) = ncdatasort(x, y, time*24*3600,
+#                                          trinodes, lon, lat)
 
 time = mjd2num(time)
 
@@ -127,7 +127,7 @@ adcp = pd.read_csv(adcpFilename)
 
 lonlat = np.array([adcp['Longitude'], adcp['Latitude']]).T
 
-index = closest_point(lonlat, lon, lat)
+#index = closest_point(lonlat, lon, lat)
 index = closest_point(lonlat, lonc, latc)
 
 adcpData = pd.DataFrame()
@@ -141,6 +141,8 @@ for i, ii in enumerate(index):
     path = adcp.iloc[i, -1]
     if path != 'None':
         print adcp.iloc[i, 0]
+        #print lonlat[i,1], uvnodell[ii,1]
+
         ADCP = pd.read_csv(path, index_col=0)
         ADCP.index = pd.to_datetime(ADCP.index)
 
@@ -149,51 +151,44 @@ for i, ii in enumerate(index):
         for j, jj in enumerate(ADCP.index):
             adcpTime[j] = datetime2matlabdn(jj)
 
-    #        plt.plot(adcpTime,ADCP['v'].values)
-    #        plt.plot(time, va[:, ii])
-    #        plt.show()
-
-    #        adcpCoef = ut_solv(adcpTime, ADCP['u'].values, ADCP['v'].values, uvnodell[ii, 1],
-    #                           'auto', Rayleigh[0], 'NoTrend', 'Rmin', 'OLS',
-    #                           'NoDiagn', 'LinCI')
-
-
-        adcpCoef = ut_solv(adcpTime, ADCP['u'].values, ADCP['v'].values, uvnodell[ii, 1],
+        adcpCoef = ut_solv(adcpTime, ADCP['u'].values, ADCP['v'].values, lonlat[i, 1],
                             cnstit='auto', rmin=Rayleigh[0], notrend=True,
                             method='ols', nodiagn=True, linci=True,
                             conf_int=False)
 
-        adcpAUX = adcpCoef['aux']
-        del adcpAUX['opt']
-        del adcpCoef['aux']
+#        adcpAUX = adcpCoef['aux']
+#        del adcpAUX['opt']
+#        del adcpCoef['aux']
 
-        adcpAUX = pd.DataFrame(adcpAUX)
-        a = pd.DataFrame(adcpCoef)
-        size = a.shape[0]
-        nameSpacer = pd.DataFrame({'ADCP_Location': np.repeat(adcp.iloc[i, 0],
-                                                                size)})
-
-        cat = pd.concat([a, adcpAUX, nameSpacer], axis=1)
-
-        adcpData = cat.set_index('ADCP_Location')
+#        adcpAUX = pd.DataFrame(adcpAUX)
+#        a = pd.DataFrame(adcpCoef)
+#        size = a.shape[0]
+#        nameSpacer = pd.DataFrame({'ADCP_Location': np.repeat(adcp.iloc[i, 0],
+#                                                                size)})
+#
+#        cat = pd.concat([a, adcpAUX, nameSpacer], axis=1)
+#
+#        adcpData = cat.set_index('ADCP_Location')
+        adcpData = adcpCoef
         #adcpData = pd.concat([adcpData, cat])
 
-        coef = ut_solv(time, ua[:, ii], va[:, ii], uvnodell[ii, 1],
+        coef = ut_solv(time, ua[:, ii], va[:, ii], lonlat[i, 1],
                         cnstit='auto', rmin=Rayleigh[0], notrend=True,
                        method='ols', nodiagn=True, linci=True, conf_int=False)
 
-        aux = coef['aux']
-        del aux['opt']
-        del coef['aux']
-
-        aux = pd.DataFrame(aux)
-        c = pd.DataFrame(coef)
-        size = c.shape[0]
-        nameSpacer = pd.DataFrame({'ADCP_Location': np.repeat(adcp.iloc[i, 0],
-                                                              size)})
-
-        ccat = pd.concat([c, aux, nameSpacer], axis=1)
-        runData = ccat.set_index('ADCP_Location')
+#        aux = coef['aux']
+#        del aux['opt']
+#        del coef['aux']
+#
+#        aux = pd.DataFrame(aux)
+#        c = pd.DataFrame(coef)
+#        size = c.shape[0]
+#        nameSpacer = pd.DataFrame({'ADCP_Location': np.repeat(adcp.iloc[i, 0],
+#                                                              size)})
+#
+#        ccat = pd.concat([c, aux, nameSpacer], axis=1)
+#        runData = ccat.set_index('ADCP_Location')
+        runData = coef
 
 
         mod = pd.DataFrame({'ua':ua[:, i], 'va':va[:, i]})
