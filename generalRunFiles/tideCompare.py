@@ -168,7 +168,7 @@ def adcp(datafiles):
 
 
 def main():
-    datafiles = ['array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc',
+    datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc',
                  '/array/data1/rkarsten/dncoarse_bctest/output/dn_coarse_0001.nc',
                  '/array/data1/rkarsten/dncoarse_bctest2/output/dn_coarse_0001.nc',
                  '/array/data1/rkarsten/dncoarse_bctest_all/output/dn_coarse_0001.nc',
