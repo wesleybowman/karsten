@@ -47,15 +47,15 @@ def tideGauge(datafiles, Struct):
 
     ut_constits = ['M2','S2','N2','K2','K1','O1','P1','Q1']
 
-    coef_gptg = ut_solv(gptg.RBR.date_num_Z,
-                        (gptg.RBR.data-np.mean(gptg.RBR.data)), [],
-                        gptg.RBR.lat, cnstit=ut_constits, notrend=True,
+    coef_gptg = ut_solv(gptg['RBR'].date_num_Z,
+                        (gptg['RBR'].data-np.mean(gptg['RBR'].data)), [],
+                        gptg['RBR'].lat, cnstit=ut_constits, notrend=True,
                         rmin=0.95, method='ols', nodiagn=True, linci=True,
                         ordercnstit='frq')
 
-    coef_dgtg = ut_solv(dgtg.RBR.date_num_Z,
-                        (dgtg.RBR.data-np.mean(dgtg.RBR.data)), [],
-                        dgtg.RBR.lat, cnstit=ut_constits, notrend=True,
+    coef_dgtg = ut_solv(dgtg['RBR'].date_num_Z,
+                        (dgtg['RBR'].data-np.mean(dgtg['RBR'].data)), [],
+                        dgtg['RBR'].lat, cnstit=ut_constits, notrend=True,
                         rmin=0.95, method='ols', nodiagn=True, linci=True,
                         ordercnstit='frq')
 
@@ -67,8 +67,8 @@ def tideGauge(datafiles, Struct):
         lon = data.variables['lon'][:]
         time = data.variables['time'][:]
 
-        tg_gp_id = np.argmin(np.sqrt((lon-gptg.RBR.lon)**2+(lat-gptg.RBR.lat)**2))
-        tg_dg_id = np.argmin(np.sqrt((lon-dgtg.RBR.lon)**2+(lat-dgtg.RBR.lat)**2))
+        tg_gp_id = np.argmin(np.sqrt((lon-gptg['RBR'].lon)**2+(lat-gptg['RBR'].lat)**2))
+        tg_dg_id = np.argmin(np.sqrt((lon-dgtg['RBR'].lon)**2+(lat-dgtg['RBR'].lat)**2))
 
         elgp = data.variables['zeta'][tg_gp_id, :]
         eldg = data.variables['zeta'][tg_dg_id, :]
