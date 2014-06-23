@@ -37,7 +37,7 @@ def datetime2matlabdn(dt):
 
 
 
-def tideGauge(datafiles, struct):
+def tideGauge(datafiles, Struct):
     dgFilename = '/array/rkarsten/common_tidal_files/data/observed/DG/TideGauge/DigbyWharf_015893_20140115_2221_Z.mat'
 
     gpFilename = '/array/rkarsten/common_tidal_files/data/observed/GP/TideGauge/Westport_015892_20140325_1212_Z.mat'
@@ -59,6 +59,7 @@ def tideGauge(datafiles, struct):
                         rmin=0.95, method='ols', nodiagn=True, linci=True,
                         ordercnstit='frq')
 
+    struct = np.array([])
     for filename in datafiles:
 
         data = nc.Dataset(filename, 'r')
@@ -81,9 +82,12 @@ def tideGauge(datafiles, struct):
 
         struct = np.hstack((struct, obs_loc))
 
+        Name = filename.split('/')[4]
+        Struct[Name] = np.hstack((Struct[Name], struct))
+
 
     #pickle.dump(struct, open("structADCP.p", "wb"))
-    return struct
+    return Struct
 
 
 def adcp(datafiles):
@@ -121,6 +125,8 @@ def adcp(datafiles):
         runData = pd.DataFrame()
 
 
+        Name = filename.split('/')[4]
+        Struct = {}
         struct = np.array([])
 
         for i, ii in enumerate(index):
@@ -141,13 +147,14 @@ def adcp(datafiles):
                 adcpCoef = ut_solv(adcpTime, ADCP['u'].values, ADCP['v'].values, lonlat[i, 1],
                                     cnstit='auto', rmin=Rayleigh[0], notrend=True,
                                     method='ols', nodiagn=True, linci=True,
-                                    conf_int=False)
+                                    conf_int=True)
 
                 adcpData = adcpCoef
 
                 coef = ut_solv(time, ua[:, ii], va[:, ii], lonlat[i, 1],
                                 cnstit='auto', rmin=Rayleigh[0], notrend=True,
-                            method='ols', nodiagn=True, linci=True, conf_int=False)
+                            method='ols', nodiagn=True, linci=True,
+                               conf_int=True)
 
                 runData = coef
 
@@ -163,8 +170,10 @@ def adcp(datafiles):
 
                 struct = np.hstack((struct, obs_loc))
 
+        Struct[Name] = struct
+
 #    pickle.dump(struct, open("structADCP.p", "wb"))
-    return struct
+    return Struct
 
 
 def main():
@@ -176,10 +185,14 @@ def main():
                  '/array/data1/rkarsten/dncoarse_bctest_timeseries/output/dn_coarse_0001.nc',
                  '/array/data1/rkarsten/dncoarse_stationtest/output/dn_coarse_0001.nc']
 
-    struct = adcp(datafiles)
-    struct = tideGauge(datafiles, struct)
-    pickle.dump(struct, open("structTest.p", "wb"))
+    datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc']
+    #datafiles = ['/home/wesley/ncfiles/smallcape_force_0001.nc']
+
+    Struct = adcp(datafiles)
+    Struct = tideGauge(datafiles, Struct)
+    pickle.dump(Struct, open("structTest.p", "wb"))
+    return Struct
 
 
 if __name__ == '__main__':
-    main()
+    Struct = main()

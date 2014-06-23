@@ -96,7 +96,7 @@ def datetime2matlabdn(dt):
 # filename = '/home/wesley/github/aidan-projects/grid/dngrid_0001.nc'
 # filename = '/home/abalzer/scratch/standard_run_directory/0.0015/output/dngrid_0001.nc'
 filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
-filename = '/home/abalzer/standard_run_directory/0.0015/output/dngrid_0001.nc'
+#filename = '/home/abalzer/standard_run_directory/0.0015/output/dngrid_0001.nc'
 
 data = nc.Dataset(filename, 'r')
 x = data.variables['x'][:]
@@ -115,7 +115,7 @@ Rayleigh = np.array([1])
 # adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
 adcpFilename = '/home/wesley/github/karsten/adcp/testADCP.txt'
 
-adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
+#adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
 adcp = pd.read_csv(adcpFilename)
 
 lonclatc = np.array([adcp['Longitude'], adcp['Latitude']]).T
@@ -149,7 +149,7 @@ for i, ii in enumerate(index):
                            lonclatc[i, 1],
                            cnstit=order, rmin=Rayleigh[0], notrend=True,
                            method='ols', nodiagn=True, linci=True,
-                           conf_int=False, ordercnstit='frq')
+                           conf_int=True, ordercnstit='frq')
 
         adcpAUX = adcpCoef['aux']
         del adcpAUX['opt']
