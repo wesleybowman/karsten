@@ -47,12 +47,14 @@ def tideGauge(datafiles, Struct):
 
     ut_constits = ['M2','S2','N2','K2','K1','O1','P1','Q1']
 
+    print 'Westport TideGauge'
     coef_gptg = ut_solv(gptg['RBR'].date_num_Z,
                         (gptg['RBR'].data-np.mean(gptg['RBR'].data)), [],
                         gptg['RBR'].lat, cnstit=ut_constits, notrend=True,
                         rmin=0.95, method='ols', nodiagn=True, linci=True,
                         ordercnstit='frq')
 
+    print 'DigbyWharf TideGauge'
     coef_dgtg = ut_solv(dgtg['RBR'].date_num_Z,
                         (dgtg['RBR'].data-np.mean(dgtg['RBR'].data)), [],
                         dgtg['RBR'].lat, cnstit=ut_constits, notrend=True,
@@ -75,7 +77,7 @@ def tideGauge(datafiles, Struct):
 
         time = mjd2num(time)
 
-        obs_loc = {'mod_time':time, 'obs_time':dgtg.RBR.date_num_Z,
+        obs_loc = {'mod_time':time, 'obs_time':dgtg['RBR'].date_num_Z,
                   'lon':lon, 'lat':lat,
                   'dg_tidegauge_harmonics': coef_dgtg,
                   'gp_tidegauge_harmonics':coef_gptg}
