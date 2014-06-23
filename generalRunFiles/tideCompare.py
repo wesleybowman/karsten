@@ -38,9 +38,9 @@ def datetime2matlabdn(dt):
 
 
 def tideGauge(datafiles, Struct):
-    dgFilename = '/array/rkarsten/common_tidal_files/data/observed/DG/TideGauge/DigbyWharf_015893_20140115_2221_Z.mat'
+    dgFilename = '/array/home/rkarsten/common_tidal_files/data/observed/DG/TideGauge/DigbyWharf_015893_20140115_2221_Z.mat'
 
-    gpFilename = '/array/rkarsten/common_tidal_files/data/observed/GP/TideGauge/Westport_015892_20140325_1212_Z.mat'
+    gpFilename = '/array/home/rkarsten/common_tidal_files/data/observed/GP/TideGauge/Westport_015892_20140325_1212_Z.mat'
 
     dgtg = sio.loadmat(dgFilename, struct_as_record=False, squeeze_me=True)
     gptg = sio.loadmat(gpFilename, struct_as_record=False, squeeze_me=True)
