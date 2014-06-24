@@ -101,7 +101,7 @@ def tideGauge(datafiles, Struct):
                    'dg_mod_harmonics': coef_dg,
                    'gp_mod_harmonics': coef_gp,
                    'dg_tg_data':dgtg['RBR'].data,
-                   'gp__tg_data':gptg['RBR'].data,
+                   'gp_tg_data':gptg['RBR'].data,
                    'eldg':eldg, 'elgp':elgp}
 
         struct = np.hstack((struct, obs_loc))
@@ -115,7 +115,6 @@ def tideGauge(datafiles, Struct):
 
 def adcp(datafiles, debug=False):
 
-    #adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
     if debug:
         adcpFilename = '/home/wesley/github/karsten/adcp/testADCP.txt'
     else:
