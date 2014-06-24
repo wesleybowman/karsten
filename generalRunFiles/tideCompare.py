@@ -74,8 +74,10 @@ def tideGauge(datafiles, Struct):
         tg_gp_id = np.argmin(np.sqrt((lon-gptg['RBR'].lon)**2+(lat-gptg['RBR'].lat)**2))
         tg_dg_id = np.argmin(np.sqrt((lon-dgtg['RBR'].lon)**2+(lat-dgtg['RBR'].lat)**2))
 
-        elgp = data.variables['zeta'][tg_gp_id, :]
-        eldg = data.variables['zeta'][tg_dg_id, :]
+        #elgp = data.variables['zeta'][tg_gp_id, :]
+        #eldg = data.variables['zeta'][tg_dg_id, :]
+        elgp = data.variables['zeta'][:, tg_gp_id]
+        eldg = data.variables['zeta'][:, tg_dg_id]
 
         coef_dg = ut_solv(time, eldg, [], dgtg['RBR'].lat, cnstit=ut_constits,
                           notrend=True, rmin=0.95, method='ols', nodiagn=True,
