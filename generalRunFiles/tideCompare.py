@@ -64,6 +64,7 @@ def tideGauge(datafiles, Struct):
     struct = np.array([])
     for filename in datafiles:
 
+        print filename
         data = nc.Dataset(filename, 'r')
         lat = data.variables['lat'][:]
         lon = data.variables['lon'][:]
@@ -109,6 +110,7 @@ def tideGauge(datafiles, Struct):
 def adcp(datafiles):
 
     for filename in datafiles:
+        print filename
         data = nc.Dataset(filename, 'r')
         x = data.variables['x'][:]
         y = data.variables['y'][:]
