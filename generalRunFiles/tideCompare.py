@@ -103,6 +103,7 @@ def tideGauge(datafiles, Struct):
         struct = np.hstack((struct, obs_loc))
 
         Name = filename.split('/')[4]
+        print Name
         Struct[Name] = np.hstack((Struct[Name], struct))
 
 
@@ -115,8 +116,8 @@ def adcp(datafiles):
     for filename in datafiles:
         print filename
         data = nc.Dataset(filename, 'r')
-        x = data.variables['x'][:]
-        y = data.variables['y'][:]
+        #x = data.variables['x'][:]
+        #y = data.variables['y'][:]
         lon = data.variables['lon'][:]
         lat = data.variables['lat'][:]
         lonc = data.variables['lonc'][:]
@@ -124,7 +125,7 @@ def adcp(datafiles):
         ua = data.variables['ua']
         va = data.variables['va']
         time = data.variables['time'][:]
-        trinodes = data.variables['nv'][:]
+        #trinodes = data.variables['nv'][:]
 
         time = mjd2num(time)
 
@@ -147,6 +148,7 @@ def adcp(datafiles):
 
 
         Name = filename.split('/')[4]
+        print Name
         Struct = {}
         struct = np.array([])
 
@@ -193,7 +195,7 @@ def adcp(datafiles):
 
         Struct[Name] = struct
 
-    pickle.dump(Struct, open("structADCP.p", "wb"))
+    #pickle.dump(Struct, open("structADCP.p", "wb"))
     return Struct
 
 
@@ -208,12 +210,12 @@ def main():
                  #'/array/data1/rkarsten/dncoarse_stationtest/output/dn_coarse_0001.nc']
 
                  #'/array/data1/rkarsten/dncoarse_stationtest/output/dn_coarse_0001.nc']
-    datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc']
+    #datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc']
     #datafiles = ['/home/wesley/ncfiles/smallcape_force_0001.nc']
 
     Struct = adcp(datafiles)
     Struct = tideGauge(datafiles, Struct)
-    pickle.dump(Struct, open("structTest.p", "wb"))
+    pickle.dump(Struct, open("structTest2.p", "wb"))
     return Struct
 
 
