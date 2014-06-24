@@ -69,18 +69,30 @@ def tideGauge(datafiles, Struct):
         lon = data.variables['lon'][:]
         time = data.variables['time'][:]
 
+        time = mjd2num(time)
+
         tg_gp_id = np.argmin(np.sqrt((lon-gptg['RBR'].lon)**2+(lat-gptg['RBR'].lat)**2))
         tg_dg_id = np.argmin(np.sqrt((lon-dgtg['RBR'].lon)**2+(lat-dgtg['RBR'].lat)**2))
 
         elgp = data.variables['zeta'][tg_gp_id, :]
         eldg = data.variables['zeta'][tg_dg_id, :]
 
-        time = mjd2num(time)
+        coef_dg = ut_solv(time, eldg, [], cnstit=ut_constits, notrend=True,
+                          rmin=0.95, method='ols', nodiagn=True, linci=True,
+                          ordercnstit='frq')
+
+        coef_gp = ut_solv(time, elgp, [], cnstit=ut_constits, notrend=True,
+                          rmin=0.95, method='ols', nodiagn=True, linci=True,
+                          ordercnstit='frq')
+
+
 
         obs_loc = {'mod_time':time, 'obs_time':dgtg['RBR'].date_num_Z,
-                  'lon':lon, 'lat':lat,
-                  'dg_tidegauge_harmonics': coef_dgtg,
-                  'gp_tidegauge_harmonics':coef_gptg}
+                   'lon':lon, 'lat':lat,
+                   'dg_tidegauge_harmonics': coef_dgtg,
+                   'gp_tidegauge_harmonics':coef_gptg,
+                   'dg_mod_harmonics': coef_dg,
+                   'gp_mod_harmonics': coeg_gp}
 
         struct = np.hstack((struct, obs_loc))
 
