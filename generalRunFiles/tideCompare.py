@@ -89,21 +89,23 @@ def tideGauge(datafiles, Struct):
                           linci=True, ordercnstit='frq')
 
 
+        Name = filename.split('/')[4]
+        print Name
 
-        obs_loc = {'mod_time':time, 'dg_time':dgtg['RBR'].date_num_Z,
+        obs_loc = {'name':Name, 'type':'TideGauge',
+                   'mod_time':time, 'dg_time':dgtg['RBR'].date_num_Z,
                    'gp_time':gptg['RBR'].date_num_Z,
                    'lon':lon, 'lat':lat,
                    'dg_tidegauge_harmonics': coef_dgtg,
                    'gp_tidegauge_harmonics':coef_gptg,
                    'dg_mod_harmonics': coef_dg,
                    'gp_mod_harmonics': coef_gp,
-                   'dg_data':dgtg['RBR'].data,
-                   'gp_data':gptg['RBR'].data}
+                   'dg_tg_data':dgtg['RBR'].data,
+                   'gp__tg_data':gptg['RBR'].data,
+                   'eldg':eldg, 'elgp':elgp}
 
         struct = np.hstack((struct, obs_loc))
 
-        Name = filename.split('/')[4]
-        print Name
         Struct[Name] = np.hstack((Struct[Name], struct))
 
 
@@ -111,7 +113,41 @@ def tideGauge(datafiles, Struct):
     return Struct
 
 
-def adcp(datafiles):
+def adcp(datafiles, debug=False):
+
+    #adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
+    if debug:
+        adcpFilename = '/home/wesley/github/karsten/adcp/testADCP.txt'
+    else:
+        adcpFilename = '/array/home/107002b/github/karsten/adcp/acadia_dngrid_adcp_2012.txt'
+
+    #adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
+    adcp = pd.read_csv(adcpFilename)
+
+    for i,v in enumerate(adcp['Latitude']):
+        path = adcp.iloc[i, -1]
+        if path != 'None':
+            print adcp.iloc[i, 0]
+            #print lonlat[i,1], uvnodell[ii,1]
+
+            ADCP = pd.read_csv(path, index_col=0)
+            ADCP.index = pd.to_datetime(ADCP.index)
+
+            adcpTime = np.empty(ADCP.index.shape)
+
+            for j, jj in enumerate(ADCP.index):
+                adcpTime[j] = datetime2matlabdn(jj)
+
+            adcpCoef = ut_solv(adcpTime, ADCP['u'].values,
+                               ADCP['v'].values, v,
+                               cnstit='auto', rmin=0.95, notrend=True,
+                               method='ols', nodiagn=True, linci=True,
+                               conf_int=True)
+
+            adcpData = adcpCoef
+
+    obs = pd.DataFrame({'u':ADCP['u'].values, 'v':ADCP['v'].values})
+
 
     for filename in datafiles:
         print filename
@@ -129,15 +165,6 @@ def adcp(datafiles):
 
         time = mjd2num(time)
 
-        Rayleigh = np.array([1])
-
-        #adcpFilename = '/home/wesley/github/karsten/adcp/dngrid_adcp_2012.txt'
-        #adcpFilename = '/home/wesley/github/karsten/adcp/testADCP.txt'
-
-        #adcpFilename = '/home/wesleyb/github/karsten/adcp/dngrid_adcp_2012.txt'
-        adcpFilename = '/array/home/107002b/github/karsten/adcp/acadia_dngrid_adcp_2012.txt'
-        adcp = pd.read_csv(adcpFilename)
-
         lonlat = np.array([adcp['Longitude'], adcp['Latitude']]).T
 
         #index = closest_point(lonlat, lon, lat)
@@ -145,7 +172,6 @@ def adcp(datafiles):
 
         adcpData = pd.DataFrame()
         runData = pd.DataFrame()
-
 
         Name = filename.split('/')[4]
         print Name
@@ -157,32 +183,15 @@ def adcp(datafiles):
             path = adcp.iloc[i, -1]
             if path != 'None':
                 print adcp.iloc[i, 0]
-                #print lonlat[i,1], uvnodell[ii,1]
-
-                ADCP = pd.read_csv(path, index_col=0)
-                ADCP.index = pd.to_datetime(ADCP.index)
-
-                adcpTime = np.empty(ADCP.index.shape)
-
-                for j, jj in enumerate(ADCP.index):
-                    adcpTime[j] = datetime2matlabdn(jj)
-
-                adcpCoef = ut_solv(adcpTime, ADCP['u'].values, ADCP['v'].values, lonlat[i, 1],
-                                    cnstit='auto', rmin=Rayleigh[0], notrend=True,
-                                    method='ols', nodiagn=True, linci=True,
-                                    conf_int=True)
-
-                adcpData = adcpCoef
 
                 coef = ut_solv(time, ua[:, ii], va[:, ii], lonlat[i, 1],
-                                cnstit='auto', rmin=Rayleigh[0], notrend=True,
+                                cnstit='auto', rmin=0.95, notrend=True,
                             method='ols', nodiagn=True, linci=True,
                                conf_int=True)
 
                 runData = coef
 
-                mod = pd.DataFrame({'ua':ua[:, i], 'va':va[:, i]})
-                obs = pd.DataFrame({'u':ADCP['u'].values, 'v':ADCP['v'].values})
+                mod = pd.DataFrame({'ua':ua[:, ii], 'va':va[:, ii]})
 
                 obs_loc = {'name':adcp.iloc[i,0], 'type':'ADCP', 'lat':lonlat[i,-1],
                         'lon':lonlat[0,0], 'obs_timeseries':obs,
@@ -195,29 +204,29 @@ def adcp(datafiles):
 
         Struct[Name] = struct
 
-    #pickle.dump(Struct, open("structADCP.p", "wb"))
     return Struct
 
 
-def main():
-    datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc',
-                 '/array/data1/rkarsten/dncoarse_bctest/output/dn_coarse_0001.nc',
-                 '/array/data1/rkarsten/dncoarse_bctest2/output/dn_coarse_0001.nc',
-                 '/array/data1/rkarsten/dncoarse_bctest_all/output/dn_coarse_0001.nc',
-                 '/array/data1/rkarsten/dncoarse_bctest_EC/output/dn_coarse_0001.nc',
-                 '/array/data1/rkarsten/dncoarse_bctest_timeseries/output/dn_coarse_0001.nc']
+def main(debug=False):
+    if debug:
+        datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc']
+        #datafiles = ['/home/wesley/ncfiles/smallcape_force_0001.nc']
+    else:
+
+        datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc',
+                    '/array/data1/rkarsten/dncoarse_bctest/output/dn_coarse_0001.nc',
+                    '/array/data1/rkarsten/dncoarse_bctest2/output/dn_coarse_0001.nc',
+                    '/array/data1/rkarsten/dncoarse_bctest_all/output/dn_coarse_0001.nc',
+                    '/array/data1/rkarsten/dncoarse_bctest_EC/output/dn_coarse_0001.nc',
+                    '/array/data1/rkarsten/dncoarse_bctest_timeseries/output/dn_coarse_0001.nc']
 
                  #'/array/data1/rkarsten/dncoarse_stationtest/output/dn_coarse_0001.nc']
 
-                 #'/array/data1/rkarsten/dncoarse_stationtest/output/dn_coarse_0001.nc']
-    #datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc']
-    #datafiles = ['/home/wesley/ncfiles/smallcape_force_0001.nc']
-
-    Struct = adcp(datafiles)
+    Struct = adcp(datafiles, debug=True)
     Struct = tideGauge(datafiles, Struct)
     pickle.dump(Struct, open("structTest2.p", "wb"))
     return Struct
 
 
 if __name__ == '__main__':
-    Struct = main()
+    Struct = main(debug=True)
