@@ -12,11 +12,36 @@ class FVCOM:
     As of right now, only takes a filename as input. It will then load in the
     data (except for timeseries, since loading in the whole time series can be
     too large)
+
+    ax can be defined as a region, i.e. a bounding box.
+    An example:
+        ax = [min(lon_coord), max(lon_coord), min(lat_coord), max(lat_coord)]
     '''
 
-    def __init__(self, filename):
+    def __init__(self, filename, ax=[]):
         self.QC = ['raw data']
+
         self.load(filename)
+
+        if ax:
+            self.ax = ax
+        else:
+            self.ax = [min(self.lon), max(self.lon), min(self.lat), max(self.lat)]
+
+
+    def el_region(self):
+        #self.lonc = np.intersect1d(np.argwhere(self.lonc>=self.ax[0]),np.argwhere(self.lonc<=self.ax[1]))
+        #self.latc = np.intersect1d(np.argwhere(self.latc>=self.ax[2]),np.argwhere(self.latc<=self.ax[3]))
+        #self.region_e = np.intersect1d(self.latc,self.lonc)
+        #print self.region_e.shape
+
+        self.region_e = np.argwhere((self.lonc >= self.ax[0]) &
+                                    (self.lonc <= self.ax[1]) &
+                                    (self.latc >= self.ax[2]) &
+                                    (self.latc <= self.ax[3]))
+
+        print self.region_e
+
 
     def load(self, filename):
         self.data = nc.Dataset(filename, 'r')
@@ -33,7 +58,6 @@ class FVCOM:
         self.aw0 = self.data.variables['aw0'][:]
         self.awx = self.data.variables['awx'][:]
         self.awy = self.data.variables['awy'][:]
-        self.time = self.data.variables['time'][:]
         self.trinodes = self.data.variables['nv'][:]
         self.siglay = self.data.variables['siglay'][:]
         self.siglev = self.data.variables['siglev'][:]
@@ -45,10 +69,16 @@ class FVCOM:
         # elev timeseries
         self.el = self.data.variables['zeta']
 
+        # get time and adjust it to matlab datenum
+        self.time = self.data.variables['time'][:]
+        self.time = self.time + 678942
+
         try:
-            self.wa = self.data.variables['w']
-            self.ua = self.data.variables['u']
-            self.va = self.data.variables['v']
+            self.wa = self.data.variables['ww']
+            self.u = self.data.variables['u']
+            self.v = self.data.variables['v']
+            self.ua = self.data.variables['ua']
+            self.va = self.data.variables['va']
             self.D3 = True
 
         except KeyError:
@@ -75,6 +105,10 @@ class FVCOM:
             self.U, self.V = ut_reconstr(time, self.coef)
         else:
             self.ts_recon, _ = ut_reconstr(time, self.coef)
+
+
+
+
 
 if __name__ == '__main__':
     filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
