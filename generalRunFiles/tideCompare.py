@@ -147,6 +147,7 @@ def adcp(datafiles, debug=False):
             adcpData = adcpCoef
 
     obs = pd.DataFrame({'u':ADCP['u'].values, 'v':ADCP['v'].values})
+    Struct = {}
 
 
     for filename in datafiles:
@@ -175,7 +176,6 @@ def adcp(datafiles, debug=False):
 
         Name = filename.split('/')[4]
         print Name
-        Struct = {}
         struct = np.array([])
 
         for i, ii in enumerate(index):
@@ -231,4 +231,4 @@ def main(debug=False):
 
 
 if __name__ == '__main__':
-    Struct = main(debug=True)
+    Struct = main(debug=False)
