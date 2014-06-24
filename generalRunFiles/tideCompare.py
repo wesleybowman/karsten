@@ -77,13 +77,13 @@ def tideGauge(datafiles, Struct):
         elgp = data.variables['zeta'][tg_gp_id, :]
         eldg = data.variables['zeta'][tg_dg_id, :]
 
-        coef_dg = ut_solv(time, eldg, [], cnstit=ut_constits, notrend=True,
-                          rmin=0.95, method='ols', nodiagn=True, linci=True,
-                          ordercnstit='frq')
+        coef_dg = ut_solv(time, eldg, [], dgtg['RBR'].lat, cnstit=ut_constits,
+                          notrend=True, rmin=0.95, method='ols', nodiagn=True,
+                          linci=True, ordercnstit='frq')
 
-        coef_gp = ut_solv(time, elgp, [], cnstit=ut_constits, notrend=True,
-                          rmin=0.95, method='ols', nodiagn=True, linci=True,
-                          ordercnstit='frq')
+        coef_gp = ut_solv(time, elgp, [], gptg['RBR'].lat, cnstit=ut_constits,
+                          notrend=True, rmin=0.95, method='ols', nodiagn=True,
+                          linci=True, ordercnstit='frq')
 
 
 
@@ -92,7 +92,7 @@ def tideGauge(datafiles, Struct):
                    'dg_tidegauge_harmonics': coef_dgtg,
                    'gp_tidegauge_harmonics':coef_gptg,
                    'dg_mod_harmonics': coef_dg,
-                   'gp_mod_harmonics': coeg_gp}
+                   'gp_mod_harmonics': coef_gp}
 
         struct = np.hstack((struct, obs_loc))
 
