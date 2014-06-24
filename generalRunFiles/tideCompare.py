@@ -209,7 +209,8 @@ def adcp(datafiles, debug=False):
 
 def main(debug=False):
     if debug:
-        datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc']
+        datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc',
+        '/array/data1/rkarsten/dncoarse_bctest/output/dn_coarse_0001.nc']
         #datafiles = ['/home/wesley/ncfiles/smallcape_force_0001.nc']
     else:
 
@@ -223,6 +224,7 @@ def main(debug=False):
                  #'/array/data1/rkarsten/dncoarse_stationtest/output/dn_coarse_0001.nc']
 
     Struct = adcp(datafiles, debug=False)
+    pickle.dump(Struct, open("structADCP.p", "wb"))
     Struct = tideGauge(datafiles, Struct)
     pickle.dump(Struct, open("structTest2.p", "wb"))
     return Struct
