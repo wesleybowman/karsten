@@ -69,3 +69,15 @@ class FVCOM:
                                 self.lat[ind], **kwarg)
 
             self.QC.append('Harmonics done for elevation')
+
+    def reconstr(self, time):
+        if self.coef['aux']['opt']['twodim']:
+            self.U, self.V = ut_reconstr(time, self.coef)
+        else:
+            self.ts_recon, _ = ut_reconstr(time, self.coef)
+
+if __name__ == '__main__':
+    filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
+    test = FVCOM(filename)
+    test.harmonics(0, cnstit='auto', notrend=True, nodiagn=True)
+    test.reconstr(test.time)
