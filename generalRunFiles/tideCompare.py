@@ -90,12 +90,15 @@ def tideGauge(datafiles, Struct):
 
 
 
-        obs_loc = {'mod_time':time, 'obs_time':dgtg['RBR'].date_num_Z,
+        obs_loc = {'mod_time':time, 'dg_time':dgtg['RBR'].date_num_Z,
+                   'gp_time':gptg['RBR'].date_num_Z,
                    'lon':lon, 'lat':lat,
                    'dg_tidegauge_harmonics': coef_dgtg,
                    'gp_tidegauge_harmonics':coef_gptg,
                    'dg_mod_harmonics': coef_dg,
-                   'gp_mod_harmonics': coef_gp}
+                   'gp_mod_harmonics': coef_gp,
+                   'dg_data':dgtg['RBR'].data,
+                   'gp_data':gptg['RBR'].data}
 
         struct = np.hstack((struct, obs_loc))
 
