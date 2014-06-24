@@ -222,7 +222,7 @@ def main(debug=False):
 
                  #'/array/data1/rkarsten/dncoarse_stationtest/output/dn_coarse_0001.nc']
 
-    Struct = adcp(datafiles, debug=True)
+    Struct = adcp(datafiles, debug=False)
     Struct = tideGauge(datafiles, Struct)
     pickle.dump(Struct, open("structTest2.p", "wb"))
     return Struct
