@@ -4,6 +4,7 @@ import netCDF4 as nc
 import sys
 sys.path.append('/home/wesley/github/UTide/')
 from utide import ut_solv, ut_reconstr
+from shortest_element_path import shortest_element_path
 
 
 class FVCOM:
@@ -30,15 +31,20 @@ class FVCOM:
 
 
     def el_region(self):
-        #self.lonc = np.intersect1d(np.argwhere(self.lonc>=self.ax[0]),np.argwhere(self.lonc<=self.ax[1]))
-        #self.latc = np.intersect1d(np.argwhere(self.latc>=self.ax[2]),np.argwhere(self.latc<=self.ax[3]))
-        #self.region_e = np.intersect1d(self.latc,self.lonc)
-        #print self.region_e.shape
 
         self.region_e = np.argwhere((self.lonc >= self.ax[0]) &
                                     (self.lonc <= self.ax[1]) &
                                     (self.latc >= self.ax[2]) &
                                     (self.latc <= self.ax[3]))
+
+        print self.region_e
+
+    def node_region(self):
+
+        self.region_n = np.argwhere((self.lon >= self.ax[0]) &
+                                    (self.lon <= self.ax[1]) &
+                                    (self.lat >= self.ax[2]) &
+                                    (self.lat <= self.ax[3]))
 
         print self.region_e
 
@@ -51,6 +57,7 @@ class FVCOM:
         self.lat = self.data.variables['lat'][:]
         self.lonc = self.data.variables['lonc'][:]
         self.latc = self.data.variables['latc'][:]
+        self.nv = self.data.variables['nv'][:]
         self.h = self.data.variables['h'][:]
         self.nbe = self.data.variables['nbe'][:]
         self.a1u = self.data.variables['a1u'][:]
@@ -86,32 +93,62 @@ class FVCOM:
             self.va = self.data.variables['va']
             self.D3 = False
 
+    def closest_point(self, pt_lon, pt_lat, lon, lat):
+        '''
+        Finds the closest exact lon, lat to a lon, lat coordinate.
+        Example input:
+            closest_point([-65.37], [45.34], lon, lat)
+
+        where lon, lat are from data
+        '''
+
+        points = np.array([pt_lon, pt_lat]).T
+
+        point_list = np.array([lon,lat]).T
+
+        closest_dist = ((point_list[:, 0] - points[:, 0, None])**2 +
+                        (point_list[:, 1] - points[:, 1, None])**2)
+
+        closest_point_indexes = np.argmin(closest_dist, axis=1)
+
+        return closest_point_indexes
+
+
     def harmonics(self, ind, twodim=True, **kwarg):
 
         if twodim:
             self.coef = ut_solv(self.time, self.ua[:, ind], self.va[:, ind],
                                 self.lat[ind], **kwarg)
 
-            self.QC.append('Harmonics done for velocity')
+            self.QC.append('ut_solv done for velocity')
 
         else:
             self.coef = ut_solv(self.time, self.ua[:, ind], [],
                                 self.lat[ind], **kwarg)
 
-            self.QC.append('Harmonics done for elevation')
+            self.QC.append('ut_solv done for elevation')
 
     def reconstr(self, time):
         if self.coef['aux']['opt']['twodim']:
             self.U, self.V = ut_reconstr(time, self.coef)
+            self.QC.append('ut_reconstr done for velocity')
         else:
             self.ts_recon, _ = ut_reconstr(time, self.coef)
+            self.QC.append('ut_reconstr done for elevation')
 
 
 
 
 
 if __name__ == '__main__':
+
     filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
     test = FVCOM(filename)
     test.harmonics(0, cnstit='auto', notrend=True, nodiagn=True)
     test.reconstr(test.time)
+
+    t = shortest_element_path(test.latc,test.lonc,test.lat,test.lon,test.nv,test.h)
+    elements, _ = t.getTargets([[41420,39763],[48484,53441],
+                                [27241,24226],[21706,17458]])
+
+    # t.graphGrid()
