@@ -2,6 +2,7 @@ import fnmatch
 import os
 import netCDF4 as nc
 import numpy as np
+import cPickle as pickle
 
 filename = '/array/data1/073208o/workspace_matlab/runs/2013_run'
 
@@ -19,3 +20,6 @@ for i,v in enumerate(matches):
 
     time = np.hstack((time, t))
     ua = np.hstack((ua, u))
+
+test = {'time':time, 'ua':ua}
+pickle.dump(test, open('test.p', 'wb'))
