@@ -83,3 +83,4 @@ for i in range(vel.shape[0]):
     ax.yaxis.set_major_formatter(ticks)
     saveName = './figures/figure{0}.png'.format(i)
     plt.savefig(saveName, bbox_inches=0)
+    plt.clf()
