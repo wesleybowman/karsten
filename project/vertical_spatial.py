@@ -68,6 +68,7 @@ vmax = 2.5
 vmin = 0
 
 for i in range(vel.shape[0]):
+    print i
     fig,ax = plt.subplots()
     plt.rc('font',size='22')
     levels = np.linspace(0,3.3,34)
