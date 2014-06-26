@@ -1,7 +1,5 @@
 from __future__ import division
 import numpy as np
-import pandas as pd
-import netCDF4 as net
 from datetime import datetime
 from datetime import timedelta
 import matplotlib.ticker as ticker
@@ -37,12 +35,17 @@ short_path = shortest_element_path(data.latc, data.lonc,
                                     data.lat,data.lon,
                                     data.nv, data.h)
 
+short_path = shortest_element_path(data.yc, data.xc,
+                                    data.y, data.x,
+                                    data.nv, data.h)
+
 #short_path = shortest_element_path(filename)
 el, _ = short_path.getTargets([ind])
-short_path.graphGrid()
+short_path.graphGrid(plot=True)
 saveName = './figures/e-wPath.png'
 plt.savefig(saveName, bbox_inches=0)
 plt.clf()
+print 'Path Saved'
 
 t_slice = ['2014-02-02T06:45:00','2014-02-02T07:05:00']
 t_slice = np.array(t_slice,dtype='datetime64[us]')

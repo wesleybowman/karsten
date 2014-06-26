@@ -23,6 +23,7 @@ class shortest_element_path:
         self.h = h
 
         z = np.vstack((latc,lonc)).T
+        #z = np.vstack((xc, yc)).T
 
         self.points = map(tuple,z)
 

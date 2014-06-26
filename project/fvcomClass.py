@@ -57,6 +57,8 @@ class FVCOM:
         self.data = nc.Dataset(filename, 'r')
         self.x = self.data.variables['x'][:]
         self.y = self.data.variables['y'][:]
+        self.xc = self.data.variables['xc'][:]
+        self.yc = self.data.variables['yc'][:]
         self.lon = self.data.variables['lon'][:]
         self.lat = self.data.variables['lat'][:]
         self.lonc = self.data.variables['lonc'][:]
