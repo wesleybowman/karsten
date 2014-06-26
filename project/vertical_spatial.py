@@ -56,7 +56,8 @@ if __name__ == "__main__":
         argtime = np.argwhere((time>=t_slice[0])&(time<=t_slice[-1])).flatten()
 
     #vel = np.sqrt(nc['u'][argtime,:,el]**2+nc['v'][argtime,:,el]**2+nc['ww'][argtime,:,el]**2)
-    vel = np.sqrt(data.u[argtime,:,el]**2+data.u[argtime,:,el]**2+data.ww[argtime,:,el]**2)
+    #vel = np.sqrt(data.u[argtime,:,el]**2+data.u[argtime,:,el]**2+data.ww[argtime,:,el]**2)
+    vel = np.sqrt(data.u[:,:,el]**2+data.v[:,:,el]**2+data.ww[:,:,el]**2)
     lat = data.latc[el]
     lon = data.lonc[el]
     #lat = nc['latc'][el]
