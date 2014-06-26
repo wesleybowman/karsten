@@ -100,7 +100,7 @@ plt.clf()
 for i in range(vel.shape[0]):
     print i
     fig,ax = plt.subplots()
-    plt.rc('font',size='22')
+    plt.rc('font',size='12')
     levels = np.linspace(0,3.3,34)
     cs = ax.contourf(line,siglay,vel[i,:],levels=levels)
     ax.contour(line,siglay,vel[i,:],cs.levels,colors='k',hold='on')
