@@ -25,18 +25,21 @@ def theta(a):
 if __name__ == "__main__":
 
 
-    filename = '/array2/data3/rkarsten/july_2012/output/ dngrid_0001_02.nc'
+    filename = '/array2/data3/rkarsten/july_2012/output/dngrid_0001_02.nc'
     siglay = np.array([0.98999,0.94999,0.86999,0.74999,0.58999,0.41000,0.25000,0.13000,0.05000,0.01000])
 
 
     data = FVCOM(filename)
-    data.closest_point()
     # North-South
     ind = data.closest_point([-66.3385, -66.3385], [44.277, 44.277])
     # East- West
     ind = data.closest_point([-66.3412, -66.3324], [44.277, 44.277])
 
-    short_path = shortest_element_path(filename)
+    short_path = shortest_element_path(data.latc, data.lonc,
+                                       data.lat,data.lon,
+                                       data.nv, data.h)
+
+    #short_path = shortest_element_path(filename)
     el, _ = short_path.getTargets([ind])
 
     t_slice = ['2014-02-02T06:45:00','2014-02-02T07:05:00']
