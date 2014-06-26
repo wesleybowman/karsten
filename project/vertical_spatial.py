@@ -40,11 +40,11 @@ short_path = shortest_element_path(data.lonc, data.latc,
 #                                    data.nv, data.h)
 
 el, _ = short_path.getTargets([ind])
-short_path.graphGrid()
-plt.show()
+#short_path.graphGrid()
+#plt.show()
 #saveName = './figures/e-wPath.png'
 #plt.savefig(saveName, bbox_inches=0)
-plt.clf()
+#plt.clf()
 print 'Path Saved'
 
 t_slice = ['2014-02-02T06:45:00','2014-02-02T07:05:00']
@@ -62,6 +62,7 @@ if t_slice.shape[0] != 1:
 
 #vel = np.sqrt(nc['u'][argtime,:,el]**2+nc['v'][argtime,:,el]**2+nc['ww'][argtime,:,el]**2)
 #vel = np.sqrt(data.u[argtime,:,el]**2+data.u[argtime,:,el]**2+data.ww[argtime,:,el]**2)
+print 'Calculating'
 vel = np.sqrt(data.u[:, :, el[0]]**2 + data.v[:, :, el[0]]**2 + data.ww[:, :, el[0]]**2)
 mean_vel = np.mean(vel, axis=0)
 
