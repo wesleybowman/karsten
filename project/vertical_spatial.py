@@ -27,9 +27,9 @@ siglay = np.array([0.98999,0.94999,0.86999,0.74999,0.58999,0.41000,0.25000,0.130
 
 data = FVCOM(filename)
 # North-South
-ind = data.closest_point([-66.3385, -66.3385], [44.277, 44.277])
+ind = data.closest_point([-66.3385, -66.3385], [44.2815, 44.2755])
 # East- West
-ind = data.closest_point([-66.3419, -66.3324], [44.2778, 44.2778])
+#ind = data.closest_point([-66.3419, -66.3324], [44.2778, 44.2778])
 
 short_path = shortest_element_path(data.lonc, data.latc,
                                     data.lon, data.lat,
