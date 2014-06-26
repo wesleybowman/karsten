@@ -93,7 +93,6 @@ ax.xaxis.set_major_formatter(ticks)
 ax.yaxis.set_major_formatter(ticks)
 
 saveName = './figures/mean_vel.png'.format(i)
-plt.show()
 plt.savefig(saveName, bbox_inches=0)
 plt.clf()
 
@@ -107,8 +106,8 @@ for i in range(vel.shape[0]):
     cbar = fig.colorbar(cs,ax=ax)
     cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
     #plt.title(str(time[i]))
-    #ax.set_xlabel('Longitude')
-    ax.set_xlabel('xc')
+    ax.set_xlabel('Longitude')
+    #ax.set_xlabel('xc')
     scale = 1
     ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
     ax.xaxis.set_major_formatter(ticks)
