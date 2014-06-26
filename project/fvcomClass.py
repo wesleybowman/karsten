@@ -5,6 +5,10 @@ import sys
 sys.path.append('/home/wesley/github/UTide/')
 from utide import ut_solv, ut_reconstr
 from shortest_element_path import shortest_element_path
+import matplotlib.pyplot as plt
+import matplotlib.tri as Tri
+import matplotlib.ticker as ticker
+import seaborn
 
 
 class FVCOM:
@@ -93,7 +97,8 @@ class FVCOM:
             self.va = self.data.variables['va']
             self.D3 = False
 
-    def closest_point(self, pt_lon, pt_lat, lon, lat):
+    def closest_point(self, pt_lon, pt_lat):
+    # def closest_point(self, pt_lon, pt_lat, lon, lat):
         '''
         Finds the closest exact lon, lat to a lon, lat coordinate.
         Example input:
@@ -104,7 +109,8 @@ class FVCOM:
 
         points = np.array([pt_lon, pt_lat]).T
 
-        point_list = np.array([lon,lat]).T
+        #point_list = np.array([lon,lat]).T
+        point_list = np.array([self.lonc, self.latc]).T
 
         closest_dist = ((point_list[:, 0] - points[:, 0, None])**2 +
                         (point_list[:, 1] - points[:, 1, None])**2)
@@ -137,6 +143,33 @@ class FVCOM:
             self.QC.append('ut_reconstr done for elevation')
 
 
+    def graphGrid(self):
+        nv = self.nv.T -1
+        h = self.h
+        tri = Tri.Triangulation(self.lon, self.lat, triangles=nv)
+
+        levels=np.arange(-38,-4,1)   # depth contours to plot
+
+        fig = plt.figure(figsize=(18,10))
+        plt.rc('font',size='22')
+        ax = fig.add_subplot(111,aspect=(1.0/np.cos(np.mean(self.lat)*np.pi/180.0)))
+        plt.tricontourf(tri, -h,levels=levels,shading='faceted',cmap=plt.cm.gist_earth)
+        plt.triplot(tri)
+        plt.ylabel('Latitude')
+        plt.xlabel('Longitude')
+        plt.gca().patch.set_facecolor('0.5')
+        cbar=plt.colorbar()
+        cbar.set_label('Water Depth (m)', rotation=-90,labelpad=30)
+
+        scale = 1
+        ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
+        ax.xaxis.set_major_formatter(ticks)
+        ax.yaxis.set_major_formatter(ticks)
+        plt.grid()
+        plt.show()
+
+
+
 
 
 
@@ -147,8 +180,8 @@ if __name__ == '__main__':
     test.harmonics(0, cnstit='auto', notrend=True, nodiagn=True)
     test.reconstr(test.time)
 
-    t = shortest_element_path(test.latc,test.lonc,test.lat,test.lon,test.nv,test.h)
-    elements, _ = t.getTargets([[41420,39763],[48484,53441],
-                                [27241,24226],[21706,17458]])
+    # t = shortest_element_path(test.latc,test.lonc,test.lat,test.lon,test.nv,test.h)
+    #elements, _ = t.getTargets([[41420,39763],[48484,53441],
+    #                            [27241,24226],[21706,17458]])
 
     # t.graphGrid()
