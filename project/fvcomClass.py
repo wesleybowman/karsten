@@ -8,7 +8,7 @@ from shortest_element_path import shortest_element_path
 import matplotlib.pyplot as plt
 import matplotlib.tri as Tri
 import matplotlib.ticker as ticker
-#import seaborn
+import seaborn
 
 
 class FVCOM:

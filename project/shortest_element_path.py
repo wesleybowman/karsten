@@ -6,7 +6,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.tri as Tri
 import matplotlib.ticker as ticker
-#import seaborn
+import seaborn
 
 class shortest_element_path:
     def __init__(self, lonc, latc, lon, lat, nv, h):
