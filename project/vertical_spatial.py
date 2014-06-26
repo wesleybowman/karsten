@@ -68,8 +68,8 @@ mean_vel = np.mean(vel, axis=0)
 
 lat = data.latc[el]
 lon = data.lonc[el]
-lat = data.xc[el]
-lon = data.yc[el]
+#lat = data.xc[el]
+#lon = data.yc[el]
 #lat = nc['latc'][el]
 #lon = nc['lonc'][el]
 
