@@ -77,6 +77,7 @@ print mean_vel.shape
 vmax = 2.5
 vmin = 0
 
+fig,ax = plt.subplots()
 plt.rc('font',size='22')
 levels = np.linspace(0,3.3,34)
 cs = ax.contourf(line,siglay,mean_vel,levels=levels)
