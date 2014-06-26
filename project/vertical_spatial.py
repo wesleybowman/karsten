@@ -40,8 +40,8 @@ short_path = shortest_element_path(data.lonc, data.latc,
 #                                    data.nv, data.h)
 
 el, _ = short_path.getTargets([ind])
-short_path.graphGrid()
-plt.show()
+#short_path.graphGrid()
+#plt.show()
 #saveName = './figures/e-wPath.png'
 #plt.savefig(saveName, bbox_inches=0)
 #plt.clf()
