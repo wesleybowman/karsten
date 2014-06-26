@@ -85,7 +85,7 @@ class FVCOM:
         self.time = self.time + 678942
 
         try:
-            self.wa = self.data.variables['ww']
+            self.ww = self.data.variables['ww']
             self.u = self.data.variables['u']
             self.v = self.data.variables['v']
             self.ua = self.data.variables['ua']
