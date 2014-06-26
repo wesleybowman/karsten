@@ -138,7 +138,7 @@ class shortest_element_path:
 
         tri = Tri.Triangulation(lon, lat, triangles=nv)  # xy or latlon based on how you are #Grand Passage
 
-        levels=np.arange(-38,-4,1)   # depth contours to plot
+        levels=np.arange(-38,6,1)   # depth contours to plot
 
         fig = plt.figure(figsize=(18,10))
         plt.rc('font',size='22')
