@@ -81,4 +81,5 @@ for i in range(vel.shape[0]):
     ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
     ax.xaxis.set_major_formatter(ticks)
     ax.yaxis.set_major_formatter(ticks)
-    plt.show()
+    saveName = '/figures/figure{0}.png'.format(i)
+    plt.savefig(saveName, bbox_inches=0)
