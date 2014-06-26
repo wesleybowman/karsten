@@ -79,8 +79,8 @@ vmin = 0
 
 plt.rc('font',size='22')
 levels = np.linspace(0,3.3,34)
-cs = ax.contourf(line,siglay,vel[i,:],levels=levels)
-ax.contour(line,siglay,vel[i,:],cs.levels,colors='k',hold='on')
+cs = ax.contourf(line,siglay,mean_vel,levels=levels)
+ax.contour(line,siglay,mean_vel,cs.levels,colors='k',hold='on')
 cbar = fig.colorbar(cs,ax=ax)
 cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
 #plt.title(str(time[i]))
