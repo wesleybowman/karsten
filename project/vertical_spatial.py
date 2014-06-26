@@ -40,6 +40,9 @@ short_path = shortest_element_path(data.latc, data.lonc,
 #short_path = shortest_element_path(filename)
 el, _ = short_path.getTargets([ind])
 short_path.graphGrid()
+saveName = './figures/e-wPath.png'
+plt.savefig(saveName, bbox_inches=0)
+plt.clf()
 
 t_slice = ['2014-02-02T06:45:00','2014-02-02T07:05:00']
 t_slice = np.array(t_slice,dtype='datetime64[us]')
@@ -56,33 +59,38 @@ if t_slice.shape[0] != 1:
 
 #vel = np.sqrt(nc['u'][argtime,:,el]**2+nc['v'][argtime,:,el]**2+nc['ww'][argtime,:,el]**2)
 #vel = np.sqrt(data.u[argtime,:,el]**2+data.u[argtime,:,el]**2+data.ww[argtime,:,el]**2)
-#vel = np.sqrt(data.u[:, :, el[0]]**2 + data.v[:, :, el[0]]**2 + data.ww[:, :, el[0]]**2)
-#
-#lat = data.latc[el]
-#lon = data.lonc[el]
-##lat = nc['latc'][el]
-##lon = nc['lonc'][el]
-#
-#line = lon
-#print vel.shape
-#vmax = 2.5
-#vmin = 0
-#
-#for i in range(vel.shape[0]):
-#    print i
-#    fig,ax = plt.subplots()
-#    plt.rc('font',size='22')
-#    levels = np.linspace(0,3.3,34)
-#    cs = ax.contourf(line,siglay,vel[i,:],levels=levels)
-#    ax.contour(line,siglay,vel[i,:],cs.levels,colors='k',hold='on')
-#    cbar = fig.colorbar(cs,ax=ax)
-#    cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
-#    #plt.title(str(time[i]))
-#    ax.set_xlabel('Longitude')
-#    scale = 1
-#    ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
-#    ax.xaxis.set_major_formatter(ticks)
-#    ax.yaxis.set_major_formatter(ticks)
-#    saveName = './figures/figure{0}.png'.format(i)
-#    plt.savefig(saveName, bbox_inches=0)
-#    plt.clf()
+vel = np.sqrt(data.u[:, :, el[0]]**2 + data.v[:, :, el[0]]**2 + data.ww[:, :, el[0]]**2)
+
+lat = data.latc[el]
+lon = data.lonc[el]
+lat = data.xc[el]
+lon = data.yc[el]
+#lat = nc['latc'][el]
+#lon = nc['lonc'][el]
+
+line = lon
+print vel.shape
+vmax = 2.5
+vmin = 0
+
+for i in range(vel.shape[0]):
+    print i
+    fig,ax = plt.subplots()
+    plt.rc('font',size='22')
+    levels = np.linspace(0,3.3,34)
+    cs = ax.contourf(line,siglay,vel[i,:],levels=levels)
+    ax.contour(line,siglay,vel[i,:],cs.levels,colors='k',hold='on')
+    cbar = fig.colorbar(cs,ax=ax)
+    cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
+    #plt.title(str(time[i]))
+    #ax.set_xlabel('Longitude')
+    ax.set_xlabel('xc')
+    scale = 1
+    ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
+    ax.xaxis.set_major_formatter(ticks)
+    ax.yaxis.set_major_formatter(ticks)
+
+    saveName = './figures/figure{0:>04d}.png'.format(i)
+    plt.show()
+    plt.savefig(saveName, bbox_inches=0)
+    plt.clf()

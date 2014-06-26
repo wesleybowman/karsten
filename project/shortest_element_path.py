@@ -121,7 +121,7 @@ class shortest_element_path:
 
         return self.elements, self.coordinates
 
-    def graphGrid(self,narrowGrid=False):
+    def graphGrid(self,narrowGrid=False, plot=False):
         #nx.draw(self.graph, self.pointIDXY)
         #plt.show()
 
@@ -175,7 +175,8 @@ class shortest_element_path:
         #plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=2, ncol=3,fontsize='14', borderaxespad=0.)
         plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=2, ncol=3)
         #plt.legend()
-        plt.show()
+        if plot:
+            plt.show()
 
 
 if __name__ == '__main__':
