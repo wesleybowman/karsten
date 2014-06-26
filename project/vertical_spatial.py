@@ -29,7 +29,7 @@ data = FVCOM(filename)
 # North-South
 ind = data.closest_point([-66.3385, -66.3385], [44.277, 44.277])
 # East- West
-ind = data.closest_point([-66.345, -66.3324], [44.277, 44.277])
+ind = data.closest_point([-66.3419, -66.3324], [44.2778, 44.2778])
 
 short_path = shortest_element_path(data.lonc, data.latc,
                                     data.lon, data.lat,
@@ -39,7 +39,6 @@ short_path = shortest_element_path(data.lonc, data.latc,
 #                                    data.x, data.y,
 #                                    data.nv, data.h)
 
-#short_path = shortest_element_path(filename)
 el, _ = short_path.getTargets([ind])
 short_path.graphGrid()
 plt.show()
