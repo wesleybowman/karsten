@@ -40,11 +40,11 @@ short_path = shortest_element_path(data.lonc, data.latc,
 #                                    data.nv, data.h)
 
 el, _ = short_path.getTargets([ind])
-short_path.graphGrid()
+#short_path.graphGrid()
 #plt.show()
-saveName = './figures/e-wPath.png'
-plt.savefig(saveName, bbox_inches=0)
-plt.clf()
+#saveName = './figures/e-wPath.png'
+#plt.savefig(saveName, bbox_inches=0)
+#plt.clf()
 print 'Path Saved'
 
 t_slice = ['2014-02-02T06:45:00','2014-02-02T07:05:00']
@@ -77,7 +77,6 @@ print mean_vel.shape
 vmax = 2.5
 vmin = 0
 
-fig,ax = plt.subplots()
 plt.rc('font',size='22')
 levels = np.linspace(0,3.3,34)
 cs = ax.contourf(line,siglay,vel[i,:],levels=levels)
@@ -85,8 +84,8 @@ ax.contour(line,siglay,vel[i,:],cs.levels,colors='k',hold='on')
 cbar = fig.colorbar(cs,ax=ax)
 cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
 #plt.title(str(time[i]))
-#ax.set_xlabel('Longitude')
-ax.set_xlabel('xc')
+ax.set_xlabel('Longitude')
+ax.set_title('vel_mean')
 scale = 1
 ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
 ax.xaxis.set_major_formatter(ticks)
