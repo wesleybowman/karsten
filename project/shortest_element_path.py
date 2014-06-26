@@ -9,7 +9,7 @@ import matplotlib.ticker as ticker
 #import seaborn
 
 class shortest_element_path:
-    def __init__(self, latc, lonc, lat, lon, nv, h):
+    def __init__(self, lonc, latc, lon, lat, nv, h):
 
         #self.data = nc.Dataset(filename,'r')
 
