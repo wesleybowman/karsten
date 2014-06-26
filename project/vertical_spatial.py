@@ -31,17 +31,17 @@ ind = data.closest_point([-66.3385, -66.3385], [44.277, 44.277])
 # East- West
 ind = data.closest_point([-66.3419, -66.3324], [44.2778, 44.2778])
 
-short_path = shortest_element_path(data.lonc, data.latc,
-                                    data.lon, data.lat,
-                                    data.nv, data.h)
-
-#short_path = shortest_element_path(data.xc, data.yc,
-#                                    data.x, data.y,
+#short_path = shortest_element_path(data.lonc, data.latc,
+#                                    data.lon, data.lat,
 #                                    data.nv, data.h)
+
+short_path = shortest_element_path(data.xc, data.yc,
+                                    data.x, data.y,
+                                    data.nv, data.h)
 
 el, _ = short_path.getTargets([ind])
 short_path.graphGrid()
-plt.show()
+#plt.show()
 saveName = './figures/e-wPath.png'
 plt.savefig(saveName, bbox_inches=0)
 plt.clf()
@@ -68,8 +68,8 @@ mean_vel = np.mean(vel, axis=0)
 
 lat = data.latc[el]
 lon = data.lonc[el]
-#lat = data.xc[el]
-#lon = data.yc[el]
+lat = data.xc[el]
+lon = data.yc[el]
 #lat = nc['latc'][el]
 #lon = nc['lonc'][el]
 
