@@ -72,6 +72,7 @@ lon = data.lonc[el]
 #lon = data.yc[el]
 
 line = lon
+line = lat
 print vel.shape
 print mean_vel.shape
 vmax = 2.5
@@ -85,7 +86,8 @@ ax.contour(line,siglay,mean_vel,cs.levels,colors='k',hold='on')
 cbar = fig.colorbar(cs,ax=ax)
 cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
 #plt.title(str(time[i]))
-ax.set_xlabel('Longitude')
+#ax.set_xlabel('Longitude')
+ax.set_xlabel('Latitude')
 ax.set_title('vel_mean')
 scale = 1
 ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
@@ -106,7 +108,8 @@ for i in range(vel.shape[0]):
     cbar = fig.colorbar(cs,ax=ax)
     cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
     #plt.title(str(time[i]))
-    ax.set_xlabel('Longitude')
+    #ax.set_xlabel('Longitude')
+    ax.set_xlabel('Latitude')
     #ax.set_xlabel('xc')
     scale = 1
     ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
