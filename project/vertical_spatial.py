@@ -31,7 +31,7 @@ data = FVCOM(filename)
 # North-South
 ind = data.closest_point([-66.3385, -66.3385], [44.277, 44.277])
 # East- West
-ind = data.closest_point([-66.3412, -66.3324], [44.277, 44.277])
+ind = data.closest_point([-66.345, -66.3324], [44.277, 44.277])
 
 short_path = shortest_element_path(data.latc, data.lonc,
                                     data.lat,data.lon,
