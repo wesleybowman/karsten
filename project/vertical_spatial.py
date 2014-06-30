@@ -65,7 +65,7 @@ if t_slice.shape[0] != 1:
 #vel = np.sqrt(nc['u'][argtime,:,el]**2+nc['v'][argtime,:,el]**2+nc['ww'][argtime,:,el]**2)
 #vel = np.sqrt(data.u[argtime,:,el]**2+data.u[argtime,:,el]**2+data.ww[argtime,:,el]**2)
 print 'Calculating'
-print el.shape
+print len(el)
 #vel = np.sqrt(data.u[:, :, el[0]]**2 + data.v[:, :, el[0]]**2 + data.ww[:, :, el[0]]**2)
 u = data.u[:, :, el]
 v = data.v[:, :, el]
