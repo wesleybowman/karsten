@@ -6,6 +6,8 @@ import matplotlib.ticker as ticker
 import matplotlib.pyplot as plt
 from shortest_element_path import shortest_element_path
 from fvcomClass import FVCOM
+import numexpr as ne
+
 
 def time_index(a):
     a = a.reindex(index=a.index.to_datetime())
@@ -63,9 +65,14 @@ if t_slice.shape[0] != 1:
 #vel = np.sqrt(nc['u'][argtime,:,el]**2+nc['v'][argtime,:,el]**2+nc['ww'][argtime,:,el]**2)
 #vel = np.sqrt(data.u[argtime,:,el]**2+data.u[argtime,:,el]**2+data.ww[argtime,:,el]**2)
 print 'Calculating'
-vel = np.sqrt(data.u[:, :, el[0]]**2 + data.v[:, :, el[0]]**2 + data.ww[:, :, el[0]]**2)
-mean_vel = np.mean(vel, axis=0)
+print el.shape
+#vel = np.sqrt(data.u[:, :, el[0]]**2 + data.v[:, :, el[0]]**2 + data.ww[:, :, el[0]]**2)
+u = data.u[:, :, el]
+v = data.v[:, :, el]
+ww = data.ww[:, :, el]
+vel = ne.evaluate('sqrt(u**2 + v**2 + ww**2)')
 
+mean_vel = np.mean(vel, axis=0)
 
 lat = data.latc[el]
 lon = data.lonc[el]
