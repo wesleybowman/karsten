@@ -70,7 +70,8 @@ print len(el)
 u = data.u[:, :, el]
 v = data.v[:, :, el]
 ww = data.ww[:, :, el]
-vel = ne.evaluate('sqrt(u**2 + v**2 + ww**2)')
+#vel = ne.evaluate('sqrt(u**2 + v**2 + ww**2)')
+vel = np.sqrt(u**2 + v**2 + ww**2)
 
 mean_vel = np.mean(vel, axis=0)
 
