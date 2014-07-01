@@ -82,8 +82,8 @@ lon = data.lonc[el]
 #lat = data.xc[el]
 #lon = data.yc[el]
 
-#line = lon
-line = lat
+line = lon
+#line = lat
 print vel.shape
 print mean_vel.shape
 vmax = 2.5
@@ -92,7 +92,8 @@ vmin = 0
 fig,ax = plt.subplots()
 plt.rc('font',size='22')
 levels = np.linspace(0,3.3,34)
-cs = ax.contourf(line,siglay,mean_vel,levels=levels)
+cs = ax.contourf(line,siglay,mean_vel,levels=levels, colors='k',
+                 cmap=plt.get_cmap('jet'))
 #ax.contour(line,siglay,mean_vel,cs.levels,colors='k',hold='on')
 ax.contour(line,siglay,mean_vel,cs.levels)
 cbar = fig.colorbar(cs,ax=ax)
@@ -117,7 +118,9 @@ for i in range(vel.shape[0]):
     levels = np.linspace(0,3.3,34)
     cs = ax.contourf(line,siglay,vel[i,:],levels=levels)
     #ax.contour(line,siglay,vel[i,:],cs.levels,colors='k',hold='on')
-    ax.contour(line,siglay,vel[i,:],cs.levels,hold='on')
+    ax.contour(line,siglay,vel[i,:],cs.levels,colors='k',hold='on',
+               cmap=plt.get_cmap('jet'))
+    #ax.contour(line,siglay,vel[i,:],cs.levels,hold='on')
     cbar = fig.colorbar(cs,ax=ax)
     cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
     #plt.title(str(time[i]))
