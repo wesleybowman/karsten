@@ -92,7 +92,7 @@ vmin = 0
 fig,ax = plt.subplots()
 plt.rc('font',size='22')
 levels = np.linspace(0,3.3,34)
-cs = ax.contourf(line,siglay,mean_vel,levels=levels, colors='k',
+cs = ax.contourf(line,siglay,mean_vel,levels=levels,
                  cmap=plt.get_cmap('jet'))
 #ax.contour(line,siglay,mean_vel,cs.levels,colors='k',hold='on')
 ax.contour(line,siglay,mean_vel,cs.levels)
@@ -118,7 +118,7 @@ for i in range(vel.shape[0]):
     levels = np.linspace(0,3.3,34)
     cs = ax.contourf(line,siglay,vel[i,:],levels=levels)
     #ax.contour(line,siglay,vel[i,:],cs.levels,colors='k',hold='on')
-    ax.contour(line,siglay,vel[i,:],cs.levels,colors='k',hold='on',
+    ax.contour(line,siglay,vel[i,:],cs.levels,hold='on',
                cmap=plt.get_cmap('jet'))
     #ax.contour(line,siglay,vel[i,:],cs.levels,hold='on')
     cbar = fig.colorbar(cs,ax=ax)
