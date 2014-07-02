@@ -71,9 +71,9 @@ def tideGauge(datafiles, Struct):
         lon = data.variables['lon'][:]
         time_JD = data.variables['time_JD'][:]
         time_second = data.variables['time_second'][:]
-        time = time_JD + 678942 + time_second
+        time = time_JD + 678942 + time_second / (24*3600)
 
-        time = mjd2num(time)
+        #time = mjd2num(time)
 
         tg_gp_id = np.argmin(np.sqrt((lon-gptg['RBR'].lon)**2+(lat-gptg['RBR'].lat)**2))
         tg_dg_id = np.argmin(np.sqrt((lon-dgtg['RBR'].lon)**2+(lat-dgtg['RBR'].lat)**2))
