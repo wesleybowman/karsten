@@ -155,15 +155,16 @@ def adcp(datafiles, debug=False):
     for filename in datafiles:
         print filename
         data = nc.Dataset(filename, 'r')
-        #x = data.variables['x'][:]
-        #y = data.variables['y'][:]
-        lon = data.variables['lon'][:]
-        lat = data.variables['lat'][:]
-        lonc = data.variables['lonc'][:]
-        latc = data.variables['latc'][:]
+        #lat = data.variables['lat'][:]
+        #lon = data.variables['lon'][:]
+        time_JD = data.variables['time_JD'][:]
+        time_second = data.variables['time_second'][:]
+        time = time_JD + 678942 + time_second
+
+        lonc = data.variables['lon'][:]
+        latc = data.variables['lat'][:]
         ua = data.variables['ua']
         va = data.variables['va']
-        time = data.variables['time'][:]
         #trinodes = data.variables['nv'][:]
 
         time = mjd2num(time)
