@@ -221,7 +221,7 @@ def main(debug=False):
     Struct = adcp(datafiles, debug=False)
     pickle.dump(Struct, open("structADCP.p", "wb"))
     Struct = tideGauge(datafiles, Struct)
-    pickle.dump(Struct, open("structTest2.p", "wb"))
+    pickle.dump(Struct, open("structStationTest.p", "wb"))
     return Struct
 
 
