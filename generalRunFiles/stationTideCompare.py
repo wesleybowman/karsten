@@ -159,7 +159,7 @@ def adcp(datafiles, debug=False):
         #lon = data.variables['lon'][:]
         time_JD = data.variables['time_JD'][:]
         time_second = data.variables['time_second'][:]
-        time = time_JD + 678942 + time_second
+        time = time_JD + 678942 + time_second/(24*3600)
 
         lonc = data.variables['lon'][:]
         latc = data.variables['lat'][:]

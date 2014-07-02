@@ -16,6 +16,7 @@ class station:
         self.h = self.data.variables['h'][:]
         self.time_JD = self.data.variables['time_JD'][:]
         self.time_second = self.data.variables['time_second'][:]
+        self.time = self.time_JD + 678942 + self.time_second
         self.u = self.data.variables['u']
         self.v = self.data.variables['v']
         self.ww = self.data.variables['ww']
