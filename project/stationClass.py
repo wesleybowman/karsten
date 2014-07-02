@@ -24,4 +24,5 @@ class station:
         self.elev = self.data.variables['elev']
 
 if __name__ == '__main__':
-    filename = '/array2/data3/rkarsten/dncoarse_3D/output/dn_coarse_station_timeseries.nc'
+    filename = '/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc'
+    data = station(filename)
