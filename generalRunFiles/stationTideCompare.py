@@ -217,6 +217,7 @@ def main(debug=False):
     else:
 
         datafiles = ['/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc']
+        datafiles = ['/array/home/rkarsten/common_tidal_files/data/simulated/FVCOM/dn_coarse_station_timeseries.nc']
 
     Struct = adcp(datafiles, debug=False)
     pickle.dump(Struct, open("structADCP.p", "wb"))
