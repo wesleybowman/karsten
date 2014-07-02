@@ -216,15 +216,7 @@ def main(debug=False):
         #datafiles = ['/home/wesley/ncfiles/smallcape_force_0001.nc']
     else:
 
-#        datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc',
-#                    '/array/data1/rkarsten/dncoarse_bctest/output/dn_coarse_0001.nc',
-#                    '/array/data1/rkarsten/dncoarse_bctest2/output/dn_coarse_0001.nc',
-#                    '/array/data1/rkarsten/dncoarse_bctest_all/output/dn_coarse_0001.nc',
-#                    '/array/data1/rkarsten/dncoarse_bctest_EC/output/dn_coarse_0001.nc',
-#                    '/array/data1/rkarsten/dncoarse_bctest_timeseries/output/dn_coarse_0001.nc']
-    datafiles = ['/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc']
-
-                 #'/array/data1/rkarsten/dncoarse_stationtest/output/dn_coarse_0001.nc']
+        datafiles = ['/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc']
 
     Struct = adcp(datafiles, debug=False)
     pickle.dump(Struct, open("structADCP.p", "wb"))
