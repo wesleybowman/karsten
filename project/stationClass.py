@@ -21,7 +21,7 @@ class station:
         self.ww = self.data.variables['ww']
         self.ua = self.data.variables['ua']
         self.va = self.data.variables['va']
-        self.elev = self.data.variables['elev']
+        self.elev = self.data.variables['zeta']
 
 if __name__ == '__main__':
     filename = '/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc'
