@@ -167,7 +167,7 @@ def adcp(datafiles, debug=False):
         va = data.variables['va']
         #trinodes = data.variables['nv'][:]
 
-        time = mjd2num(time)
+        #time = mjd2num(time)
 
         lonlat = np.array([adcp['Longitude'], adcp['Latitude']]).T
 
