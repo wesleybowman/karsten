@@ -66,7 +66,14 @@ def tideGauge(datafiles, Struct):
     for filename in datafiles:
 
         print filename
-        data = station(filename)
+        data = nc.Dataset(filename, 'r')
+        lat = data.variables['lat'][:]
+        lon = data.variables['lon'][:]
+        time_JD = data.variables['time_JD'][:]
+        time_second = data.variables['time_second'][:]
+        time = time_JD + 678942 + time_second
+
+        time = mjd2num(time)
 
         tg_gp_id = np.argmin(np.sqrt((lon-gptg['RBR'].lon)**2+(lat-gptg['RBR'].lat)**2))
         tg_dg_id = np.argmin(np.sqrt((lon-dgtg['RBR'].lon)**2+(lat-dgtg['RBR'].lat)**2))
@@ -209,12 +216,13 @@ def main(debug=False):
         #datafiles = ['/home/wesley/ncfiles/smallcape_force_0001.nc']
     else:
 
-        datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc',
-                    '/array/data1/rkarsten/dncoarse_bctest/output/dn_coarse_0001.nc',
-                    '/array/data1/rkarsten/dncoarse_bctest2/output/dn_coarse_0001.nc',
-                    '/array/data1/rkarsten/dncoarse_bctest_all/output/dn_coarse_0001.nc',
-                    '/array/data1/rkarsten/dncoarse_bctest_EC/output/dn_coarse_0001.nc',
-                    '/array/data1/rkarsten/dncoarse_bctest_timeseries/output/dn_coarse_0001.nc']
+#        datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc',
+#                    '/array/data1/rkarsten/dncoarse_bctest/output/dn_coarse_0001.nc',
+#                    '/array/data1/rkarsten/dncoarse_bctest2/output/dn_coarse_0001.nc',
+#                    '/array/data1/rkarsten/dncoarse_bctest_all/output/dn_coarse_0001.nc',
+#                    '/array/data1/rkarsten/dncoarse_bctest_EC/output/dn_coarse_0001.nc',
+#                    '/array/data1/rkarsten/dncoarse_bctest_timeseries/output/dn_coarse_0001.nc']
+    datafiles = ['/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc']
 
                  #'/array/data1/rkarsten/dncoarse_stationtest/output/dn_coarse_0001.nc']
 
