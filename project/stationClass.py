@@ -6,7 +6,7 @@ class station:
         self.load(filename)
 
     def load(self, filename):
-        self.data = nc.Dataset('filename')
+        self.data = nc.Dataset(filename)
         self.x = self.data.variables['x'][:]
         self.y = self.data.variables['y'][:]
         self.lon = self.data.variables['lon'][:]
@@ -24,5 +24,6 @@ class station:
         self.elev = self.data.variables['elev']
 
 if __name__ == '__main__':
+    filename = '/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc'
     filename = '/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc'
     data = station(filename)
