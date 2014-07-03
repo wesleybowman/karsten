@@ -32,14 +32,20 @@ filename = '/array2/data3/rkarsten/july_2012/output/dngrid_0001_02.nc'
 filename = '/EcoII/july_2012/output/dngrid_0001_03.nc'
 filename = '/EcoII/june_2013/output/dngrid_0001_week2.nc'
 #filename = '/EcoII/july_2012/output/dngrid_0001_03.nc'
+
+eastwest = True
+
 siglay = np.array([0.98999,0.94999,0.86999,0.74999,0.58999,0.41000,0.25000,0.13000,0.05000,0.01000])
 
 
 data = FVCOM(filename)
-# North-South
-ind = data.closest_point([-66.3385, -66.3385], [44.2815, 44.2755])
-# East- West
-ind = data.closest_point([-66.3419, -66.3324], [44.2778, 44.2778])
+
+if eastwest:
+    # East- West
+    ind = data.closest_point([-66.3419, -66.3324], [44.2778, 44.2778])
+else:
+    # North-South
+    ind = data.closest_point([-66.3385, -66.3385], [44.2815, 44.2755])
 
 short_path = shortest_element_path(data.lonc, data.latc,
                                     data.lon, data.lat,
@@ -84,17 +90,17 @@ v = data.v[:, :, el[0]]
 print 'Calculating'
 #vel = ne.evaluate('sqrt(u**2 + v**2 + ww**2)')
 vel = ne.evaluate('sqrt(u**2 + v**2)')
-#vel = np.sqrt(u**2 + v**2 + ww**2)
 
 mean_vel = np.mean(vel, axis=0)
 
 lat = data.latc[el]
 lon = data.lonc[el]
-#lat = data.xc[el]
-#lon = data.yc[el]
 
-line = lon
-#line = lat
+if eastwest:
+    line = lon
+else:
+    line = lat
+
 print data.time[0]
 new = date2py(data.time[0])
 print new
@@ -102,9 +108,6 @@ print vel.shape
 print mean_vel.shape
 
 
-#u,v,w,ua,va,latc,lonc,elevc, hc, time, el, siglev, siglay
-#elevc =
-#hc =
 print 'Calculating elc and hc'
 size = data.trinodes.T[el].shape[0]
 size1 = data.el.shape[0]
@@ -120,8 +123,10 @@ mat = {'u':u, 'v':v, 'latc':lat, 'lonc':lon, 'time':data.time,
        'va':data.va[:, el[0]],
        'elc':elc, 'hc':hc}
 
-#sio.savemat('east-west.mat', mat)
-sio.savemat('north-south.mat', mat)
+if eastwest:
+    sio.savemat('east-west.mat', mat)
+else:
+    sio.savemat('north-south.mat', mat)
 
 vmax = 2.5
 vmin = 0
@@ -135,9 +140,10 @@ cs = ax.contourf(line,siglay,mean_vel,levels=levels, cmap=plt.cm.jet)
 ax.contour(line,siglay,mean_vel,cs.levels, colors='k')
 cbar = fig.colorbar(cs,ax=ax)
 cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
-#plt.title(str(time[i]))
-ax.set_xlabel('Longitude')
-#ax.set_xlabel('Latitude')
+if eastwest:
+    ax.set_xlabel('Longitude')
+else:
+    ax.set_xlabel('Latitude')
 ax.set_title('vel_mean')
 scale = 1
 ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
@@ -156,15 +162,14 @@ for i in range(vel.shape[0]):
     levels = np.linspace(0,3.3,34)
     cs = ax.contourf(line,siglay,vel[i,:],levels=levels, cmap=plt.cm.jet)
     ax.contour(line,siglay,vel[i,:],cs.levels,colors='k',hold='on')
-    #ax.contour(line,siglay,vel[i,:],cs.levels,hold='on')
     cbar = fig.colorbar(cs,ax=ax)
     cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
-    #plt.title(str(time[i]))
     title = '{}'.format(date2py(data.time[i]))
     ax.set_title(title)
-    ax.set_xlabel('Longitude')
-    #ax.set_xlabel('Latitude')
-    #ax.set_xlabel('xc')
+    if eastwest:
+        ax.set_xlabel('Longitude')
+    else:
+        ax.set_xlabel('Latitude')
     scale = 1
     ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
     ax.xaxis.set_major_formatter(ticks)
