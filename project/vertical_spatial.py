@@ -150,7 +150,11 @@ ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
 ax.xaxis.set_major_formatter(ticks)
 ax.yaxis.set_major_formatter(ticks)
 
-saveName = './figures/mean_vel.png'.format(i)
+if eastwest:
+    saveName = './figures/eastwest/mean_vel.png'.format(i)
+else:
+    saveName = './figures/northsouth/mean_vel.png'.format(i)
+
 #plt.show()
 plt.savefig(saveName, bbox_inches=0)
 plt.clf()
@@ -175,7 +179,11 @@ for i in range(vel.shape[0]):
     ax.xaxis.set_major_formatter(ticks)
     ax.yaxis.set_major_formatter(ticks)
 
-    saveName = './figures/figure{0:>04d}.png'.format(i)
+    if eastwest:
+        saveName = './figures/eastwest/figure{0:>04d}.png'.format(i)
+    else:
+        saveName = './figures/northsouth/figure{0:>04d}.png'.format(i)
+
     #plt.show()
     plt.savefig(saveName, bbox_inches=0)
     plt.clf()
