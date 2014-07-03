@@ -105,8 +105,8 @@ size1 = data.el.shape[0]
 elc = np.zeros((size1, size))
 hc = np.zeros((size))
 for ind,value in enumerate(data.trinodes.T[el[0]]):
-    elc[:, ind] = np.mean(data.el[:, value], axis=1)
-    hc[ind] = np.mean(data.h[value])
+    elc[:, ind] = np.mean(data.el[:, value-1], axis=1)
+    hc[ind] = np.mean(data.h[value-1])
 
 mat = {'u':u, 'v':v, 'latc':lat, 'lonc':lon, 'time':data.time,
        'siglay':data.siglay, 'siglev':data.siglev, 'ua':data.ua[:, el[0]],
