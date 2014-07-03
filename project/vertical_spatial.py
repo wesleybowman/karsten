@@ -94,8 +94,14 @@ new = date2py(data.time[0])
 print new
 print vel.shape
 print mean_vel.shape
+
+mat = {
+
+}
+
 vmax = 2.5
 vmin = 0
+
 
 fig,ax = plt.subplots()
 plt.rc('font',size='22')
@@ -123,13 +129,13 @@ for i in range(vel.shape[0]):
     fig,ax = plt.subplots()
     plt.rc('font',size='12')
     levels = np.linspace(0,3.3,34)
-    cs = ax.contourf(line,siglay,vel[i,:],levels=levels)
+    cs = ax.contourf(line,siglay,vel[i,:],levels=levelsi, cmap=plt.cm.jet)
     ax.contour(line,siglay,vel[i,:],cs.levels,colors='k',hold='on')
     #ax.contour(line,siglay,vel[i,:],cs.levels,hold='on')
     cbar = fig.colorbar(cs,ax=ax)
     cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
     #plt.title(str(time[i]))
-    title = '{}'.format(data.time[i])
+    title = '{}'.format(date2py(data.time[i]))
     ax.set_title('vel_mean')
     ax.set_xlabel('Longitude')
     #ax.set_xlabel('Latitude')
