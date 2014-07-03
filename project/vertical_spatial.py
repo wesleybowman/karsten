@@ -30,6 +30,7 @@ def date2py(matlab_datenum):
 
 filename = '/array2/data3/rkarsten/july_2012/output/dngrid_0001_02.nc'
 filename = '/EcoII/july_2012/output/dngrid_0001_03.nc'
+filename = '/EcoII/june_2013/output/dngrid_0001_week2.nc'
 siglay = np.array([0.98999,0.94999,0.86999,0.74999,0.58999,0.41000,0.25000,0.13000,0.05000,0.01000])
 
 
@@ -103,6 +104,7 @@ print mean_vel.shape
 #u,v,w,ua,va,latc,lonc,elevc, hc, time, el, siglev, siglay
 #elevc =
 #hc =
+print 'Calculating elc and hc'
 size = data.trinodes.T[el].shape[0]
 size1 = data.el.shape[0]
 elc = np.zeros((size1, size))
@@ -111,6 +113,7 @@ for ind,value in enumerate(data.trinodes.T[el[0]]):
     elc[:, ind] = np.mean(data.el[:, value-1], axis=1)
     hc[ind] = np.mean(data.h[value-1])
 
+print 'Saving mat file'
 mat = {'u':u, 'v':v, 'latc':lat, 'lonc':lon, 'time':data.time,
        'siglay':data.siglay, 'siglev':data.siglev, 'ua':data.ua[:, el[0]],
        'va':data.va[:, el[0]],
@@ -122,6 +125,7 @@ sio.savemat('north-south.mat', mat)
 vmax = 2.5
 vmin = 0
 
+print 'Plotting'
 
 fig,ax = plt.subplots()
 plt.rc('font',size='22')

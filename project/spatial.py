@@ -19,8 +19,9 @@ data.el_region()
 
 u = data.u[:, :, data.region_e[:,0]]
 v = data.v[:, :, data.region_e[:,0]]
-ww = data.ww[:, :, data.region_e[:,0]]
+#ww = data.ww[:, :, data.region_e[:,0]]
 
-vel = ne.evaluate('sqrt(u**2 + v**2 + ww**2)')
+#vel = ne.evaluate('sqrt(u**2 + v**2 + ww**2)')
+vel = ne.evaluate('sqrt(u**2 + v**2)')
 
 mean_vel = np.mean(vel, axis=0)
