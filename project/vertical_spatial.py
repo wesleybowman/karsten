@@ -95,9 +95,14 @@ print new
 print vel.shape
 print mean_vel.shape
 
-mat = {
 
-}
+#u,v,w,ua,va,latc,lonc,elevc, hc, time, el, siglev, siglay
+#elevc =
+#hc =
+
+#mat = {'u':u, 'v':v, 'latc':lat, 'lonc':lon, 'time':data.time,
+#
+#}
 
 vmax = 2.5
 vmin = 0
@@ -136,7 +141,7 @@ for i in range(vel.shape[0]):
     cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
     #plt.title(str(time[i]))
     title = '{}'.format(date2py(data.time[i]))
-    ax.set_title('vel_mean')
+    ax.set_title(title)
     ax.set_xlabel('Longitude')
     #ax.set_xlabel('Latitude')
     #ax.set_xlabel('xc')
