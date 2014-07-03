@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from shortest_element_path import shortest_element_path
 from fvcomClass import FVCOM
 import numexpr as ne
+import scipy.io as sio
 
 
 def time_index(a):
@@ -47,8 +48,8 @@ short_path = shortest_element_path(data.lonc, data.latc,
 #                                    data.nv, data.h)
 
 el, _ = short_path.getTargets([ind])
-short_path.graphGrid()
-plt.show()
+#short_path.graphGrid()
+#plt.show()
 #saveName = './figures/e-wPath.png'
 #plt.savefig(saveName, bbox_inches=0)
 plt.clf()
@@ -99,10 +100,20 @@ print mean_vel.shape
 #u,v,w,ua,va,latc,lonc,elevc, hc, time, el, siglev, siglay
 #elevc =
 #hc =
+size = data.trinodes.T[el].shape[0]
+size1 = data.el.shape[0]
+elc = np.zeros((size1, size))
+hc = np.zeros((size))
+for i,v in enumerate(data.trinodes.T[el[0]]):
+    elc[:, i] = np.mean(data.el[:, v], axis=1)
+    hc[i] = np.mean(data.h[v])
 
-#mat = {'u':u, 'v':v, 'latc':lat, 'lonc':lon, 'time':data.time,
-#
-#}
+mat = {'u':u, 'v':v, 'latc':lat, 'lonc':lon, 'time':data.time,
+       'siglay':data.siglay, 'siglev':data.siglev, 'ua':data.ua, 'va':data.va,
+       'elc':elc, 'hc':hc}
+
+sio.savemat('east-west.mat', mat)
+#sio.savemat('east-west.mat', mat)
 
 vmax = 2.5
 vmin = 0
@@ -125,8 +136,8 @@ ax.xaxis.set_major_formatter(ticks)
 ax.yaxis.set_major_formatter(ticks)
 
 saveName = './figures/mean_vel.png'.format(i)
-plt.show()
-#plt.savefig(saveName, bbox_inches=0)
+#plt.show()
+plt.savefig(saveName, bbox_inches=0)
 plt.clf()
 
 for i in range(vel.shape[0]):
@@ -151,6 +162,6 @@ for i in range(vel.shape[0]):
     ax.yaxis.set_major_formatter(ticks)
 
     saveName = './figures/figure{0:>04d}.png'.format(i)
-    plt.show()
-    #plt.savefig(saveName, bbox_inches=0)
+    #plt.show()
+    plt.savefig(saveName, bbox_inches=0)
     plt.clf()

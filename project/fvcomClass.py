@@ -99,6 +99,24 @@ class FVCOM:
             self.va = self.data.variables['va']
             self.D3 = False
 
+    def centers(self):
+        size = self.trinodes.T.shape[0]
+        size1 = self.el.shape[0]
+        elc = np.zeros((size1, size))
+        hc = np.zeros((size))
+        for i,v in enumerate(self.trinodes.T):
+            elc[:, i] = np.mean(self.el[:, v], axis=1)
+            hc[i] = np.mean(self.h[v], axis=1)
+
+        return elc, hc
+
+    def hc(self):
+        size = self.trinodes.T.shape[0]
+        size1 = self.el.shape[0]
+        elc = np.zeros((size1, size))
+        for i,v in enumerate(self.trinodes.T):
+            elc[:, i] = np.mean(self.el[:, v], axis=1)
+
     def closest_point(self, pt_lon, pt_lat):
     # def closest_point(self, pt_lon, pt_lat, lon, lat):
         '''
