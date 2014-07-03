@@ -73,7 +73,9 @@ if t_slice.shape[0] != 1:
 print len(el[0])
 print 'Loading timeseries'
 #vel = np.sqrt(data.u[:, :, el[0]]**2 + data.v[:, :, el[0]]**2 + data.ww[:, :, el[0]]**2)
+print 'U'
 u = data.u[:, :, el[0]]
+print 'V'
 v = data.v[:, :, el[0]]
 #ww = data.ww[:, :, el[0]]
 
