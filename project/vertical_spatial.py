@@ -80,7 +80,8 @@ v = data.v[:, :, el[0]]
 #ww = data.ww[:, :, el[0]]
 
 print 'Calculating'
-vel = ne.evaluate('sqrt(u**2 + v**2 + ww**2)')
+#vel = ne.evaluate('sqrt(u**2 + v**2 + ww**2)')
+vel = ne.evaluate('sqrt(u**2 + v**2)')
 #vel = np.sqrt(u**2 + v**2 + ww**2)
 
 mean_vel = np.mean(vel, axis=0)
