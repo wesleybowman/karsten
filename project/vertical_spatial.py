@@ -37,7 +37,7 @@ data = FVCOM(filename)
 # North-South
 ind = data.closest_point([-66.3385, -66.3385], [44.2815, 44.2755])
 # East- West
-ind = data.closest_point([-66.3419, -66.3324], [44.2778, 44.2778])
+#ind = data.closest_point([-66.3419, -66.3324], [44.2778, 44.2778])
 
 short_path = shortest_element_path(data.lonc, data.latc,
                                     data.lon, data.lat,
@@ -88,8 +88,8 @@ lon = data.lonc[el]
 #lat = data.xc[el]
 #lon = data.yc[el]
 
-line = lon
-#line = lat
+#line = lon
+line = lat
 print data.time[0]
 new = date2py(data.time[0])
 print new
@@ -113,8 +113,8 @@ mat = {'u':u, 'v':v, 'latc':lat, 'lonc':lon, 'time':data.time,
        'va':data.va[:, el[0]],
        'elc':elc, 'hc':hc}
 
-sio.savemat('east-west.mat', mat)
 #sio.savemat('east-west.mat', mat)
+sio.savemat('north-south.mat', mat)
 
 vmax = 2.5
 vmin = 0
@@ -128,8 +128,8 @@ ax.contour(line,siglay,mean_vel,cs.levels, colors='k')
 cbar = fig.colorbar(cs,ax=ax)
 cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
 #plt.title(str(time[i]))
-ax.set_xlabel('Longitude')
-#ax.set_xlabel('Latitude')
+#ax.set_xlabel('Longitude')
+ax.set_xlabel('Latitude')
 ax.set_title('vel_mean')
 scale = 1
 ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
@@ -154,8 +154,8 @@ for i in range(vel.shape[0]):
     #plt.title(str(time[i]))
     title = '{}'.format(date2py(data.time[i]))
     ax.set_title(title)
-    ax.set_xlabel('Longitude')
-    #ax.set_xlabel('Latitude')
+    #ax.set_xlabel('Longitude')
+    ax.set_xlabel('Latitude')
     #ax.set_xlabel('xc')
     scale = 1
     ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
