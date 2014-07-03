@@ -1,4 +1,6 @@
+from __future__ import division
 import netCDF4 as nc
+
 
 
 class station:
@@ -16,7 +18,7 @@ class station:
         self.h = self.data.variables['h'][:]
         self.time_JD = self.data.variables['time_JD'][:]
         self.time_second = self.data.variables['time_second'][:]
-        self.time = self.time_JD + 678942 + self.time_second
+        self.time = self.time_JD + 678942 + self.time_second / (24*3600)
         self.u = self.data.variables['u']
         self.v = self.data.variables['v']
         self.ww = self.data.variables['ww']
@@ -25,6 +27,7 @@ class station:
         self.elev = self.data.variables['zeta']
 
 if __name__ == '__main__':
+    #filename = '/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc'
     filename = '/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc'
-    filename = '/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc'
+    #filename = ''
     data = station(filename)

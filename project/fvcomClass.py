@@ -83,8 +83,8 @@ class FVCOM:
         self.el = self.data.variables['zeta']
 
         # get time and adjust it to matlab datenum
-        self.time = self.data.variables['time'][:]
-        self.time = self.time + 678942
+        self.julianTime = self.data.variables['time'][:]
+        self.time = self.julianTime + 678942
 
         try:
             self.ww = self.data.variables['ww']
