@@ -104,12 +104,13 @@ size = data.trinodes.T[el].shape[0]
 size1 = data.el.shape[0]
 elc = np.zeros((size1, size))
 hc = np.zeros((size))
-for i,v in enumerate(data.trinodes.T[el[0]]):
-    elc[:, i] = np.mean(data.el[:, v], axis=1)
-    hc[i] = np.mean(data.h[v])
+for ind,value in enumerate(data.trinodes.T[el[0]]):
+    elc[:, ind] = np.mean(data.el[:, value], axis=1)
+    hc[ind] = np.mean(data.h[value])
 
 mat = {'u':u, 'v':v, 'latc':lat, 'lonc':lon, 'time':data.time,
-       'siglay':data.siglay, 'siglev':data.siglev, 'ua':data.ua, 'va':data.va,
+       'siglay':data.siglay, 'siglev':data.siglev, 'ua':data.ua[:, el[0]],
+       'va':data.va[:, el[0]],
        'elc':elc, 'hc':hc}
 
 sio.savemat('east-west.mat', mat)
