@@ -75,7 +75,7 @@ print 'Loading timeseries'
 #vel = np.sqrt(data.u[:, :, el[0]]**2 + data.v[:, :, el[0]]**2 + data.ww[:, :, el[0]]**2)
 u = data.u[:, :, el[0]]
 v = data.v[:, :, el[0]]
-ww = data.ww[:, :, el[0]]
+#ww = data.ww[:, :, el[0]]
 
 print 'Calculating'
 vel = ne.evaluate('sqrt(u**2 + v**2 + ww**2)')
