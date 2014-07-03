@@ -21,7 +21,11 @@ def theta(a):
     a = np.arctan2(a['v'],a['u'])
     return a
 
+def date2py(matlab_datenum):
+    python_datetime = datetime.fromordinal(int(matlab_datenum)) + \
+        timedelta(days=matlab_datenum%1) - timedelta(days = 366)
 
+    return python_datetime
 
 filename = '/array2/data3/rkarsten/july_2012/output/dngrid_0001_02.nc'
 filename = '/EcoII/july_2012/output/dngrid_0001_03.nc'
@@ -85,6 +89,9 @@ lon = data.lonc[el]
 
 line = lon
 #line = lat
+print data.time[0]
+new = date2py(data.time[0])
+print new
 print vel.shape
 print mean_vel.shape
 vmax = 2.5
@@ -93,9 +100,8 @@ vmin = 0
 fig,ax = plt.subplots()
 plt.rc('font',size='22')
 levels = np.linspace(0,3.3,34)
-cs = ax.contourf(line,siglay,mean_vel,levels=levels)
-#ax.contour(line,siglay,mean_vel,cs.levels, colors='k')
-ax.contour(line,siglay,mean_vel,cs.levels)
+cs = ax.contourf(line,siglay,mean_vel,levels=levels, cmap=plt.cm.jet)
+ax.contour(line,siglay,mean_vel,cs.levels, colors='k')
 cbar = fig.colorbar(cs,ax=ax)
 cbar.set_label(r'Velocity $(m/s)$', rotation=-90,labelpad=30)
 #plt.title(str(time[i]))
