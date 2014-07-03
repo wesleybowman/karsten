@@ -129,7 +129,7 @@ for i in range(vel.shape[0]):
     fig,ax = plt.subplots()
     plt.rc('font',size='12')
     levels = np.linspace(0,3.3,34)
-    cs = ax.contourf(line,siglay,vel[i,:],levels=levelsi, cmap=plt.cm.jet)
+    cs = ax.contourf(line,siglay,vel[i,:],levels=level, cmap=plt.cm.jet)
     ax.contour(line,siglay,vel[i,:],cs.levels,colors='k',hold='on')
     #ax.contour(line,siglay,vel[i,:],cs.levels,hold='on')
     cbar = fig.colorbar(cs,ax=ax)
