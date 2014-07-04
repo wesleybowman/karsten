@@ -40,7 +40,7 @@ vmin = -0.08
 
 print 'Plotting... '
 for i in xrange(mean_vel.shape[0]):
-    grid = Tri.Triangulation(data.lon, data.lat, triangles=data.trinodes)
+    grid = Tri.Triangulation(data.lon, data.lat, triangles=data.trinodes.T-1)
     fig = plt.figure()
     ax = fig.add_subplot(111,aspect=(1.0/np.cos(np.mean(data.lat)*np.pi/180.0)))
     CS = ax.tricontour(grid, -h,levels=levels,shading='faceted',cmap=plt.cm.gist_earth)
