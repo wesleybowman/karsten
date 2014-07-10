@@ -90,7 +90,7 @@ def tideGauge(datafiles, Struct):
                           linci=True, ordercnstit='frq')
 
 
-        Name = filename.split('/')[4]
+        Name = filename.split('/')[-3]
         print Name
 
         obs_loc = {'name':Name, 'type':'TideGauge',
@@ -174,7 +174,7 @@ def adcp(datafiles, debug=False):
         adcpData = pd.DataFrame()
         runData = pd.DataFrame()
 
-        Name = filename.split('/')[4]
+        Name = filename.split('/')[-3]
         print Name
         struct = np.array([])
 
