@@ -220,14 +220,18 @@ def main(debug=False):
 #                    '/array/data1/rkarsten/dncoarse_bctest_all/output/dn_coarse_0001.nc',
 #                    '/array/data1/rkarsten/dncoarse_bctest_EC/output/dn_coarse_0001.nc',
 #                    '/array/data1/rkarsten/dncoarse_bctest_timeseries/output/dn_coarse_0001.nc']
-    datafiles = ['/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc']
+    #datafiles = ['/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc']
+        datafiles = ['/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dncoarse/calibration/bottom_roughness/0.0015/output/dngrid_0001.nc',
+        '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dncoarse/calibration/bottom_roughness/0.0020/output/dngrid_0001.nc',
+        '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dncoarse/calibration/bottom_roughness/0.0025/output/dngrid_0001.nc',
+        '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dncoarse/calibration/bottom_roughness/0.0030/output/dngrid_0001.nc']
 
                  #'/array/data1/rkarsten/dncoarse_stationtest/output/dn_coarse_0001.nc']
 
     Struct = adcp(datafiles, debug=False)
     pickle.dump(Struct, open("structADCP.p", "wb"))
     Struct = tideGauge(datafiles, Struct)
-    pickle.dump(Struct, open("structTest2.p", "wb"))
+    pickle.dump(Struct, open("structBottomFric.p", "wb"))
     return Struct
 
 

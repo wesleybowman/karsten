@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.tri as Tri
 import matplotlib.ticker as ticker
 import seaborn
+import scipy.io as sio
 
 
 class FVCOM:
@@ -54,7 +55,8 @@ class FVCOM:
 
 
     def load(self, filename):
-        self.data = nc.Dataset(filename, 'r')
+        #self.data = nc.Dataset(filename, 'r')
+        self.data = sio.netcdf.netcdf_file(filename, 'r')
         self.x = self.data.variables['x'][:]
         self.y = self.data.variables['y'][:]
         self.xc = self.data.variables['xc'][:]
@@ -63,7 +65,6 @@ class FVCOM:
         self.lat = self.data.variables['lat'][:]
         self.lonc = self.data.variables['lonc'][:]
         self.latc = self.data.variables['latc'][:]
-        self.nv = self.data.variables['nv'][:]
         self.h = self.data.variables['h'][:]
         self.nbe = self.data.variables['nbe'][:]
         self.a1u = self.data.variables['a1u'][:]
@@ -71,9 +72,12 @@ class FVCOM:
         self.aw0 = self.data.variables['aw0'][:]
         self.awx = self.data.variables['awx'][:]
         self.awy = self.data.variables['awy'][:]
-        self.trinodes = self.data.variables['nv'][:]
         self.siglay = self.data.variables['siglay'][:]
         self.siglev = self.data.variables['siglev'][:]
+
+        self.nv = self.data.variables['nv'][:]
+        #Make Trinode available for Python indexing
+        self.trinodes = self.nv.T -1
 
         # Need to use len to get size of dimensions
         self.nele = self.data.dimensions['nele']
@@ -85,6 +89,7 @@ class FVCOM:
         # get time and adjust it to matlab datenum
         self.julianTime = self.data.variables['time'][:]
         self.time = self.julianTime + 678942
+        self.QC.append('Changed time from Julian to matlab datenum')
 
         try:
             self.ww = self.data.variables['ww']
@@ -100,6 +105,7 @@ class FVCOM:
             self.D3 = False
 
     def centers(self):
+        '''Currently doesn't work with whole grid'''
         size = self.trinodes.T.shape[0]
         size1 = self.el.shape[0]
         elc = np.zeros((size1, size))
@@ -109,13 +115,6 @@ class FVCOM:
             hc[i] = np.mean(self.h[v], axis=1)
 
         return elc, hc
-
-    def hc(self):
-        size = self.trinodes.T.shape[0]
-        size1 = self.el.shape[0]
-        elc = np.zeros((size1, size))
-        for i,v in enumerate(self.trinodes.T):
-            elc[:, i] = np.mean(self.el[:, v], axis=1)
 
     def closest_point(self, pt_lon, pt_lat):
     # def closest_point(self, pt_lon, pt_lat, lon, lat):
@@ -166,7 +165,7 @@ class FVCOM:
     def graphGrid(self):
         nv = self.nv.T -1
         h = self.h
-        tri = Tri.Triangulation(self.lon, self.lat, triangles=nv)
+        tri = Tri.Triangulation(self.lon, self.lat, triangles=nv.T-1)
 
         levels=np.arange(-38,-4,1)   # depth contours to plot
 
@@ -191,8 +190,6 @@ class FVCOM:
 
 
 
-
-
 if __name__ == '__main__':
 
     filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
@@ -200,8 +197,11 @@ if __name__ == '__main__':
     test.harmonics(0, cnstit='auto', notrend=True, nodiagn=True)
     test.reconstr(test.time)
 
-    # t = shortest_element_path(test.latc,test.lonc,test.lat,test.lon,test.nv,test.h)
-    #elements, _ = t.getTargets([[41420,39763],[48484,53441],
-    #                            [27241,24226],[21706,17458]])
+    test.closest_point([-66.3385], [44.277])
+    t = shortest_element_path(test.latc,test.lonc,test.lat,test.lon,test.nv,test.h)
+    elements, _ = t.getTargets([[41420,39763],[48484,53441],
+                                [27241,24226],[21706,17458]])
+
+
 
     # t.graphGrid()
