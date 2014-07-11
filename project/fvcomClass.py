@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.tri as Tri
 import matplotlib.ticker as ticker
 import seaborn
-import scipy.io as sio
+#import scipy.io as sio
 
 
 class FVCOM:
@@ -55,8 +55,8 @@ class FVCOM:
 
 
     def load(self, filename):
-        #self.data = nc.Dataset(filename, 'r')
-        self.data = sio.netcdf.netcdf_file(filename, 'r')
+        self.data = nc.Dataset(filename, 'r')
+        #self.data = sio.netcdf.netcdf_file(filename, 'r')
         self.x = self.data.variables['x'][:]
         self.y = self.data.variables['y'][:]
         self.xc = self.data.variables['xc'][:]
