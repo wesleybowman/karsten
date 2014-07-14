@@ -238,3 +238,6 @@ def main(debug=False):
     Struct = tideGauge(datafiles, Struct)
     pickle.dump(Struct, open(saveName, "wb"))
     return Struct
+
+if __name__ == '__main__':
+    main()
