@@ -154,10 +154,12 @@ def main(debug=False):
 
     for fvFile in fvFiles:
 
+        print fvFile
         fvData = station(fvFile)
 
         struct = np.array([])
         for adcpFile in adcpFiles:
+            print adcpFile
             adcpData = ADCP(adcpFile)
             lonlat = np.array([adcpData.lon[0], adcpData.lat[0]]).T
             ind = closest_point(lonlat, fvData.lon, fvData.lat)
