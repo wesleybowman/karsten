@@ -31,7 +31,6 @@ class FVCOM:
         self.ax = ax
         self.data = nc.Dataset(filename, 'r')
         self.load(filename, elements)
-        self.data.close()
 
         if ax:
             self.ax = ax
@@ -201,7 +200,7 @@ if __name__ == '__main__':
     ind = [-66.3419, -66.3324, 44.2755, 44.2815]
 
     test = FVCOM(filename, ax=ind)
-    #test.harmonics(0, cnstit='auto', notrend=True, nodiagn=True)
+    test.harmonics(0, cnstit='auto', notrend=True, nodiagn=True)
     #test.reconstr(test.time)
 
     #test.closest_point([-66.3385], [44.277])
