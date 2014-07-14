@@ -147,7 +147,7 @@ def main(debug=False):
 
     saveName = 'june_2013_3D_station.p'
 
-    fvData = FVCOM(fvFile)
+    fvData = station(fvFile)
     adcpData = ADCP(adcpFile)
 
     #Struct = adcp(datafiles, debug=False)
