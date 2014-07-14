@@ -92,7 +92,7 @@ def tideGauge(datafiles, Struct):
                           linci=True, ordercnstit='frq')
 
 
-        Name = filename.split('/')[4]
+        Name = filename.split('/')[-3]
         print Name
 
         obs_loc = {'name':Name, 'type':'TideGauge',
@@ -177,7 +177,7 @@ def adcp(datafiles, debug=False):
         adcpData = pd.DataFrame()
         runData = pd.DataFrame()
 
-        Name = filename.split('/')[4]
+        Name = filename.split('/')[-3]
         print Name
         struct = np.array([])
 
@@ -220,12 +220,14 @@ def main(debug=False):
         datafiles = ['/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc']
         datafiles = ['/array/home/rkarsten/common_tidal_files/data/simulated/FVCOM/dn_coarse_station_timeseries.nc']
 
+        datafiles = ['/array/home/116822s/2012_station_run.nc']
+
+    saveName = 'struct2012_station_run.p'
     Struct = adcp(datafiles, debug=False)
-    pickle.dump(Struct, open("structADCP.p", "wb"))
+
+    if debug:
+        pickle.dump(Struct, open("structADCP.p", "wb"))
+
     Struct = tideGauge(datafiles, Struct)
-    pickle.dump(Struct, open("structStationTest.p", "wb"))
+    pickle.dump(Struct, open(saveName, "wb"))
     return Struct
-
-
-if __name__ == '__main__':
-    Struct = main(debug=False)

@@ -221,19 +221,20 @@ def main(debug=False):
 #                    '/array/data1/rkarsten/dncoarse_bctest_EC/output/dn_coarse_0001.nc',
 #                    '/array/data1/rkarsten/dncoarse_bctest_timeseries/output/dn_coarse_0001.nc']
     #datafiles = ['/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc']
-        datafiles = ['/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dncoarse/calibration/bottom_roughness/0.0015/output/dngrid_0001.nc',
-        '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dncoarse/calibration/bottom_roughness/0.0020/output/dngrid_0001.nc',
-        '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dncoarse/calibration/bottom_roughness/0.0025/output/dngrid_0001.nc',
-        '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dncoarse/calibration/bottom_roughness/0.0030/output/dngrid_0001.nc']
-
+#        datafiles = ['/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dncoarse/calibration/bottom_roughness/0.0015/output/dngrid_0001.nc',
+#        '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dncoarse/calibration/bottom_roughness/0.0020/output/dngrid_0001.nc',
+#        '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dncoarse/calibration/bottom_roughness/0.0025/output/dngrid_0001.nc',
+#        '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dncoarse/calibration/bottom_roughness/0.0030/output/dngrid_0001.nc']
+#
+        datafiles = ['/array/home/116822s/2012_run.nc']
                  #'/array/data1/rkarsten/dncoarse_stationtest/output/dn_coarse_0001.nc']
 
+    saveName = 'struct2012_run.p'
     Struct = adcp(datafiles, debug=False)
-    pickle.dump(Struct, open("structADCP.p", "wb"))
+
+    if debug:
+        pickle.dump(Struct, open("structADCP.p", "wb"))
+
     Struct = tideGauge(datafiles, Struct)
-    pickle.dump(Struct, open("structBottomFric.p", "wb"))
+    pickle.dump(Struct, open(saveName, "wb"))
     return Struct
-
-
-if __name__ == '__main__':
-    Struct = main(debug=False)

@@ -24,16 +24,19 @@ class FVCOM:
         ax = [min(lon_coord), max(lon_coord), min(lat_coord), max(lat_coord)]
     '''
 
-    def __init__(self, filename, ax=[]):
+    def __init__(self, filename, elements=slice(None), ax=[], debug=False):
         self.QC = ['raw data']
 
-        self.load(filename)
+        self.debug = debug
+        self.ax = ax
+        self.data = nc.Dataset(filename, 'r')
+        self.load(filename, elements)
+        self.data.close()
 
         if ax:
             self.ax = ax
         else:
             self.ax = [min(self.lon), max(self.lon), min(self.lat), max(self.lat)]
-
 
     def el_region(self):
 
@@ -42,21 +45,25 @@ class FVCOM:
                                     (self.latc >= self.ax[2]) &
                                     (self.latc <= self.ax[3]))
 
-        print self.region_e
+        if self.debug:
+            print self.region_e
 
     def node_region(self):
+
+        self.lon = self.data.variables['lon'][:]
+        self.lat = self.data.variables['lat'][:]
 
         self.region_n = np.argwhere((self.lon >= self.ax[0]) &
                                     (self.lon <= self.ax[1]) &
                                     (self.lat >= self.ax[2]) &
                                     (self.lat <= self.ax[3]))
 
-        print self.region_e
+        if self.debug:
+            print self.region_n
 
-
-    def load(self, filename):
+    def load(self, filename, elements):
         self.data = nc.Dataset(filename, 'r')
-        #self.data = sio.netcdf.netcdf_file(filename, 'r')
+        # self.data = sio.netcdf.netcdf_file(filename, 'r')
         self.x = self.data.variables['x'][:]
         self.y = self.data.variables['y'][:]
         self.xc = self.data.variables['xc'][:]
@@ -76,15 +83,15 @@ class FVCOM:
         self.siglev = self.data.variables['siglev'][:]
 
         self.nv = self.data.variables['nv'][:]
-        #Make Trinode available for Python indexing
-        self.trinodes = self.nv.T -1
+        # Make Trinode available for Python indexing
+        self.trinodes = self.nv.T - 1
 
         # Need to use len to get size of dimensions
         self.nele = self.data.dimensions['nele']
         self.node = self.data.dimensions['node']
 
         # elev timeseries
-        self.el = self.data.variables['zeta']
+        self.elev = self.data.variables['zeta']
 
         # get time and adjust it to matlab datenum
         self.julianTime = self.data.variables['time'][:]
@@ -104,20 +111,21 @@ class FVCOM:
             self.va = self.data.variables['va']
             self.D3 = False
 
-    def centers(self):
+    def centers(self, elements):
         '''Currently doesn't work with whole grid'''
-        size = self.trinodes.T.shape[0]
-        size1 = self.el.shape[0]
+
+        size = self.trinodes.T[elements].shape[0]
+        size1 = self.elev.shape[0]
         elc = np.zeros((size1, size))
         hc = np.zeros((size))
-        for i,v in enumerate(self.trinodes.T):
-            elc[:, i] = np.mean(self.el[:, v], axis=1)
-            hc[i] = np.mean(self.h[v], axis=1)
+        for ind, value in enumerate(self.trinodes.T[elements]):
+            elc[:, ind] = np.mean(self.elev[:, value-1], axis=1)
+            hc[ind] = np.mean(self.h[value-1])
 
         return elc, hc
 
     def closest_point(self, pt_lon, pt_lat):
-    # def closest_point(self, pt_lon, pt_lat, lon, lat):
+        # def closest_point(self, pt_lon, pt_lat, lon, lat):
         '''
         Finds the closest exact lon, lat to a lon, lat coordinate.
         Example input:
@@ -128,7 +136,7 @@ class FVCOM:
 
         points = np.array([pt_lon, pt_lat]).T
 
-        #point_list = np.array([lon,lat]).T
+        # point_list = np.array([lon,lat]).T
         point_list = np.array([self.lonc, self.latc]).T
 
         closest_dist = ((point_list[:, 0] - points[:, 0, None])**2 +
@@ -137,7 +145,6 @@ class FVCOM:
         closest_point_indexes = np.argmin(closest_dist, axis=1)
 
         return closest_point_indexes
-
 
     def harmonics(self, ind, twodim=True, **kwarg):
 
@@ -161,24 +168,23 @@ class FVCOM:
             self.ts_recon, _ = ut_reconstr(time, self.coef)
             self.QC.append('ut_reconstr done for elevation')
 
-
     def graphGrid(self):
-        nv = self.nv.T -1
+        nv = self.nv.T - 1
         h = self.h
         tri = Tri.Triangulation(self.lon, self.lat, triangles=nv.T-1)
 
-        levels=np.arange(-38,-4,1)   # depth contours to plot
+        levels = np.arange(-38, -4, 1)   # depth contours to plot
 
-        fig = plt.figure(figsize=(18,10))
-        plt.rc('font',size='22')
-        ax = fig.add_subplot(111,aspect=(1.0/np.cos(np.mean(self.lat)*np.pi/180.0)))
-        plt.tricontourf(tri, -h,levels=levels,shading='faceted',cmap=plt.cm.gist_earth)
+        fig = plt.figure(figsize=(18, 10))
+        plt.rc('font', size='22')
+        ax = fig.add_subplot(111, aspect=(1.0/np.cos(np.mean(self.lat)*np.pi/180.0)))
+        plt.tricontourf(tri, -h, levels=levels, shading='faceted', cmap=plt.cm.gist_earth)
         plt.triplot(tri)
         plt.ylabel('Latitude')
         plt.xlabel('Longitude')
         plt.gca().patch.set_facecolor('0.5')
-        cbar=plt.colorbar()
-        cbar.set_label('Water Depth (m)', rotation=-90,labelpad=30)
+        cbar = plt.colorbar()
+        cbar.set_label('Water Depth (m)', rotation=-90, labelpad=30)
 
         scale = 1
         ticks = ticker.FuncFormatter(lambda lon, pos: '{0:g}'.format(lon/scale))
@@ -188,19 +194,20 @@ class FVCOM:
         plt.show()
 
 
-
-
 if __name__ == '__main__':
 
     filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
-    test = FVCOM(filename)
-    test.harmonics(0, cnstit='auto', notrend=True, nodiagn=True)
-    test.reconstr(test.time)
 
-    test.closest_point([-66.3385], [44.277])
-    t = shortest_element_path(test.latc,test.lonc,test.lat,test.lon,test.nv,test.h)
-    elements, _ = t.getTargets([[41420,39763],[48484,53441],
-                                [27241,24226],[21706,17458]])
+    ind = [-66.3419, -66.3324, 44.2755, 44.2815]
+
+    test = FVCOM(filename, ax=ind)
+    #test.harmonics(0, cnstit='auto', notrend=True, nodiagn=True)
+    #test.reconstr(test.time)
+
+    #test.closest_point([-66.3385], [44.277])
+    #t = shortest_element_path(test.latc,test.lonc,test.lat,test.lon,test.nv,test.h)
+    #elements, _ = t.getTargets([[41420,39763],[48484,53441],
+    #                            [27241,24226],[21706,17458]])
 
 
 
