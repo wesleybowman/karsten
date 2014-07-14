@@ -157,6 +157,7 @@ def main(debug=False):
 
     #pickle.dump(Struct, open(saveName, "wb"))
     #return Struct
+    return fvData, adcpData
 
 if __name__ == '__main__':
-    main()
+    fvData, adcpData = main()
