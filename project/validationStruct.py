@@ -141,23 +141,68 @@ def main(debug=False):
         datafiles = ['/home/wesley/ncfiles/smallcape_force_0001.nc']
     else:
 
-        fvFile = '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dngrid/june_2013_3D/output/'
-        adcpFile = '/EcoII/EcoEII_server_data_tree/data/observed/GP/ADCP/Flow_GP-130620-BPa_avg5.mat'
-        adcpFile = '/EcoII/EcoEII_server_data_tree/data/observed/GP/ADCP/Flow_GP-130620-BPb_avg5.mat'
+        #fvFile = '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dngrid/june_2013_3D/output/'
+        fvFiles = ['/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dngrid/june_2013_3D/output/']
+        #adcpFile = '/EcoII/EcoEII_server_data_tree/data/observed/GP/ADCP/Flow_GP-130620-BPa_avg5.mat'
+        #adcpFile = '/EcoII/EcoEII_server_data_tree/data/observed/GP/ADCP/Flow_GP-130620-BPb_avg5.mat'
+        adcpFiles = ['/EcoII/EcoEII_server_data_tree/data/observed/GP/ADCP/Flow_GP-130620-BPa_avg5.mat',
+         '/EcoII/EcoEII_server_data_tree/data/observed/GP/ADCP/Flow_GP-130620-BPb_avg5.mat']
 
     saveName = 'june_2013_3D_station.p'
+    Name = 'june_2013_3D_station'
+    Struct = {}
 
-    fvData = station(fvFile)
-    adcpData = ADCP(adcpFile)
+    for fvFile in fvFiles:
 
-    #Struct = adcp(datafiles, debug=False)
+        fvData = station(fvFile)
+
+        struct = np.array([])
+        for adcpFile in adcpFiles:
+            adcpData = ADCP(adcpFile)
+            lonlat = np.array([adcpData.lon[0], adcpData.lat[0]]).T
+            ind = closest_point(lonlat, fvData.lon, fvData.lat)
+
+            adcpVelCoef = ut_solv(adcpData.mtime, adcpData.east_vel.T,
+                            adcpData.north_vel.T, adcpData.lat[0],
+                            cnstit='auto', rmin=0.95, notrend=True,
+                            method='ols', nodiagn=True, linci=True, coef_int=True)
+
+            adcpElevCoef = ut_solv(adcpData.mtime, adcpData.surf,
+                            [], adcpData.lat[0],
+                            cnstit='auto', rmin=0.95, notrend=True,
+                            method='ols', nodiagn=True, linci=True, coef_int=True)
+
+            adcpName = adcpFile.split('/')[-1].split('.')[0]
+            obs = pd.DataFrame({'u':adcpData.east_vel.T, 'v':adcpData.north_vel.T})
+
+            fvVelCoef = ut_solv(fvData.time, fvData.ua[:, ind], fvData.va[:, ii],
+                        fvData.lat[ind], cnstit='auto', rmin=0.95, notrend=True,
+                        method='ols', nodiagn=True, linci=True, conf_int=True)
+
+            fvElevCoef = ut_solv(fvData.time, fvData.elev[:, ind], [],
+                        fvData.lat[ind], cnstit='auto', rmin=0.95, notrend=True,
+                        method='ols', nodiagn=True, linci=True, conf_int=True)
+
+            mod = pd.DataFrame({'ua':fvData.ua[:, ind], 'va':fvData.va[:, ind]})
+
+
+            obs_loc = {'name': adcpName, 'type':'ADCP', 'lat':adcpData.lat[0],
+                    'lon':adcpData.lon[0], 'obs_timeseries':obs,
+                    'mod_timeseries':mod, 'obs_time':adcpData.mtime,
+                    'mod_time':fvData.time, 'vel_obs_harmonics':adcpVelCoef,
+                    'elev_obs_harmonics':adcpElevCoef,
+                    'vel_mod_harmonics':fvVelCoef, 'elev_mod_harmonics':fvElevCoef}
+
+            struct = np.hstack((struct, obs_loc))
+
+        Struct[Name] = struct
 
     if debug:
         pickle.dump(Struct, open("structADCP.p", "wb"))
 
-    #pickle.dump(Struct, open(saveName, "wb"))
-    #return Struct
-    return fvData, adcpData
+    pickle.dump(Struct, open(saveName, "wb"))
+    return Struct
+    #return fvData, adcpData
 
 if __name__ == '__main__':
-    fvData, adcpData = main()
+    Struct = main()

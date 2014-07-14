@@ -3,7 +3,7 @@ import numpy as np
 import netCDF4 as nc
 import os
 import fnmatch
-
+# Need to add closest point
 
 class station:
     def __init__(self, filename, elements=slice(None)):
