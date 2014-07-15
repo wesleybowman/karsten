@@ -44,10 +44,9 @@ class ADCP:
 
             self.pressure = self.mat['pres']
             self.surf = self.pressure.surf[:]
-            self.depAvg = self.percent_of_depth * self.surf
 
             self.time = self.mat['time']
-            self.mtime = self.time.mtime[:]
+            self.mtime = self.time.mtime[:].flatten()
 
         except NotImplementedError:
             self.mat = h5py.File(filename)
