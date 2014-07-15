@@ -185,6 +185,10 @@ def main(debug=False):
             #WB_COMMENT: Doesn't currently work
             obs = pd.DataFrame({'u':adcpData.ua, 'v':adcpData.va})
 
+            print fvData.time.shape
+            print fvData.ua[:, ind].shape
+            print fvData.va[:, ind].shape
+            print fvData.lat[ind].shape
             fvVelCoef = ut_solv(fvData.time, fvData.ua[:, ind], fvData.va[:, ind],
                         fvData.lat[ind], cnstit='auto', rmin=0.95, notrend=True,
                         method='ols', nodiagn=True, linci=True, conf_int=True)

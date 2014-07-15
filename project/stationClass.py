@@ -59,7 +59,6 @@ class station:
         self.elev = np.array([])
 
         for i, v in enumerate(self.matches):
-            print i,v
             data = nc.Dataset(v, 'r')
             x = data.variables['x'][:]
             y = data.variables['y'][:]
