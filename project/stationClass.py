@@ -132,9 +132,9 @@ if __name__ == '__main__':
     #filename = '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dngrid/june_2013_3D/'
     multi = True
     if multi:
-        filename = '/home/wesley/ncfiles/'
+        #filename = '/home/wesley/ncfiles/'
+        filename = '/EcoII/EcoEII_server_data_tree/workspace/simulated/FVCOM/dngrid/june_2013_3D/output/'
     else:
         filename = '/home/wesley/ncfiles/dn_coarse_station_timeseries.nc'
-        filename = '/EcoII/EcoEII_server_data_tree/workspace/simulated/FVCOM/dngrid/june_2013_3D/output/'
 
     data = station(filename)
