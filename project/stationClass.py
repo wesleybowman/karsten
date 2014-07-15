@@ -123,7 +123,7 @@ class station:
             for filename in fnmatch.filter(filenames, name):
                 self.matches.append(os.path.join(root, filename))
 
-        return self.matches
+        return sorted(self.matches)
 
 
 if __name__ == '__main__':
