@@ -176,7 +176,7 @@ def main(debug=False):
                             cnstit='auto', rmin=0.95, notrend=True,
                             method='ols', nodiagn=True, linci=True, coef_int=True)
 
-            adcpElevCoef = ut_solv(adcpData.mtime, adcpData.surf,
+            adcpElevCoef = ut_solv(adcpData.mtime, adcpData.surf.flatten(),
                             [], adcpData.lat[0],
                             cnstit='auto', rmin=0.95, notrend=True,
                             method='ols', nodiagn=True, linci=True, coef_int=True)
