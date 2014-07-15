@@ -10,6 +10,7 @@ from utide import ut_solv
 import scipy.io as sio
 from stationClass import station
 from adcpClass import ADCP
+from fvcomClass import FVCOM
 
 def mjd2num(x):
 
@@ -148,7 +149,9 @@ def main(debug=False):
         #adcpFile = '/EcoII/EcoEII_server_data_tree/data/observed/GP/ADCP/Flow_GP-130620-BPb_avg5.mat'
         adcpFiles = ['/EcoII/EcoEII_server_data_tree/data/observed/GP/ADCP/Flow_GP-130620-BPa_avg5.mat',
          '/EcoII/EcoEII_server_data_tree/data/observed/GP/ADCP/Flow_GP-130620-BPb_avg5.mat']
+	fvdebug = '/EcoII/EcoEII_server_data_tree/workspace/simulated/FVCOM/dngrid/june_2013_3D/output/dngrid_0001_week2.nc'
 
+    fvdebugData = FVCOM(fvdebug)
     saveName = 'june_2013_3D_station.p'
     Name = 'june_2013_3D_station'
     Struct = {}
@@ -163,7 +166,12 @@ def main(debug=False):
             print adcpFile
             adcpData = ADCP(adcpFile)
             lonlat = np.array([adcpData.lon[0], adcpData.lat[0]]).T
-            ind = closest_point(lonlat, fvData.lon, fvData.lat)
+            #lonlat = np.array([adcpData.x[0], adcpData.y[0]]).T
+            #ind = closest_point(lonlat, fvData.lon, fvData.lat)
+            newind = closest_point(lonlat, fvdebugData.lon, fvdebugData.lat)
+            #ind = closest_point(lonlat, fvData.x, fvData.y)
+	    new = np.array([fvdebugData.xc[newind], fvdebugData.yc[newind]])
+	    ind = closest_point(new, fvData.x, fvData.y)
 
             print ind
             print adcpData.mtime.shape
@@ -183,7 +191,7 @@ def main(debug=False):
 
             adcpName = adcpFile.split('/')[-1].split('.')[0]
             #WB_COMMENT: Doesn't currently work
-            obs = pd.DataFrame({'u':adcpData.ua, 'v':adcpData.va})
+            obs = pd.DataFrame({'u':adcpData.ua, 'v':adcpData.va, 'elev':adcpData.surf})
 
             print fvData.time.shape
             print fvData.ua[:, ind].shape
@@ -192,20 +200,21 @@ def main(debug=False):
 
             fvVelCoef = ut_solv(fvData.time, fvData.ua[:, ind].flatten(),
                                 fvData.va[:, ind].flatten(),
-                        fvData.lat[ind], cnstit='auto', rmin=0.95, notrend=True,
+                        adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
                         method='ols', nodiagn=True, linci=True, conf_int=True)
 
             print fvData.elev[:, ind].shape
             fvElevCoef = ut_solv(fvData.time, fvData.elev[:, ind].flatten(), [],
-                        fvData.lat[ind], cnstit='auto', rmin=0.95, notrend=True,
+                        adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
                         method='ols', nodiagn=True, linci=True, conf_int=True)
 
             mod = pd.DataFrame({'ua':fvData.ua[:, ind].flatten(),
-                                'va':fvData.va[:, ind].flatten()})
+                                'va':fvData.va[:, ind].flatten(),
+                                'elev':fvData.elev[:, ind].flatten()})
 
 
-            obs_loc = {'name': adcpName, 'type':'ADCP', 'lat':adcpData.lat[0],
-                    'lon':adcpData.lon[0], 'obs_timeseries':obs,
+            obs_loc = {'name': adcpName, 'type':'ADCP', 'lat':fvdebugData.lat[newind],
+                    'lon':fvdebugData.lon[newind], 'obs_timeseries':obs,
                     'mod_timeseries':mod, 'obs_time':adcpData.mtime,
                     'mod_time':fvData.time, 'vel_obs_harmonics':adcpVelCoef,
                     'elev_obs_harmonics':adcpElevCoef,
