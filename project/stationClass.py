@@ -84,7 +84,6 @@ class station:
             self.h = np.hstack((self.h, h))
             self.time_JD = np.hstack((self.time_JD, t_JD))
             self.time_second = np.hstack((self.time_second, t_second))
-            self.siglay = np.hstack((self.siglay, siglay))
 
             if i == 0:
                 print 'once'
