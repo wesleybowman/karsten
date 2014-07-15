@@ -164,8 +164,8 @@ def main(debug=False):
             lonlat = np.array([adcpData.lon[0], adcpData.lat[0]]).T
             ind = closest_point(lonlat, fvData.lon, fvData.lat)
 
-            adcpVelCoef = ut_solv(adcpData.mtime, adcpData.east_vel.T,
-                            adcpData.north_vel.T, adcpData.lat[0],
+            adcpVelCoef = ut_solv(adcpData.mtime, adcpData.east_vel,
+                            adcpData.north_vel, adcpData.lat[0],
                             cnstit='auto', rmin=0.95, notrend=True,
                             method='ols', nodiagn=True, linci=True, coef_int=True)
 
@@ -175,7 +175,8 @@ def main(debug=False):
                             method='ols', nodiagn=True, linci=True, coef_int=True)
 
             adcpName = adcpFile.split('/')[-1].split('.')[0]
-            obs = pd.DataFrame({'u':adcpData.east_vel.T, 'v':adcpData.north_vel.T})
+            #WB_COMMENT: Doesn't currently work
+            obs = pd.DataFrame({'u':adcpData.east_vel, 'v':adcpData.north_vel})
 
             fvVelCoef = ut_solv(fvData.time, fvData.ua[:, ind], fvData.va[:, ii],
                         fvData.lat[ind], cnstit='auto', rmin=0.95, notrend=True,

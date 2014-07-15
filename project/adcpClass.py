@@ -12,6 +12,16 @@ class ADCP:
 
         self.load(filename)
 
+    def __str__(self):
+        '''
+        What shows when
+        print datais run
+        '''
+        return 'ADCP Class'
+
+    def __repr__(self):
+        return 'ADCP Class'
+
     def load(self, filename):
         try:
             self.mat = sio.loadmat(filename,
@@ -21,6 +31,7 @@ class ADCP:
             self.lon = self.mat['lon']
 
             self.data = self.mat['data']
+            self.bins = self.data.bins[:].flatten()
             self.north_vel = self.data.north_vel[:]
             self.east_vel = self.data.east_vel[:]
             self.vert_vel = self.data.vert_vel[:]
@@ -43,13 +54,14 @@ class ADCP:
 
             #self.data = self.mat['data']
             self.data = Struct(**self.mat['data'])
-            self.north_vel = self.data.north_vel[:]
-            self.east_vel = self.data.east_vel[:]
-            self.vert_vel = self.data.vert_vel[:]
-            self.dir_vel = self.data.dir_vel[:]
-            self.mag_signed_vel = self.data.mag_signed_vel[:]
-            self.ucross = self.data.Ucross[:]
-            self.ualong = self.data.Ualong[:]
+            self.bins = self.data.bins[:].flatten()
+            self.north_vel = self.data.north_vel[:].T
+            self.east_vel = self.data.east_vel[:].T
+            self.vert_vel = self.data.vert_vel[:].T
+            self.dir_vel = self.data.dir_vel[:].T
+            self.mag_signed_vel = self.data.mag_signed_vel[:].T
+            self.ucross = self.data.Ucross[:].T
+            self.ualong = self.data.Ualong[:].T
 
             self.pressure = Struct(**self.mat['pres'])
             self.surf = self.pressure.surf[:]
