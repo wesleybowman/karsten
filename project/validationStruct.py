@@ -195,7 +195,8 @@ def main(debug=False):
                         fvData.lat[ind], cnstit='auto', rmin=0.95, notrend=True,
                         method='ols', nodiagn=True, linci=True, conf_int=True)
 
-            fvElevCoef = ut_solv(fvData.time, fvData.elev[:, ind], [],
+            print fvData.elev[:, ind].shape
+            fvElevCoef = ut_solv(fvData.time, fvData.elev[:, ind].flatten(), [],
                         fvData.lat[ind], cnstit='auto', rmin=0.95, notrend=True,
                         method='ols', nodiagn=True, linci=True, conf_int=True)
 
