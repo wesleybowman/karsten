@@ -200,7 +200,8 @@ def main(debug=False):
                         fvData.lat[ind], cnstit='auto', rmin=0.95, notrend=True,
                         method='ols', nodiagn=True, linci=True, conf_int=True)
 
-            mod = pd.DataFrame({'ua':fvData.ua[:, ind], 'va':fvData.va[:, ind]})
+            mod = pd.DataFrame({'ua':fvData.ua[:, ind].flatten(),
+                                'va':fvData.va[:, ind].flatten()})
 
 
             obs_loc = {'name': adcpName, 'type':'ADCP', 'lat':adcpData.lat[0],
