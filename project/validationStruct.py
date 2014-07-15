@@ -168,10 +168,10 @@ def main(debug=False):
             lonlat = np.array([adcpData.lon[0], adcpData.lat[0]]).T
             #lonlat = np.array([adcpData.x[0], adcpData.y[0]]).T
             #ind = closest_point(lonlat, fvData.lon, fvData.lat)
-            newind = closest_point(lonlat, fvdebugData.lon, fvdebugData.lat)
+            newind = closest_point(lonlat, fvdebugData.lonc, fvdebugData.latc)
             #ind = closest_point(lonlat, fvData.x, fvData.y)
             new = np.array([fvdebugData.xc[newind], fvdebugData.yc[newind]])
-            ind = closest_point(new, fvData.x, fvData.y)
+            ind = closest_point(new.T, fvData.x, fvData.y)
 
             print ind
             print adcpData.mtime.shape
