@@ -130,10 +130,11 @@ if __name__ == '__main__':
     #filename = '/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc'
     #filename = '/array2/data3/rkarsten/dncoarse_3D/output2/dn_coarse_station_timeseries.nc'
     #filename = '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dngrid/june_2013_3D/'
-    multi = False
+    multi = True
     if multi:
         filename = '/home/wesley/ncfiles/'
     else:
         filename = '/home/wesley/ncfiles/dn_coarse_station_timeseries.nc'
+        filename = '/EcoII/EcoEII_server_data_tree/workspace/simulated/FVCOM/dngrid/june_2013_3D/output/'
 
     data = station(filename)
