@@ -102,7 +102,7 @@ class station:
                 print self.ua.shape
                 self.siglay = np.hstack((self.siglay, siglay))
                 self.siglev = np.hstack((self.siglev, siglev))
-                self.u = np.dstack((self.u, u))
+                self.u = np.vstack((self.u, u))
                 self.v = np.hstack((self.v, v))
                 self.ww = np.hstack((self.ww, ww))
                 self.ua = np.hstack((self.ua, ua))
