@@ -189,7 +189,9 @@ def main(debug=False):
             print fvData.ua[:, ind].shape
             print fvData.va[:, ind].shape
             print fvData.lat[ind].shape
-            fvVelCoef = ut_solv(fvData.time, fvData.ua[:, ind], fvData.va[:, ind],
+
+            fvVelCoef = ut_solv(fvData.time, fvData.ua[:, ind].flatten(),
+                                fvData.va[:, ind].flatten(),
                         fvData.lat[ind], cnstit='auto', rmin=0.95, notrend=True,
                         method='ols', nodiagn=True, linci=True, conf_int=True)
 
