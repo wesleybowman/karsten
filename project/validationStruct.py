@@ -165,6 +165,12 @@ def main(debug=False):
             lonlat = np.array([adcpData.lon[0], adcpData.lat[0]]).T
             ind = closest_point(lonlat, fvData.lon, fvData.lat)
 
+            print ind
+            print adcpData.mtime.shape
+            print adcpData.ua.shape
+            print adcpData.va.shape
+            print adcpData.surf.shape
+
             adcpVelCoef = ut_solv(adcpData.mtime, adcpData.ua,
                             adcpData.va, adcpData.lat[0],
                             cnstit='auto', rmin=0.95, notrend=True,
