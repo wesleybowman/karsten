@@ -8,9 +8,11 @@ class Struct:
 
 class ADCP:
 
-    def __init__(self, filename):
+    def __init__(self, filename, percent_of_depth=1):
 
+        self.percent_of_depth = percent_of_depth
         self.load(filename)
+        self.depthAverage()
 
     def __str__(self):
         '''
@@ -42,6 +44,7 @@ class ADCP:
 
             self.pressure = self.mat['pres']
             self.surf = self.pressure.surf[:]
+            self.depAvg = self.percent_of_depth * self.surf
 
             self.time = self.mat['time']
             self.mtime = self.time.mtime[:]
@@ -68,6 +71,19 @@ class ADCP:
 
             self.time = Struct(**self.mat['time'])
             self.mtime = self.time.mtime[:]
+
+    def depthAverage(self):
+        '''Find the depth average of a variable based on percent_of_depth
+        choosen by the user. Currently only working for east_vel (u) and
+        north_vel (v) '''
+
+        ind = np.argwhere(self.bins < self.percent_of_depth * self.surf)
+        index = ind[np.r_[ind[1:,0] != ind[:-1,0], True]]
+        data_ma_u = np.ma.array(self.east_vel, mask=np.arange(self.east_vel.shape[1]) > index[:, 1, None])
+        data_ma_v = np.ma.array(self.north_vel, mask=np.arange(self.north_vel.shape[1]) > index[:, 1, None])
+        self.ua = np.array(data_ma_u.mean(axis=1))
+        self.va = np.array(data_ma_v.mean(axis=1))
+
 
 
 if __name__ == '__main__':
