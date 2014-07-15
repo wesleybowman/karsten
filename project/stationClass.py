@@ -105,7 +105,7 @@ class station:
                 self.u = np.vstack((self.u, u))
                 self.v = np.hstack((self.v, v))
                 self.ww = np.hstack((self.ww, ww))
-                self.ua = np.hstack((self.ua, ua))
+                self.ua = np.vstack((self.ua, ua))
                 self.va = np.hstack((self.va, va))
                 self.elev = np.hstack((self.elev, elev))
                 print self.ua.shape
