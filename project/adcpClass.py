@@ -46,7 +46,7 @@ class ADCP:
             self.surf = self.pressure.surf[:]
 
             self.time = self.mat['time']
-            self.mtime = self.time.mtime[:].flatten()
+            self.mtime = self.time.mtime[:]
 
         except NotImplementedError:
             self.mat = h5py.File(filename)
@@ -69,7 +69,7 @@ class ADCP:
             self.surf = self.pressure.surf[:]
 
             self.time = Struct(**self.mat['time'])
-            self.mtime = self.time.mtime[:]
+            self.mtime = self.time.mtime[:].flatten()
 
     def depthAverage(self):
         '''Find the depth average of a variable based on percent_of_depth
