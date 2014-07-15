@@ -66,7 +66,7 @@ class ADCP:
             self.ualong = self.data.Ualong[:].T
 
             self.pressure = Struct(**self.mat['pres'])
-            self.surf = self.pressure.surf[:]
+            self.surf = self.pressure.surf[:].flatten()
 
             self.time = Struct(**self.mat['time'])
             self.mtime = self.time.mtime[:].flatten()
@@ -76,7 +76,7 @@ class ADCP:
         choosen by the user. Currently only working for east_vel (u) and
         north_vel (v) '''
 
-        ind = np.argwhere(self.bins < self.percent_of_depth * self.surf)
+        ind = np.argwhere(self.bins < self.percent_of_depth * self.surf[:,None])
         index = ind[np.r_[ind[1:,0] != ind[:-1,0], True]]
         data_ma_u = np.ma.array(self.east_vel, mask=np.arange(self.east_vel.shape[1]) > index[:, 1, None])
         data_ma_v = np.ma.array(self.north_vel, mask=np.arange(self.north_vel.shape[1]) > index[:, 1, None])
