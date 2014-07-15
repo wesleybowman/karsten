@@ -86,7 +86,6 @@ class station:
             self.time_second = np.hstack((self.time_second, t_second))
 
             if i == 0:
-                print 'once'
                 self.siglay = siglay
                 self.siglev = siglev
                 self.u = u
@@ -95,34 +94,17 @@ class station:
                 self.ua = ua
                 self.va = va
                 self.elev = elev
-                print self.ua.shape
 
             else:
-                print ua.shape
-                print self.ua.shape
-                self.siglay = np.hstack((self.siglay, siglay))
-                self.siglev = np.hstack((self.siglev, siglev))
+                self.siglay = np.vstack((self.siglay, siglay))
+                self.siglev = np.vstack((self.siglev, siglev))
                 self.u = np.vstack((self.u, u))
-                self.v = np.hstack((self.v, v))
-                self.ww = np.hstack((self.ww, ww))
+                self.v = np.vstack((self.v, v))
+                self.ww = np.vstack((self.ww, ww))
                 self.ua = np.vstack((self.ua, ua))
-                self.va = np.hstack((self.va, va))
-                self.elev = np.hstack((self.elev, elev))
-                print self.ua.shape
+                self.va = np.vstack((self.va, va))
+                self.elev = np.vstack((self.elev, elev))
 
-#
-#            else:
-#                print ua.shape
-#                print self.ua.shape
-#                self.siglay = np.hstack((self.siglay, siglay))
-#                self.siglev = np.hstack((self.siglev, siglev))
-#                self.u = np.hstack((self.u, u))
-#                self.v = np.hstack((self.v, v))
-#                self.ww = np.hstack((self.ww, ww))
-#                self.ua = np.hstack((self.ua, ua))
-#                self.va = np.hstack((self.va, va))
-#                self.elev = np.hstack((self.elev, elev))
-#                print self.ua.shape
 
         self.time = self.time_JD + 678942 + self.time_second / (24*3600)
 
