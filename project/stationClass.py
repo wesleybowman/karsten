@@ -39,7 +39,7 @@ class station:
         self.elev = self.data.variables['zeta'][:, elements]
 
     def loadMulti(self, filename, elements):
-        matches = self.findFiles(filename)
+        self.matches = self.findFiles(filename)
 
         self.x = np.array([])
         self.y = np.array([])
@@ -58,7 +58,7 @@ class station:
         self.va = np.array([])
         self.elev = np.array([])
 
-        for i, v in enumerate(matches):
+        for i, v in enumerate(self.matches):
             print i,v
             data = nc.Dataset(v, 'r')
             x = data.variables['x'][:]
@@ -118,12 +118,12 @@ class station:
         '''
 
         name = '*station*.nc'
-        matches = []
+        self.matches = []
         for root, dirnames, filenames in os.walk(filename):
             for filename in fnmatch.filter(filenames, name):
-                matches.append(os.path.join(root, filename))
+                self.matches.append(os.path.join(root, filename))
 
-        return matches
+        return self.matches
 
 
 if __name__ == '__main__':
