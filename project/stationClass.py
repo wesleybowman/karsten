@@ -85,33 +85,30 @@ class station:
             self.time_JD = np.hstack((self.time_JD, t_JD))
             self.time_second = np.hstack((self.time_second, t_second))
             self.siglay = np.hstack((self.siglay, siglay))
-            self.siglev = np.hstack((self.siglev, siglev))
-            self.u = np.hstack((self.u, u))
-            self.v = np.hstack((self.v, v))
-            self.ww = np.hstack((self.ww, ww))
-            self.ua = np.hstack((self.ua, ua))
-            self.va = np.hstack((self.va, va))
-            self.elev = np.hstack((self.elev, elev))
 
-#            if i == 0:
-#                self.siglay = siglay
-#                self.siglev = siglev
-#                self.u = u
-#                self.v = v
-#                self.ww = ww
-#                self.ua = ua
-#                self.va = va
-#                self.elev = elev
-#
-#            else:
-#                self.siglay = np.hstack((self.siglay, siglay))
-#                self.siglev = np.hstack((self.siglev, siglev))
-#                self.u = np.hstack((self.u, u))
-#                self.v = np.hstack((self.v, v))
-#                self.ww = np.hstack((self.ww, ww))
-#                self.ua = np.hstack((self.ua, ua))
-#                self.va = np.hstack((self.va, va))
-#                self.elev = np.hstack((self.elev, elev))
+            if i == 0:
+                print 'once'
+                self.siglay = siglay
+                self.siglev = siglev
+                self.u = u
+                self.v = v
+                self.ww = ww
+                self.ua = ua
+                self.va = va
+                self.elev = elev
+
+            else:
+                print ua
+                print self.ua
+                self.siglay = np.hstack((self.siglay, siglay))
+                self.siglev = np.hstack((self.siglev, siglev))
+                self.u = np.hstack((self.u, u))
+                self.v = np.hstack((self.v, v))
+                self.ww = np.hstack((self.ww, ww))
+                self.ua = np.hstack((self.ua, ua))
+                self.va = np.hstack((self.va, va))
+                self.elev = np.hstack((self.elev, elev))
+                print self.ua
 
         self.time = self.time_JD + 678942 + self.time_second / (24*3600)
 
