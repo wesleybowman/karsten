@@ -138,11 +138,12 @@ def main(debug=False):
     if debug:
         #datafiles = ['/array/data1/rkarsten/dncoarse_bctest_old/output/dn_coarse_0001.nc',
         #            '/array/data1/rkarsten/dncoarse_bctest/output/dn_coarse_0001.nc']
-        datafiles = ['/home/wesley/ncfiles/smallcape_force_0001.nc']
+        fvFiles = ['/home/wesley/ncfiles/smallcape_force_0001.nc']
     else:
 
         #fvFile = '/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dngrid/june_2013_3D/output/'
-        fvFiles = ['/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dngrid/june_2013_3D/output/']
+        #fvFiles = ['/EcoII/EcoEII_server_data_tree/data/simulated/FVCOM/dngrid/june_2013_3D/output/']
+        fvFiles = ['/EcoII/EcoEII_server_data_tree/workspace/simulated/FVCOM/dngrid/june_2013_3D/output/']
         #adcpFile = '/EcoII/EcoEII_server_data_tree/data/observed/GP/ADCP/Flow_GP-130620-BPa_avg5.mat'
         #adcpFile = '/EcoII/EcoEII_server_data_tree/data/observed/GP/ADCP/Flow_GP-130620-BPb_avg5.mat'
         adcpFiles = ['/EcoII/EcoEII_server_data_tree/data/observed/GP/ADCP/Flow_GP-130620-BPa_avg5.mat',
