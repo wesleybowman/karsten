@@ -95,10 +95,11 @@ class station:
                 self.ua = ua
                 self.va = va
                 self.elev = elev
+                print self.ua.shape
 
             else:
-                print ua
-                print self.ua
+                print ua.shape
+                print self.ua.shape
                 self.siglay = np.hstack((self.siglay, siglay))
                 self.siglev = np.hstack((self.siglev, siglev))
                 self.u = np.hstack((self.u, u))
@@ -107,7 +108,7 @@ class station:
                 self.ua = np.hstack((self.ua, ua))
                 self.va = np.hstack((self.va, va))
                 self.elev = np.hstack((self.elev, elev))
-                print self.ua
+                print self.ua.shape
 
         self.time = self.time_JD + 678942 + self.time_second / (24*3600)
 
