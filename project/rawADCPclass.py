@@ -43,6 +43,7 @@ class rawADCP:
         except NotImplementedError:
             self.mat = h5py.File(filename)
             self.adcp = self.mat['adcp']
+            #self.adcp = Struct(**self.mat['adcp'])
 
     def Params_Stn4_SWNSreport(self, filename):
         fname = filename.split('/')

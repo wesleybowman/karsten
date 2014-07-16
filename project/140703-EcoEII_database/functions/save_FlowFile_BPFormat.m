@@ -32,7 +32,7 @@ yd = adcp.mtime - datenum(day1(1),0,0);
 tind = find(yd>params.tmin & yd<params.tmax);
 time.mtime = adcp.mtime(tind);
 dt = nanmean(diff(time.mtime));
-
+save dt.mat dt
 
 %% Depth
 if isempty(rbr)
@@ -57,6 +57,7 @@ else
     % Calculate ensemble average
     nens = round(dt/(rbr.mtime(2) - rbr.mtime(1)));
     mtimeens = rbr.mtime(nens/2):dt:rbr.mtime(end-nens/2);
+    save mtime.mat mtimeens
     mtimeens = mtimeens+params.rbr_hr_offset/24;
     depthens = calc_ensemble(rbr.depth,nens,1);
 
@@ -67,7 +68,7 @@ else
         if options.showRBRavg == 1
             figure
             hold all
-            plot(rbr.mtime,rbr.depth+params.dabPS)
+            plot(rbr.mtime+params.rbr_hr_offset/24,rbr.depth+params.dabPS)
             plot(time.mtime,pres.surf,'r','linewidth',2)
             legend('Raw data', 'Averaged data')
         end

@@ -1,7 +1,9 @@
 from __future__ import division
+import numpy as np
 from rawADCPclass import rawADCP
 from datetime import datetime
 from datetime import timedelta
+import scipy.io as sio
 
 def date2py(matlab_datenum):
     python_datetime = datetime.fromordinal(int(matlab_datenum)) + \
@@ -28,17 +30,29 @@ def save_FlowFile_BPFormat(fileinfo, adcp, rbr, params, options):
     #date_time = [date2py(tval[0]) for tval in adcp.mtime[:]]
     datenum = datetime(day1.year,1,1) + timedelta(365)
     datenum = datenum.toordinal()
-    yd = adcp.mtime[:] - datenum
 
-    mini = timedelta(days=params.tmin)
-    maxi = timedelta(days=params.tmax)
+    yd = adcp.mtime[:].flatten() - datenum
+    tind = np.where((yd > params.tmin) & (yd < params.tmax))[0]
 
-    nmin = datetime(day1.year,1,1) + mini
-    nmax = datetime(day1.year,1,1) + maxi
+    time = {}
+    time['mtime'] = adcp.mtime[:].flatten()[tind]
+    dt = np.nanmean(np.diff(time['mtime']))
+
+    if not rbr:
+        print 'Depths measured by ADCP not yet coded.'
+    else:
+        print 'Ensemble averaging rbr data'
+
+        nens = round(dt/(rbr.mtime[1] - rbr.mtime[0]))
 
 
 
-    print yd
+#    mini = timedelta(days=params.tmin)
+#    maxi = timedelta(days=params.tmax)
+#
+#    nmin = datetime(day1.year,1,1) + mini
+#    nmax = datetime(day1.year,1,1) + maxi
+#    print yd
 
 
 
@@ -47,9 +61,49 @@ if __name__ == '__main__':
     data = rawADCP(filename)
     adcp = Struct(**data.adcp)
     params = Struct(**data.saveparams)
+    rbr = Struct(**data.rbr)
 
 #    save_FlowFile_BPFormat(data.fileinfo, data.adcp, data.rbr,
 #                           data.saveparams, data.options)
 
-    save_FlowFile_BPFormat(data.fileinfo, adcp, data.rbr,
-                           params, data.options)
+    day1 = date2py(adcp.mtime[0][0])
+    #date_time = [date2py(tval[0]) for tval in adcp.mtime[:]]
+    datenum = datetime(day1.year,1,1) + timedelta(365)
+    datenum = datenum.toordinal()
+    yd = adcp.mtime[:].flatten() - datenum
+    tind = np.where((yd > params.tmin) & (yd < params.tmax))[0]
+
+    time = {}
+    time['mtime'] = adcp.mtime[:].flatten()[tind]
+    dt = np.nanmean(np.diff(time['mtime']))
+
+    if not rbr:
+        print 'Depths measured by ADCP not yet coded.'
+    else:
+        print 'Ensemble averaging rbr data'
+
+        nens = round(dt/(rbr.mtime[1] - rbr.mtime[0]))
+        temp = np.arange(rbr.mtime[nens/2-1], rbr.mtime[-1-nens/2], dt)
+        temp2 = np.r_[rbr.mtime[nens/2-1]: rbr.mtime[-1-nens/2]: dt]
+
+        # Load in matlab values
+        filename = './140703-EcoEII_database/scripts_examples/mtime.mat'
+        mat = sio.loadmat(filename, struct_as_record=False, squeeze_me=True)
+        matTimes = mat['mtimeens']
+        filename = './140703-EcoEII_database/scripts_examples/dt.mat'
+        mat = sio.loadmat(filename, struct_as_record=False, squeeze_me=True)
+        matdt = mat['dt']
+
+        print matTimes.shape
+        print temp - matTimes
+        print temp2 - matTimes
+        print dt - matdt
+
+#        mtimeens = rbr.mtime[nens/2]rdt:rbr.mtime[end-nens/2]
+#        mtimeens = mtimeens+params.rbr_hr_offset/24
+#
+#        depthens = calc_ensemble(rbr.depth,nens,1);
+
+
+#    save_FlowFile_BPFormat(data.fileinfo, adcp, data.rbr,
+#                           params, data.options)
