@@ -31,8 +31,11 @@ day1 = datevec(adcp.mtime(1));
 yd = adcp.mtime - datenum(day1(1),0,0);
 tind = find(yd>params.tmin & yd<params.tmax);
 time.mtime = adcp.mtime(tind);
+mtime = adcp.mtime(tind);
+
 dt = nanmean(diff(time.mtime));
 save dt.mat dt
+save time.mat mtime
 
 %% Depth
 if isempty(rbr)
@@ -57,9 +60,10 @@ else
     % Calculate ensemble average
     nens = round(dt/(rbr.mtime(2) - rbr.mtime(1)));
     mtimeens = rbr.mtime(nens/2):dt:rbr.mtime(end-nens/2);
-    save mtime.mat mtimeens
+    save mtime.mat mtimeens 
     mtimeens = mtimeens+params.rbr_hr_offset/24;
     depthens = calc_ensemble(rbr.depth,nens,1);
+    save depthens.mat depthens
 
     disp('Interpolating the ensembled data')
     pres.surf = interp1(mtimeens,depthens,time.mtime,'linear')+params.dabPS;
