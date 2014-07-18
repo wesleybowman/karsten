@@ -63,7 +63,7 @@ class rawADCP:
         self.saveparams['zmin'] = 0
         self.saveparams['zmax'] = 20
         self.saveparams['approxdepth'] = 15.5
-        self.saveparams['flooddi'] = 0
+        self.saveparams['flooddir'] = 0
         self.saveparams['declination'] = -17.25
         self.saveparams['lat'] =  44.2605
         self.saveparams['lon'] = -66.3354

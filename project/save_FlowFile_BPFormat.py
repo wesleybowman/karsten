@@ -86,6 +86,100 @@ def rotate_to_true(X, Y, theta=-19):
     return x, y
 
 
+def get_DirFromN(u,v):
+    '''
+    #This function computes the direction from North with the output in degrees
+    #and measured clockwise from north.
+    #
+    # Inputs:
+    #   u: eastward component
+    #   v: northward component
+    '''
+
+    theta = np.arctan2(u,v) * 180 / np.pi
+
+    ind = np.where(theta<0)
+    theta[ind] = theta[ind] + 360
+    return theta
+
+def sign_speed(u_all, v_all, s_all, dir_all, flood_heading):
+
+    if type(flood_heading)==int:
+        flood_heading += np.array([-90, 90])
+
+    s_signed_all = np.empty(spd_all.shape)
+    s_signed_all.fill(np.nan)
+
+    PA_all = np.zeros(s_all.shape[-1])
+    for i in xrange(s_all.shape[-1]):
+        u = u_all[:, i]
+        v = v_all[:, i]
+        dir = dir_all[:, i]
+        s = s_all[:, i]
+
+        #determine principal axes - potentially a problem if axes are very kinked
+        #   since this would misclassify part of ebb and flood
+        PA, _ = principal_axis(u, v)
+        PA_all[i] = PA
+
+        # sign speed - eliminating wrap-around
+        dir_PA = dir - PA
+
+        dir_PA[dir_PA < -90] += 360
+        dir_PA[dir_PA > 270] -= 360
+
+        #dir_PA[dir_PA<-90] = dir_PA(dir_PA<-90) + 360;
+        #dir_PA(dir_PA>270) = dir_PA(dir_PA>270) - 360;
+
+        #general direction of flood passed as input argument
+        #if PA >= flood_heading[0] and PA <= flood_heading[1]:
+        if flood_heading[0] <= PA <= flood_heading[1]:
+            #ind_fld = find(dir_PA >= -90 & dir_PA<90)
+            ind_fld = np.where((dir_PA >= -90) & (dir_PA<90))
+            s_signed = -s
+            s_signed[ind_fld] = s[ind_fld]
+        else:
+            ind_ebb = np.where((dir_PA >= -90) & (dir_PA<90))
+            s_signed = s
+            s_signed[ind_ebb] = -s[ind_ebb]
+
+        s_signed_all[:, i] = s_signed
+
+    return s_signed_all, PA_all
+
+def principal_axis(u, v):
+
+    #create velocity matrix
+    U = np.vstack((u,v)).T
+    #eliminate NaN values
+    U = U[~np.isnan(U[:, 0]), :]
+    #convert matrix to deviate form
+    rep = np.tile(np.mean(U, axis=0), [len(U), 1])
+    U -= rep
+    #compute covariance matrix
+    R = np.dot(U.T, U) / (len(U) - 1)
+
+    #calculate eigenvalues and eigenvectors for covariance matrix
+    lamb, V = np.linalg.eig(R)
+    #sort eignvalues in descending order so that major axis is given by first eigenvector
+    # sort in descending order with indices
+    ilamb = sorted(range(len(lamb)), key=lambda k: lamb[k], reverse=True)
+    lamb = sorted(lamb, reverse=True)
+    # reconstruct the eigenvalue matrix
+    lamb = np.diag(lamb)
+    #reorder the eigenvectors
+    V = V[:, ilamb]
+
+    #rotation angle of major axis in radians relative to cartesian coordiantes
+    ra = np.arctan2(V[0,1], V[1,1])
+    #express principal axis in compass coordinates
+    PA = -ra * 180 / np.pi + 90
+    #variance captured by principal
+    varxp_PA = np.diag(lamb[0]) / np.trace(lamb)
+
+    return PA, varxp_PA
+
+
 class Struct:
     def __init__(self, **entries):
         self.__dict__.update(entries)
@@ -126,6 +220,7 @@ def save_FlowFile_BPFormat(fileinfo, adcp, rbr, params, options):
 if __name__ == '__main__':
     filename = '140703-EcoEII_database/data/GP-120726-BPd_raw.mat'
     data = rawADCP(filename)
+    rawdata = rawADCP(filename)
     #adcp = Struct(**data.adcp)
     rawADCP = data.adcp
     adcp = data.adcp
@@ -234,27 +329,24 @@ if __name__ == '__main__':
                                                               params['hdgmod'])
         #Comments{end+1} = 'East and north velocity rotated by params.hdgmod';
 
+    # Rotate east_vel and north_vel to be relative to true north
     data['east_vel'], data['north_vel'] = \
         rotate_to_true(adcp['east_vel'][:][tind][:, zind],
                        adcp['north_vel'][:][tind][:, zind],
                        params['declination'])
 
     # Direction
+    data['dir_vel'] = get_DirFromN(data['east_vel'],data['north_vel'])
 
+    # Signed Speed
+    spd_all = np.sqrt(data['east_vel']**2+data['north_vel']**2)
 
+    # Determine flood and ebb based on principal direction (Polagye Routine)
+    print 'Getting signed speed (Principal Direction Method) -- used all speeds'
+    s_signed_all, PA_all = sign_speed(data['east_vel'], data['north_vel'],
+                                      spd_all, data['dir_vel'], params['flooddir'])
 
+    data['mag_signed_vel'] = s_signed_all
 
-
-
-#data.dir_vel = get_DirFromN(data.east_vel,data.north_vel);
-#
-#% Signed Speed
-#spd_all = sqrt(data.east_vel.^2+data.north_vel.^2);
-#% Determine flood and ebb based on principal direction (Polagye Routine)
-#disp('Getting signed speed (Principal Direction Method) -- used all speeds')
-#[s_signed_all, PA_all] = sign_speed(data.east_vel, data.north_vel, spd_all, data.dir_vel, params.flooddir);
-#data.mag_signed_vel = s_signed_all;
-#
-#
 ##    save_FlowFile_BPFormat(data.fileinfo, adcp, data.rbr,
 ##                           params, data.options)
