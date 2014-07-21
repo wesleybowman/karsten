@@ -6,6 +6,7 @@ from datetime import timedelta
 import scipy.io as sio
 import scipy.interpolate as sip
 import matplotlib.pyplot as plt
+import seaborn
 
 def date2py(matlab_datenum):
     python_datetime = datetime.fromordinal(int(matlab_datenum)) + \
@@ -107,7 +108,7 @@ def sign_speed(u_all, v_all, s_all, dir_all, flood_heading):
     if type(flood_heading)==int:
         flood_heading += np.array([-90, 90])
 
-    s_signed_all = np.empty(spd_all.shape)
+    s_signed_all = np.empty(s_all.shape)
     s_signed_all.fill(np.nan)
 
     PA_all = np.zeros(s_all.shape[-1])
@@ -128,13 +129,8 @@ def sign_speed(u_all, v_all, s_all, dir_all, flood_heading):
         dir_PA[dir_PA < -90] += 360
         dir_PA[dir_PA > 270] -= 360
 
-        #dir_PA[dir_PA<-90] = dir_PA(dir_PA<-90) + 360;
-        #dir_PA(dir_PA>270) = dir_PA(dir_PA>270) - 360;
-
         #general direction of flood passed as input argument
-        #if PA >= flood_heading[0] and PA <= flood_heading[1]:
         if flood_heading[0] <= PA <= flood_heading[1]:
-            #ind_fld = find(dir_PA >= -90 & dir_PA<90)
             ind_fld = np.where((dir_PA >= -90) & (dir_PA<90))
             s_signed = -s
             s_signed[ind_fld] = s[ind_fld]
@@ -173,7 +169,8 @@ def principal_axis(u, v):
     #rotation angle of major axis in radians relative to cartesian coordiantes
     ra = np.arctan2(V[0,1], V[1,1])
     #express principal axis in compass coordinates
-    PA = -ra * 180 / np.pi + 90
+    # WES_COMMENT: may need to change this, cause in original is -ra
+    PA = ra * 180 / np.pi + 90
     #variance captured by principal
     varxp_PA = np.diag(lamb[0]) / np.trace(lamb)
 
@@ -184,103 +181,64 @@ class Struct:
     def __init__(self, **entries):
         self.__dict__.update(entries)
 
-def save_FlowFile_BPFormat(fileinfo, adcp, rbr, params, options):
-    print adcp.mtime[0]
-    day1 = date2py(adcp.mtime[0][0])
+
+def save_FlowFile_BPFormat(fileinfo, adcp, rbr, params, options, debug=False):
+
+    comments = ['data is in Polagye Tools format',
+                'data.east_vel and data.north_vel are relative to true north',
+               'The parameters were set by ' + fileinfo['paramfile']]
+
+    day1 = date2py(adcp['mtime'][0][0])
     print day1
     #date_time = [date2py(tval[0]) for tval in adcp.mtime[:]]
     datenum = datetime(day1.year,1,1) + timedelta(365)
     datenum = datenum.toordinal()
 
-    yd = adcp.mtime[:].flatten() - datenum
-    tind = np.where((yd > params.tmin) & (yd < params.tmax))[0]
-
-    time = {}
-    time['mtime'] = adcp.mtime[:].flatten()[tind]
-    dt = np.nanmean(np.diff(time['mtime']))
-
-    if not rbr:
-        print 'Depths measured by ADCP not yet coded.'
-    else:
-        print 'Ensemble averaging rbr data'
-
-        nens = round(dt/(rbr.mtime[1] - rbr.mtime[0]))
-
-
-
-#    mini = timedelta(days=params.tmin)
-#    maxi = timedelta(days=params.tmax)
-#
-#    nmin = datetime(day1.year,1,1) + mini
-#    nmax = datetime(day1.year,1,1) + maxi
-#    print yd
-
-
-
-if __name__ == '__main__':
-    filename = '140703-EcoEII_database/data/GP-120726-BPd_raw.mat'
-    data = rawADCP(filename)
-    rawdata = rawADCP(filename)
-    #adcp = Struct(**data.adcp)
-    rawADCP = data.adcp
-    adcp = data.adcp
-    params = Struct(**data.saveparams)
-    params = data.saveparams
-    rbr = Struct(**data.rbr)
-
-#    save_FlowFile_BPFormat(data.fileinfo, data.adcp, data.rbr,
-#                           data.saveparams, data.options)
-
-    debug = False
-    #day1 = date2py(adcp.mtime[0][0])
-    day1 = date2py(adcp['mtime'][0][0])
-    #date_time = [date2py(tval[0]) for tval in adcp.mtime[:]]
-    datenum = datetime(day1.year,1,1) + timedelta(365)
-    datenum = datenum.toordinal()
-    #yd = adcp.mtime[:].flatten() - datenum
     yd = adcp['mtime'][:].flatten() - datenum
-    #tind = np.where((yd > params.tmin) & (yd < params.tmax))[0]
     tind = np.where((yd > params['tmin']) & (yd < params['tmax']))[0]
 
+    pres = {}
     time = {}
     time['mtime'] = adcp['mtime'][:].flatten()[tind]
     dt = np.nanmean(np.diff(time['mtime']))
-    pres = {}
 
     if not rbr:
         print 'Depths measured by ADCP not yet coded.'
+        comments.append('Depths as measured by ADCP')
     else:
         print 'Ensemble averaging rbr data'
+        comments.append('Depths as measured by RBR sensor')
 
         nens = round(dt/(rbr.mtime[1] - rbr.mtime[0]))
         temp = np.arange(rbr.mtime[nens/2-1], rbr.mtime[-1-nens/2], dt)
-        temp2 = np.r_[rbr.mtime[nens/2-1]: rbr.mtime[-1-nens/2]: dt]
-
-        # Load in matlab values
-        filename = './140703-EcoEII_database/scripts_examples/mtime.mat'
-        mat = sio.loadmat(filename, struct_as_record=False, squeeze_me=True)
-        matTimes = mat['mtimeens']
-        filename = './140703-EcoEII_database/scripts_examples/dt.mat'
-        mat = sio.loadmat(filename, struct_as_record=False, squeeze_me=True)
-        matdt = mat['dt']
-
+        #temp2 = np.r_[rbr.mtime[nens/2-1]: rbr.mtime[-1-nens/2]: dt]
 
         mtimeens = np.arange(rbr.mtime[nens/2-1], rbr.mtime[-1-nens/2], dt)
-        #mtimeens = mtimeens + params.rbr_hr_offset / 24
         mtimeens = mtimeens + params['rbr_hr_offset'] / 24
         depthens = calc_ensemble(rbr.depth, nens, 1)
 
-        filename = './140703-EcoEII_database/scripts_examples/depthens.mat'
-        mat = sio.loadmat(filename, struct_as_record=False, squeeze_me=True)
-        matdepthens = mat['depthens']
+        temp = sip.interp1d(mtimeens, depthens, kind='linear')
 
-        filename = './140703-EcoEII_database/scripts_examples/time.mat'
-        mat = sio.loadmat(filename, struct_as_record=False, squeeze_me=True)
-        matmtime = mat['mtime']
+        pres['surf']= temp(time['mtime']) + params['dabPS']
 
-
-        debug = True
         if debug:
+            # Load in matlab values for testing
+            filename = './140703-EcoEII_database/scripts_examples/mtime.mat'
+            mat = sio.loadmat(filename, struct_as_record=False, squeeze_me=True)
+            matTimes = mat['mtimeens']
+            filename = './140703-EcoEII_database/scripts_examples/dt.mat'
+            mat = sio.loadmat(filename, struct_as_record=False, squeeze_me=True)
+            matdt = mat['dt']
+
+
+            filename = './140703-EcoEII_database/scripts_examples/depthens.mat'
+            mat = sio.loadmat(filename, struct_as_record=False, squeeze_me=True)
+            matdepthens = mat['depthens']
+
+            filename = './140703-EcoEII_database/scripts_examples/time.mat'
+            mat = sio.loadmat(filename, struct_as_record=False, squeeze_me=True)
+            matmtime = mat['mtime']
+
             print matTimes.shape
             print temp - matTimes
             print temp2 - matTimes
@@ -288,25 +246,6 @@ if __name__ == '__main__':
             print depthens - matdepthens
             print 'time'
             print time['mtime'] - matmtime
-
-        temp = sip.interp1d(mtimeens, depthens, kind='linear')
-
-        #pres['surf']= temp(time['mtime']) + params.dabPS
-        pres['surf']= temp(time['mtime']) + params['dabPS']
-
-        #if data.options['showRBRavg']:
-        if debug:
-            #plt.plot(rbr.mtime+params.rbr_hr_offset/24, rbr.depth+params.dabPS,
-            #         label='RBR')
-            #plt.plot(time['mtime'], pres['surf'], 'r', label='AVG')
-            plt.plot(rbr.mtime+params['rbr_hr_offset']/24, rbr.depth+params['dabPS'],
-                     label='RBR')
-            plt.plot(time['mtime'], pres['surf'], 'r', label='AVG')
-            plt.xlabel('Time')
-            plt.ylabel('Elevation')
-            plt.legend(bbox_to_anchor=(0, 0, 1, 1), bbox_transform=plt.gcf().transFigure)
-
-            plt.show()
 
     ## zlevels
     data = {}
@@ -316,18 +255,16 @@ if __name__ == '__main__':
     data['bins'] = z[zind]
 
     ## Currents
-    #data['vert_vel'] = adcp['vert_vel'][:][zind, tind].T
-    #data['error_vel'] = adcp['error_vel'][:][zind, tind].T
     data['vert_vel'] = adcp['vert_vel'][:][tind][:, zind]
     data['error_vel'] = adcp['error_vel'][:][tind][:, zind]
 
     # If compass wasn't calibrated
-    #if isfield(params,'hdgmod'):
     if 'hdgmod' in params:
         adcp['east_vel'][:], adcp['north_vel'][:] = rotate_coords(adcp['east_vel'][:],
                                                               adcp['north_vel'][:],
                                                               params['hdgmod'])
-        #Comments{end+1} = 'East and north velocity rotated by params.hdgmod';
+
+        comments.append('East and north velocity rotated by params.hdgmod')
 
     # Rotate east_vel and north_vel to be relative to true north
     data['east_vel'], data['north_vel'] = \
@@ -348,5 +285,63 @@ if __name__ == '__main__':
 
     data['mag_signed_vel'] = s_signed_all
 
-##    save_FlowFile_BPFormat(data.fileinfo, adcp, data.rbr,
-##                           params, data.options)
+    if options['showRBRavg'] or debug:
+        print 'Plotting RBR vs average'
+        plt.plot(rbr.mtime + params['rbr_hr_offset'] / 24, rbr.depth+params['dabPS'],
+                    label='RBR')
+        plt.plot(time['mtime'], pres['surf'], 'r', label='AVG')
+        plt.xlabel('Time')
+        plt.ylabel('Elevation')
+        plt.legend(bbox_to_anchor=(0, 0, 1, 1), bbox_transform=plt.gcf().transFigure)
+
+        plt.show()
+
+    if options['showPA'] or debug:
+        print 'Plotting PA vs mean'
+        plt.plot(PA_all, data['bins'], label='PA')
+        plt.plot(np.array([PA_all[0], PA_all[-1]]),
+                 np.array([np.mean(pres['surf']), np.mean(pres['surf'])]),
+                 label='mean')
+
+        plt.xlabel('Principal Axis Direction\n(clockwise from north)')
+        plt.ylabel('z (m)')
+        plt.legend(bbox_to_anchor=(0, 0, 1, 1), bbox_transform=plt.gcf().transFigure)
+        plt.show()
+
+    ## save
+    lon = params['lon']
+    lat = params['lat']
+
+    outfile = fileinfo['outdir'] + fileinfo['flowfile']
+    print 'Saving data to {0}'.format(outfile)
+
+    saveDict = {'data':data, 'pres':pres, 'time':time, 'lon':lon, 'lat':lat,
+                'params':params, 'comments':comments}
+    #save(outfile,'data','pres','time','lon','lat','params','Comments')
+
+    ## Save metadata
+    #metadata.progname=[mfilename('fullpath')];
+    #metadata.date = datestr(now);
+    #metadata.paramfile = fileinfo.paramfile;
+    #save(outfile,'metadata','-append')
+    return saveDict
+
+
+
+if __name__ == '__main__':
+    filename = '140703-EcoEII_database/data/GP-120726-BPd_raw.mat'
+    data = rawADCP(filename)
+    rawdata = rawADCP(filename)
+    #adcp = Struct(**data.adcp)
+    #rawADCP = data.adcp
+    adcp = data.adcp
+    #params = Struct(**data.saveparams)
+    params = data.saveparams
+    rbr = Struct(**data.rbr)
+
+#    save_FlowFile_BPFormat(data.fileinfo, data.adcp, data.rbr,
+#                           data.saveparams, data.options)
+
+    saveDict = \
+    save_FlowFile_BPFormat(data.fileinfo, adcp, rbr,
+                           params, data.options)

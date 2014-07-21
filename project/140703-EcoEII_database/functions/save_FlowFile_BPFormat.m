@@ -32,6 +32,7 @@ yd = adcp.mtime - datenum(day1(1),0,0);
 tind = find(yd>params.tmin & yd<params.tmax);
 time.mtime = adcp.mtime(tind);
 mtime = adcp.mtime(tind);
+options.checkSS = 1;
 
 dt = nanmean(diff(time.mtime));
 save dt.mat dt
