@@ -71,9 +71,12 @@ def main(fvFiles, adcpFiles, tideFiles, debug=False):
 
         #adcpName = adcpFile.split('/')[-1].split('.')[0]
 
-        adcp_obs = pd.DataFrame({'ua':adcpData.ua, 'va':adcpData.va,
-                                 'elev':adcpData.surf, 'u':adcpData.u,
-                                 'v':adcpData.v, 'bins':adcpData.bins})
+        adcp_obs = pd.DataFrame({'ua':adcpData.ua,
+                                 'va':adcpData.va,
+                                 'elev':adcpData.surf,
+                                 'u':adcpData.east_vel,
+                                 'v':adcpData.north_vel,
+                                 'bins':adcpData.bins})
 
         for fvFile in fvFiles:
 
