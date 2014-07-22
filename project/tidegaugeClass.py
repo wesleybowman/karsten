@@ -28,7 +28,7 @@ class Tidegauge:
     def harmonics(self, **kwarg):
 
         self.coef = ut_solv(self.time,
-                            (self.data-np.mean(self.data)), [],
+                            self.elev, [],
                             self.lat, **kwarg)
 
     def reconstr(self, time):
