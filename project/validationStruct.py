@@ -90,8 +90,10 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
             saveName = fvFile + 'validationStruct.p'
             if isStation:
                 fvData = station(fvFile)
+                ind = closest_point(lonlat, fvData.lon, fvData.lat)
             else:
                 fvData = FVCOM(fvFile, ax)
+                ind = fvData.closest_point(lonlat)
 
 
             #lonlat = np.array([adcpData.x[0], adcpData.y[0]]).T
