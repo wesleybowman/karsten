@@ -41,7 +41,7 @@ def datetime2matlabdn(dt):
 
 
 
-def main(fvFiles, adcpFiles, tideFiles, debug=False):
+def main(fvFiles, adcpFiles, tideFiles, isStation=True, debug=False):
 
     #fvdebugData = FVCOM(fvdebug)
     saveName = 'validationStruct.p'
@@ -88,7 +88,11 @@ def main(fvFiles, adcpFiles, tideFiles, debug=False):
 
             print fvFile
             saveName = fvFile + 'validationStruct.p'
-            fvData = station(fvFile)
+            if isStation:
+                fvData = station(fvFile)
+            else:
+                fvData = FVCOM(fvFile)
+
 
             #lonlat = np.array([adcpData.x[0], adcpData.y[0]]).T
             ind = closest_point(lonlat, fvData.lon, fvData.lat)
@@ -156,7 +160,10 @@ def main(fvFiles, adcpFiles, tideFiles, debug=False):
 
             print fvFile
             saveName = fvFile + 'validationStruct.p'
-            fvData = station(fvFile)
+            if isStation:
+                fvData = station(fvFile)
+            else:
+                fvData = FVCOM(fvFile)
 
             ind = np.argmin(np.sqrt((fvData.lon-tideData.lon)**2+(fvData.lat-tideData.lat)**2))
             print ind
