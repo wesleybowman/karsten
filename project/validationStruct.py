@@ -150,7 +150,7 @@ def main(fvFiles, adcpFiles, tideFiles, debug=False):
                            rmin=0.95, method='ols', nodiagn=True, linci=True,
                            ordercnstit='frq')
 
-        obs = {'data':tideData.data, 'elev':tideData.elev}
+        tide_obs = {'data':tideData.data, 'elev':tideData.elev}
 
         for fvFile in fvFiles:
 
@@ -174,10 +174,11 @@ def main(fvFiles, adcpFiles, tideFiles, debug=False):
                         adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
                         method='ols', nodiagn=True, linci=True, conf_int=True)
 
-            mod = pd.DataFrame({'ua':fvData.ua[:, ind].flatten(),
-                                'va':fvData.va[:, ind].flatten(),
-                                'elev':fvData.elev[:, ind].flatten(),
-                                'u':fvData.u, 'v':fvData.v})
+            mod = {'ua':fvData.ua[:, ind].flatten(),
+                   'va':fvData.va[:, ind].flatten(),
+                   'elev':fvData.elev[:, ind].flatten(),
+                   'u':fvData.u,
+                   'v':fvData.v}
 
 
             obs_loc = {'name':tideFile, 'type':'TideGauge',
@@ -187,7 +188,8 @@ def main(fvFiles, adcpFiles, tideFiles, debug=False):
                        'lat':tideData.lat,
                        'elev_obs_harmonics':tideData.coef,
                        'elev_mod_harmonics': fvElevCoef,
-                       'obs_timeseries':obs}
+                       'obs_timeseries':tide_obs,
+                       'mod_timeseries':mod}
 
 
             struct = np.hstack((struct, obs_loc))
