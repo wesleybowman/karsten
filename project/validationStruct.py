@@ -71,18 +71,18 @@ def main(fvFiles, adcpFiles, tideFiles, debug=False):
 
         #adcpName = adcpFile.split('/')[-1].split('.')[0]
 
-#        adcp_obs = {'ua':adcpData.ua,
-#                    'va':adcpData.va,
-#                    'elev':adcpData.surf,
-#                    'u':adcpData.east_vel,
-#                    'v':adcpData.north_vel,
-#                    'bins':adcpData.bins}
+        adcp_obs = {'ua':adcpData.ua,
+                    'va':adcpData.va,
+                    'elev':adcpData.surf,
+                    'u':adcpData.east_vel,
+                    'v':adcpData.north_vel,
+                    'bins':adcpData.bins}
 
-        adcp_obs = pd.DataFrame({'ua':adcpData.ua,
-                                 'va':adcpData.va,
-                                 'elev':adcpData.surf,
-                                 'u':adcpData.east_vel,
-                                 'v':adcpData.north_vel})
+#        adcp_obs = pd.DataFrame({'ua':adcpData.ua,
+#                                 'va':adcpData.va,
+#                                 'elev':adcpData.surf,
+#                                 'u':adcpData.east_vel,
+#                                 'v':adcpData.north_vel})
 
         for fvFile in fvFiles:
 
@@ -129,8 +129,8 @@ def main(fvFiles, adcpFiles, tideFiles, debug=False):
                        'vel_obs_harmonics':adcpVelCoef,
                        'elev_obs_harmonics':adcpElevCoef,
                        'vel_mod_harmonics':fvVelCoef,
-                       'elev_mod_harmonics':fvElevCoef,
-                       'adcp_bins':adcpData.bins}
+                       'elev_mod_harmonics':fvElevCoef}
+                       #'adcp_bins':adcpData.bins}
 
 #            obs_loc = {'name': adcpName, 'type':'ADCP', 'lat':fvdebugData.lat[newind],
 #                    'lon':fvdebugData.lon[newind], 'obs_timeseries':adcp_obs,
