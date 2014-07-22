@@ -160,9 +160,9 @@ def main(fvFiles, adcpFiles, tideFiles, debug=False):
 
             ind = np.argmin(np.sqrt((fvData.lon-tideData.lon)**2+(fvData.lat-tideData.lat)**2))
             print ind
-            lonlat = np.array([tideData.lon[0], tideData.lat[0]]).T
-            ind = closest_point(lonlat, fvData.lon, fvData.lat)
-            print ind
+            #lonlat = np.array([tideData.lon[0], tideData.lat[0]]).T
+            #ind = closest_point(lonlat, fvData.lon, fvData.lat)
+            #print ind
 
             print fvData.time.shape
             print fvData.ua[:, ind].shape
