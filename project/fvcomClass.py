@@ -2,6 +2,8 @@ from __future__ import division
 import numpy as np
 import netCDF4 as nc
 import sys
+import os
+import fnmatch
 sys.path.append('/home/wesley/github/UTide/')
 from utide import ut_solv, ut_reconstr
 from shortest_element_path import shortest_element_path
@@ -24,18 +26,157 @@ class FVCOM:
         ax = [min(lon_coord), max(lon_coord), min(lat_coord), max(lat_coord)]
     '''
 
-    def __init__(self, filename, elements=slice(None), ax=[], debug=False):
+    def __init__(self, filename, elements=slice(None), ax=[], onlyGrid=False, debug=False):
         self.QC = ['raw data']
-
-        self.debug = debug
-        self.ax = ax
-        self.data = nc.Dataset(filename, 'r')
-        self.load(filename, elements)
 
         if ax:
             self.ax = ax
         else:
-            self.ax = [min(self.lon), max(self.lon), min(self.lat), max(self.lat)]
+            #self.ax = [min(self.lon), max(self.lon), min(self.lat), max(self.lat)]
+            self.ax = elements
+
+        self.debug = debug
+
+        if onlyGrid:
+            self.loadGrid(filename)
+        else:
+            self.isMulti(filename, self.ax)
+
+
+
+    def isMulti(self, filename, ax):
+        split = filename.split('/')
+
+        if split[-1]:
+            self.multi = False
+            self.load(filename, ax)
+        else:
+            self.multi = True
+            self.loadMulti(filename, ax)
+
+    def loadMulti(self, filename, ax):
+        self.matches = self.findFiles(filename)
+
+        #self.loadGrid(filename)
+
+        self.x = np.array([])
+        self.y = np.array([])
+        self.xc = np.array([])
+        self.yc = np.array([])
+        self.lonc = np.array([])
+        self.latc = np.array([])
+        self.lon = np.array([])
+        self.lat = np.array([])
+        self.siglay = np.array([])
+        self.siglev = np.array([])
+        self.h = np.array([])
+        self.time = np.array([])
+        self.u = np.array([])
+        self.v = np.array([])
+        self.ww = np.array([])
+        self.ua = np.array([])
+        self.va = np.array([])
+        self.elev = np.array([])
+
+        for i, v in enumerate(self.matches):
+            data = nc.Dataset(v, 'r')
+            x = data.variables['x'][:]
+            y = data.variables['y'][:]
+            xc = data.variables['xc'][:]
+            yc = data.variables['yc'][:]
+            lon = data.variables['lon'][:]
+            lat = data.variables['lat'][:]
+            lonc = data.variables['lonc'][:]
+            latc = data.variables['latc'][:]
+            siglay = data.variables['siglay'][:]
+            siglev = data.variables['siglev'][:]
+            h = data.variables['h'][:]
+            time = data.variables['time'][:]
+
+            # WES_COMMENT: I do this since el_region takes the class variable
+            # self.latc, etc. Therefore this could be done more effectively,
+            # but it shouldn't hurt anything since all of these variables are
+            # small and quick
+            self.lon = data.variables['lon'][:]
+            self.lat = data.variables['lat'][:]
+            self.lonc = data.variables['lonc'][:]
+            self.latc = data.variables['latc'][:]
+
+            self.el_region()
+            self.node_region()
+
+            try:
+                u = data.variables['u'][:, :, self.region_e]
+                v = data.variables['v'][:, :, self.region_e]
+                ww = data.variables['ww'][:, :, self.region_e]
+                self.D3 = True
+            except KeyError:
+                self.D3 = False
+
+            print self.region_e
+            print data.variables['ua'].shape
+            ua = data.variables['ua'][:, self.region_e]
+            va = data.variables['va'][:, self.region_e]
+            elev = data.variables['zeta'][:, self.region_n]
+
+            self.x = np.hstack((self.x, x))
+            self.y = np.hstack((self.y, y))
+            self.xc = np.hstack((self.xc, xc))
+            self.yc = np.hstack((self.yc, yc))
+            self.lon = np.hstack((self.lon, lon))
+            self.lat = np.hstack((self.lat, lat))
+            self.lonc = np.hstack((self.lonc, lonc))
+            self.latc = np.hstack((self.latc, latc))
+            self.h = np.hstack((self.h, h))
+            self.time = np.hstack((self.time, time))
+
+            if i == 0:
+                self.siglay = siglay
+                self.siglev = siglev
+                self.ua = ua
+                self.va = va
+                self.elev = elev
+                if self.D3:
+                    self.u = u
+                    self.v = v
+                    self.ww = ww
+
+            else:
+                self.siglay = np.vstack((self.siglay, siglay))
+                self.siglev = np.vstack((self.siglev, siglev))
+                self.ua = np.vstack((self.ua, ua))
+                self.va = np.vstack((self.va, va))
+                self.elev = np.vstack((self.elev, elev))
+                if self.D3:
+                    self.u = np.vstack((self.u, u))
+                    self.v = np.vstack((self.v, v))
+                    self.ww = np.vstack((self.ww, ww))
+
+
+    def findFiles(self, filename):
+        '''
+        Wesley comment: the name needs to be a linux expression to find files
+        you want. For multiple station files, this would work
+        name = '*station*.nc'
+
+        For just dngrid_0001 and no restart files:
+        name = 'dngrid_0*.nc'
+        will work
+        '''
+
+        # WES_COMMENT: This has been hardcoded, and once we have a regular
+        # naming convention a hard-coded name will work fine.
+
+        name = 'dngrid_0*.nc'
+        name = 'small*.nc'
+        self.matches = []
+        for root, dirnames, filenames in os.walk(filename):
+            for filename in fnmatch.filter(filenames, name):
+                self.matches.append(os.path.join(root, filename))
+
+        return sorted(self.matches)
+
+
 
     def el_region(self):
 
@@ -44,25 +185,28 @@ class FVCOM:
                                     (self.latc >= self.ax[2]) &
                                     (self.latc <= self.ax[3]))
 
+        self.region_e = self.region_e.flatten()
+        self.QC.append('Made region for elements out of {}'.format(self.ax))
+
         if self.debug:
             print self.region_e
 
     def node_region(self):
-
-        self.lon = self.data.variables['lon'][:]
-        self.lat = self.data.variables['lat'][:]
 
         self.region_n = np.argwhere((self.lon >= self.ax[0]) &
                                     (self.lon <= self.ax[1]) &
                                     (self.lat >= self.ax[2]) &
                                     (self.lat <= self.ax[3]))
 
+        self.region_n = self.region_n.flatten()
+        self.QC.append('Made region for nodes out of {}'.format(self.ax))
+
         if self.debug:
             print self.region_n
 
-    def load(self, filename, elements):
+
+    def loadGrid(self, filename):
         self.data = nc.Dataset(filename, 'r')
-        # self.data = sio.netcdf.netcdf_file(filename, 'r')
         self.x = self.data.variables['x'][:]
         self.y = self.data.variables['y'][:]
         self.xc = self.data.variables['xc'][:]
@@ -71,6 +215,31 @@ class FVCOM:
         self.lat = self.data.variables['lat'][:]
         self.lonc = self.data.variables['lonc'][:]
         self.latc = self.data.variables['latc'][:]
+        self.nbe = self.data.variables['nbe'][:]
+
+        self.nv = self.data.variables['nv'][:]
+        # Make Trinode available for Python indexing
+        self.trinodes = self.nv.T - 1
+
+        # get time and adjust it to matlab datenum
+        self.julianTime = self.data.variables['time'][:]
+        self.time = self.julianTime + 678942
+        self.QC.append('Changed time from Julian to matlab datenum')
+
+
+    def load(self, filename, ax):
+
+#        self.data = nc.Dataset(filename, 'r')
+#        # self.data = sio.netcdf.netcdf_file(filename, 'r')
+#        self.x = self.data.variables['x'][:]
+#        self.y = self.data.variables['y'][:]
+#        self.xc = self.data.variables['xc'][:]
+#        self.yc = self.data.variables['yc'][:]
+#        self.lon = self.data.variables['lon'][:]
+#        self.lat = self.data.variables['lat'][:]
+#        self.lonc = self.data.variables['lonc'][:]
+#        self.latc = self.data.variables['latc'][:]
+        self.loadGrid(filename)
         self.h = self.data.variables['h'][:]
         self.nbe = self.data.variables['nbe'][:]
         self.a1u = self.data.variables['a1u'][:]
@@ -85,29 +254,33 @@ class FVCOM:
         # Make Trinode available for Python indexing
         self.trinodes = self.nv.T - 1
 
-        # Need to use len to get size of dimensions
-        self.nele = self.data.dimensions['nele']
-        self.node = self.data.dimensions['node']
-
-        # elev timeseries
-        self.elev = self.data.variables['zeta']
-
         # get time and adjust it to matlab datenum
         self.julianTime = self.data.variables['time'][:]
         self.time = self.julianTime + 678942
         self.QC.append('Changed time from Julian to matlab datenum')
 
+        # Need to use len to get size of dimensions
+        self.nele = self.data.dimensions['nele']
+        self.node = self.data.dimensions['node']
+
+        # Get regions
+        self.el_region()
+        self.node_region()
+
+        # elev timeseries
+        self.elev = self.data.variables['zeta'][:, self.region_n]
+
         try:
-            self.ww = self.data.variables['ww']
-            self.u = self.data.variables['u']
-            self.v = self.data.variables['v']
-            self.ua = self.data.variables['ua']
-            self.va = self.data.variables['va']
+            self.ww = self.data.variables['ww'][:, :, self.region_e]
+            self.u = self.data.variables['u'][:, :, self.region_e]
+            self.v = self.data.variables['v'][:, :, self.region_e]
+            self.ua = self.data.variables['ua'][:, self.region_e]
+            self.va = self.data.variables['va'][:, self.region_e]
             self.D3 = True
 
         except KeyError:
-            self.ua = self.data.variables['ua']
-            self.va = self.data.variables['va']
+            self.ua = self.data.variables['ua'][:, self.region_e]
+            self.va = self.data.variables['va'][:, self.region_e]
             self.D3 = False
 
     def centers(self, elements):
@@ -196,6 +369,7 @@ class FVCOM:
 if __name__ == '__main__':
 
     filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
+    #filename = '/home/wesley/ncfiles/'
 
     ind = [-66.3419, -66.3324, 44.2755, 44.2815]
 
