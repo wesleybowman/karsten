@@ -11,7 +11,7 @@ import scipy.io as sio
 from stationClass import station
 from adcpClass import ADCP
 from fvcomClass import FVCOM
-from fvcomClass import Tidegauge
+from tidegaugeClass import Tidegauge
 
 def mjd2num(x):
 
