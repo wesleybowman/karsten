@@ -112,11 +112,11 @@ def main(fvFiles, adcpFiles, tideFiles, debug=False):
                         adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
                         method='ols', nodiagn=True, linci=True, conf_int=True)
 
-            mod = pd.DataFrame({'ua':fvData.ua[:, ind].flatten(),
-                                'va':fvData.va[:, ind].flatten(),
-                                'elev':fvData.elev[:, ind].flatten(),
-                                'u':fvData.u[:, ind].flatten(),
-                                'v':fvData.v[:, ind].flatten()})
+            mod = {'ua':fvData.ua[:, ind].flatten(),
+                    'va':fvData.va[:, ind].flatten(),
+                    'elev':fvData.elev[:, ind].flatten(),
+                    'u':fvData.u,
+                    'v':fvData.v}
 
             obs_loc = {'name': adcpFile,
                        'type':'ADCP',
