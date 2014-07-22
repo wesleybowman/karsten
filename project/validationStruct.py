@@ -93,7 +93,8 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
                 ind = closest_point(lonlat, fvData.lon, fvData.lat)
             else:
                 fvData = FVCOM(fvFile, ax)
-                ind = fvData.closest_point(adcpData.lon[0], adcpData.lat[0])
+                ind = fvData.closest_point(adcpData.lon[0][0],
+                                           adcpData.lat[0][0])
 
 
             # right one
