@@ -41,7 +41,7 @@ def datetime2matlabdn(dt):
 
 
 
-def main(fvFiles, adcpFiles, tideFiles, isStation=True, debug=False):
+def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
 
     #fvdebugData = FVCOM(fvdebug)
     saveName = 'validationStruct.p'
@@ -91,7 +91,7 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, debug=False):
             if isStation:
                 fvData = station(fvFile)
             else:
-                fvData = FVCOM(fvFile)
+                fvData = FVCOM(fvFile, ax)
 
 
             #lonlat = np.array([adcpData.x[0], adcpData.y[0]]).T
@@ -148,6 +148,8 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, debug=False):
 
     for tideFile in tideFiles:
 
+        print tideFile
+
         tideData = Tidegauge(tideFile)
         ut_constits = ['M2','S2','N2','K2','K1','O1','P1','Q1']
         tideData.harmonics(cnstit=ut_constits, notrend=True,
@@ -163,7 +165,7 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, debug=False):
             if isStation:
                 fvData = station(fvFile)
             else:
-                fvData = FVCOM(fvFile)
+                fvData = FVCOM(fvFile, ax)
 
             ind = np.argmin(np.sqrt((fvData.lon-tideData.lon)**2+(fvData.lat-tideData.lat)**2))
             print ind
@@ -256,4 +258,6 @@ if __name__ == '__main__':
     ['/EcoII/EcoEII_server_data_tree/data/observed/GP/TideGauge/Westport_015892_20140325_1212_Z.mat',
      '/EcoII/EcoEII_server_data_tree/data/observed/DG/TideGauge/DigbyWharf_015893_20140115_2221_Z.mat']
 
-    struct = main(fvFiles, adcpFiles, tideFiles)
+    ind = [-66.3419, -66.3324, 44.2755, 44.2815]
+    struct = main(fvFiles, adcpFiles, tideFiles, isStation=False, ax=ind)
+
