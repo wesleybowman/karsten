@@ -43,7 +43,7 @@ def datetime2matlabdn(dt):
 
 def main(fvFiles, adcpFiles, tideFiles, debug=False):
 
-    fvdebugData = FVCOM(fvdebug)
+    #fvdebugData = FVCOM(fvdebug)
     saveName = 'validationStruct.p'
     #Name = 'june_2013_3D_station'
     #Struct = {}
@@ -71,12 +71,19 @@ def main(fvFiles, adcpFiles, tideFiles, debug=False):
 
         #adcpName = adcpFile.split('/')[-1].split('.')[0]
 
-        adcp_obs = pd.DataFrame({'ua':adcpData.ua,
-                                 'va':adcpData.va,
-                                 'elev':adcpData.surf,
-                                 'u':adcpData.east_vel,
-                                 'v':adcpData.north_vel,
-                                 'bins':adcpData.bins})
+        adcp_obs = {'ua':adcpData.ua,
+                    'va':adcpData.va,
+                    'elev':adcpData.surf,
+                    'u':adcpData.east_vel,
+                    'v':adcpData.north_vel,
+                    'bins':adcpData.bins}
+
+#        adcp_obs = pd.DataFrame({'ua':adcpData.ua,
+#                                 'va':adcpData.va,
+#                                 'elev':adcpData.surf,
+#                                 'u':adcpData.east_vel,
+#                                 'v':adcpData.north_vel,
+#                                 'bins':adcpData.bins})
 
         for fvFile in fvFiles:
 
