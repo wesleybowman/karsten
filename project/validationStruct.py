@@ -212,7 +212,7 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
                 #ind = closest_point(lonlat, fvData.lon, fvData.lat)
             else:
                 #ax = np.array([adcpData.lon[0], adcpData.lat[0]]).T
-                ax = [[tideData.lon[0][0]], [tideData.lat[0][0]]]
+                ax = [[tideData.lon], [tideData.lat]]
                 fvData = FVCOM(fvFile, ax)
 
             if isStation:
