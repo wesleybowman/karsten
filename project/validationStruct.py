@@ -125,21 +125,40 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
             #print fvData.va[:, ind].shape
             #print fvData.lat[ind].shape
 
-            fvVelCoef = ut_solv(fvData.time, fvData.ua[:, ind].flatten(),
-                                fvData.va[:, ind].flatten(),
-                        adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
-                        method='ols', nodiagn=True, linci=True, conf_int=True)
+            if isStation:
+                fvVelCoef = ut_solv(fvData.time, fvData.ua[:, ind].flatten(),
+                                    fvData.va[:, ind].flatten(),
+                            adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
+                            method='ols', nodiagn=True, linci=True, conf_int=True)
 
-            print fvData.elev[:, ind].shape
-            fvElevCoef = ut_solv(fvData.time, fvData.elev[:, ind].flatten(), [],
-                        adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
-                        method='ols', nodiagn=True, linci=True, conf_int=True)
+                print fvData.elev[:, ind].shape
+                fvElevCoef = ut_solv(fvData.time, fvData.elev[:, ind].flatten(), [],
+                            adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
+                            method='ols', nodiagn=True, linci=True, conf_int=True)
 
-            mod = {'ua':fvData.ua[:, ind].flatten(),
-                    'va':fvData.va[:, ind].flatten(),
-                    'elev':fvData.elev[:, ind].flatten(),
-                    'u':fvData.u,
-                    'v':fvData.v}
+                mod = {'ua':fvData.ua[:, ind].flatten(),
+                        'va':fvData.va[:, ind].flatten(),
+                        'elev':fvData.elev[:, ind].flatten(),
+                        'u':fvData.u,
+                        'v':fvData.v}
+            else:
+                fvVelCoef = ut_solv(fvData.time, fvData.ua.flatten(),
+                                    fvData.va.flatten(),
+                            adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
+                            method='ols', nodiagn=True, linci=True, conf_int=True)
+
+                print fvData.elev[:, ind].shape
+                fvElevCoef = ut_solv(fvData.time, fvData.elev.flatten(), [],
+                            adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
+                            method='ols', nodiagn=True, linci=True, conf_int=True)
+
+                mod = {'ua':fvData.ua.flatten(),
+                        'va':fvData.va.flatten(),
+                        'elev':fvData.elev.flatten(),
+                        'u':fvData.u,
+                        'v':fvData.v}
+
+
 
             obs_loc = {'name': adcpFile,
                        'type':'ADCP',
@@ -181,32 +200,40 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
 
             print fvFile
             saveName = fvFile + 'validationStruct.p'
+
             if isStation:
                 fvData = station(fvFile)
+                ind = np.argmin(np.sqrt((fvData.lon-tideData.lon)**2+(fvData.lat-tideData.lat)**2))
+                #ind = closest_point(lonlat, fvData.lon, fvData.lat)
             else:
+                #ax = np.array([adcpData.lon[0], adcpData.lat[0]]).T
+                ax = [[tideData.lon[0][0]], [tideData.lat[0][0]]]
                 fvData = FVCOM(fvFile, ax)
 
-            ind = np.argmin(np.sqrt((fvData.lon-tideData.lon)**2+(fvData.lat-tideData.lat)**2))
-            print ind
-            #lonlat = np.array([tideData.lon[0], tideData.lat[0]]).T
-            #ind = closest_point(lonlat, fvData.lon, fvData.lat)
-            #print ind
+            if isStation:
 
-            print fvData.time.shape
-            print fvData.ua[:, ind].shape
-            print fvData.va[:, ind].shape
-            print fvData.lat[ind].shape
+                print fvData.elev[:, ind].shape
+                fvElevCoef = ut_solv(fvData.time, fvData.elev[:, ind].flatten(), [],
+                            adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
+                            method='ols', nodiagn=True, linci=True, conf_int=True)
 
-            print fvData.elev[:, ind].shape
-            fvElevCoef = ut_solv(fvData.time, fvData.elev[:, ind].flatten(), [],
-                        adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
-                        method='ols', nodiagn=True, linci=True, conf_int=True)
+                mod = {'ua':fvData.ua[:, ind].flatten(),
+                        'va':fvData.va[:, ind].flatten(),
+                        'elev':fvData.elev[:, ind].flatten(),
+                        'u':fvData.u,
+                        'v':fvData.v}
+            else:
 
-            mod = {'ua':fvData.ua[:, ind].flatten(),
-                   'va':fvData.va[:, ind].flatten(),
-                   'elev':fvData.elev[:, ind].flatten(),
-                   'u':fvData.u,
-                   'v':fvData.v}
+                print fvData.elev[:, ind].shape
+                fvElevCoef = ut_solv(fvData.time, fvData.elev.flatten(), [],
+                            adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
+                            method='ols', nodiagn=True, linci=True, conf_int=True)
+
+                mod = {'ua':fvData.ua.flatten(),
+                        'va':fvData.va.flatten(),
+                        'elev':fvData.elev.flatten(),
+                        'u':fvData.u,
+                        'v':fvData.v}
 
 
             obs_loc = {'name':tideFile, 'type':'TideGauge',
@@ -221,45 +248,6 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
 
 
             struct = np.hstack((struct, obs_loc))
-
-#    for fvFile in fvFiles:
-#
-#        print fvFile
-#        saveName = fvFile + 'validationStruct.p'
-#        fvData = station(fvFile)
-#
-#        struct = np.array([])
-#
-#        print fvData.time.shape
-#        print fvData.ua[:, ind].shape
-#        print fvData.va[:, ind].shape
-#        print fvData.lat[ind].shape
-#
-#        fvVelCoef = ut_solv(fvData.time, fvData.ua[:, ind].flatten(),
-#                            fvData.va[:, ind].flatten(),
-#                    adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
-#                    method='ols', nodiagn=True, linci=True, conf_int=True)
-#
-#        print fvData.elev[:, ind].shape
-#        fvElevCoef = ut_solv(fvData.time, fvData.elev[:, ind].flatten(), [],
-#                    adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
-#                    method='ols', nodiagn=True, linci=True, conf_int=True)
-#
-#        mod = pd.DataFrame({'ua':fvData.ua[:, ind].flatten(),
-#                            'va':fvData.va[:, ind].flatten(),
-#                            'elev':fvData.elev[:, ind].flatten(),
-#                            'u':fvData.u, 'v':fvData.v})
-#
-#
-#        obs_loc = {'name': adcpName, 'type':'ADCP', 'lat':fvdebugData.lat[newind],
-#                'lon':fvdebugData.lon[newind], 'adcp_obs_timeseries':adcp_obs,
-#                'mod_timeseries':mod, 'obs_time':adcpData.mtime,
-#                'mod_time':fvData.time, 'vel_obs_harmonics':adcpVelCoef,
-#                'elev_obs_harmonics':adcpElevCoef,
-#                'vel_mod_harmonics':fvVelCoef, 'elev_mod_harmonics':fvElevCoef}
-#
-#        struct = np.hstack((struct, obs_loc))
-
 
     pickle.dump(struct, open(saveName, "wb"))
     return struct
