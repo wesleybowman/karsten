@@ -269,7 +269,7 @@ class FVCOM:
             self.node_region()
         else:
             print ax
-            print ax.shape
+            #print ax.shape
             self.region_e = self.closest_point(ax[0], ax[1])
             self.region_n = self.closest_point(ax[0], ax[1])
 
