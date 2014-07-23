@@ -95,11 +95,13 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
                 fvData = station(fvFile)
                 ind = closest_point(lonlat, fvData.lon, fvData.lat)
             else:
+                ax = [adcpData.lon[0][0], adcpData.lat[0][0]]
                 fvData = FVCOM(fvFile, ax)
-                print ax
-                lonlat = np.array([[adcpData.lon[0][0],
-                                   adcpData.lat[0][0]]])
-                ind = closest_point(lonlat, fvData.lon, fvData.lat)
+                #print ax
+#                lonlat = np.array([[adcpData.lon[0][0],
+#                                   adcpData.lat[0][0]]])
+#                ind = closest_point(lonlat, fvData.lon, fvData.lat)
+#                print ind
 
 #                ind = fvData.closest_point([adcpData.lon[0][0]],
 #                                           [adcpData.lat[0][0]])
@@ -115,9 +117,11 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
             #ind = closest_point(new.T, fvData.x, fvData.y)
 
             print fvData.time.shape
-            print fvData.ua[:, ind].shape
-            print fvData.va[:, ind].shape
-            print fvData.lat[ind].shape
+            print fvData.ua.shape
+            print fvData.ua
+            #print fvData.ua[:, ind].shape
+            #print fvData.va[:, ind].shape
+            #print fvData.lat[ind].shape
 
             fvVelCoef = ut_solv(fvData.time, fvData.ua[:, ind].flatten(),
                                 fvData.va[:, ind].flatten(),
@@ -276,6 +280,7 @@ if __name__ == '__main__':
     ['/EcoII/EcoEII_server_data_tree/data/observed/GP/TideGauge/Westport_015892_20140325_1212_Z.mat',
      '/EcoII/EcoEII_server_data_tree/data/observed/DG/TideGauge/DigbyWharf_015893_20140115_2221_Z.mat']
 
+    #ind = [-66.3419, -66.3324, 44.2755, 44.2815]
     ind = [-66.3419, -66.3324, 44.2755, 44.2815]
     struct = main(fvFiles, adcpFiles, tideFiles, isStation=False, ax=ind)
 
