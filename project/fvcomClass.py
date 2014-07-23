@@ -270,8 +270,8 @@ class FVCOM:
         else:
             print ax
             print ax.shape
-            self.region_e = self.closest_point(ax, self.lonc, self.latc)
-            self.region_b = self.closest_point(ax, self.lon, self.lat)
+            self.region_e = self.closest_point(ax[0], ax[1])
+            self.region_n = self.closest_point(ax[0], ax[1])
 
         # elev timeseries
         self.elev = self.data.variables['zeta'][:, self.region_n]
@@ -302,7 +302,7 @@ class FVCOM:
 
         return elc, hc
 
-    def closest_point(self, pt_lon, pt_lat):
+    def closest_point(self, pt_lon, pt_lat, center=True):
         # def closest_point(self, pt_lon, pt_lat, lon, lat):
         '''
         Finds the closest exact lon, lat to a lon, lat coordinate.
@@ -315,7 +315,10 @@ class FVCOM:
         points = np.array([pt_lon, pt_lat]).T
 
         # point_list = np.array([lon,lat]).T
-        point_list = np.array([self.lonc, self.latc]).T
+        if center:
+            point_list = np.array([self.lonc, self.latc]).T
+        else:
+            point_list = np.array([self.lon, self.lat]).T
 
         closest_dist = ((point_list[:, 0] - points[:, 0, None])**2 +
                         (point_list[:, 1] - points[:, 1, None])**2)
