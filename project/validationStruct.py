@@ -152,11 +152,16 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
                             adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
                             method='ols', nodiagn=True, linci=True, conf_int=True)
 
-                mod = {'ua':fvData.ua.flatten(),
-                        'va':fvData.va.flatten(),
-                        'elev':fvData.elev.flatten(),
-                        'u':fvData.u,
-                        'v':fvData.v}
+                if fvData.D3:
+                    mod = {'ua':fvData.ua.flatten(),
+                            'va':fvData.va.flatten(),
+                            'elev':fvData.elev.flatten(),
+                            'u':fvData.u,
+                            'v':fvData.v}
+                else:
+                    mod = {'ua':fvData.ua.flatten(),
+                            'va':fvData.va.flatten(),
+                            'elev':fvData.elev.flatten()}
 
 
 
@@ -229,11 +234,17 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
                             adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
                             method='ols', nodiagn=True, linci=True, conf_int=True)
 
-                mod = {'ua':fvData.ua.flatten(),
-                        'va':fvData.va.flatten(),
-                        'elev':fvData.elev.flatten(),
-                        'u':fvData.u,
-                        'v':fvData.v}
+                if fvData.D3:
+                    mod = {'ua':fvData.ua.flatten(),
+                            'va':fvData.va.flatten(),
+                            'elev':fvData.elev.flatten(),
+                            'u':fvData.u,
+                            'v':fvData.v}
+                else:
+                    mod = {'ua':fvData.ua.flatten(),
+                            'va':fvData.va.flatten(),
+                            'elev':fvData.elev.flatten()}
+
 
 
             obs_loc = {'name':tideFile, 'type':'TideGauge',
