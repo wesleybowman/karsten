@@ -168,7 +168,7 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
             obs_loc = {'name': adcpFile,
                        'type':'ADCP',
                        'lat':adcpData.lat[0],
-                       'lon':adcpData.lon[0,
+                       'lon':adcpData.lon[0],
                        'obs_timeseries':adcp_obs,
                        'mod_timeseries':mod,
                        'obs_time':adcpData.mtime,
