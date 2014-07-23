@@ -147,7 +147,7 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
                             adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
                             method='ols', nodiagn=True, linci=True, conf_int=True)
 
-                print fvData.elev[:, ind].shape
+                #print fvData.elev[:, ind].shape
                 fvElevCoef = ut_solv(fvData.time, fvData.elev.flatten(), [],
                             adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
                             method='ols', nodiagn=True, linci=True, conf_int=True)
@@ -224,7 +224,7 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
                         'v':fvData.v}
             else:
 
-                print fvData.elev[:, ind].shape
+                #print fvData.elev[:, ind].shape
                 fvElevCoef = ut_solv(fvData.time, fvData.elev.flatten(), [],
                             adcpData.lat[0], cnstit='auto', rmin=0.95, notrend=True,
                             method='ols', nodiagn=True, linci=True, conf_int=True)
