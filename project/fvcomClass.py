@@ -274,7 +274,8 @@ class FVCOM:
             self.region_n = self.closest_point(ax[0], ax[1])
 
         # elev timeseries
-        self.elev = self.data.variables['zeta'][:, self.region_n]
+        # may need to switch back to region_n
+        self.elev = self.data.variables['zeta'][:, self.region_e]
 
         try:
             self.ww = self.data.variables['ww'][:, :, self.region_e]
