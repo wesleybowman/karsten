@@ -270,8 +270,8 @@ class FVCOM:
         else:
             print ax
             print ax.shape
-            self.region_e = self.closest_point(ax[0,0], ax[0,1])
-            self.region_n = self.closest_point(ax[0,0], ax[0,1])
+            self.region_e = self.closest_point(ax[0], ax[1])
+            self.region_n = self.closest_point(ax[0], ax[1])
 
         # elev timeseries
         self.elev = self.data.variables['zeta'][:, self.region_n]
