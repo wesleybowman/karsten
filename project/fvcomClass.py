@@ -264,8 +264,12 @@ class FVCOM:
         self.node = self.data.dimensions['node']
 
         # Get regions
-        self.el_region()
-        self.node_region()
+        if len(ax) == 4:
+            self.el_region()
+            self.node_region()
+        else:
+            self.region_e = self.closest_point(ax, self.lonc, self.latc)
+            self.region_b = self.closest_point(ax, self.lon, self.lat)
 
         # elev timeseries
         self.elev = self.data.variables['zeta'][:, self.region_n]
