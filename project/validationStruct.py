@@ -5,6 +5,7 @@ import netCDF4 as nc
 from datetime import datetime, timedelta
 import cPickle as pickle
 import sys
+import os
 sys.path.append('/home/wesley/github/UTide/')
 from utide import ut_solv
 import scipy.io as sio
@@ -204,7 +205,6 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
         for fvFile in fvFiles:
 
             print fvFile
-            saveName = fvFile + 'validationStruct.p'
 
             if isStation:
                 fvData = station(fvFile)
@@ -258,6 +258,7 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
                        'mod_timeseries':mod}
 
 
+            saveName = os.path.dirname(fvFile) + 'validationStruct.p'
             struct = np.hstack((struct, obs_loc))
 
     pickle.dump(struct, open(saveName, "wb"))
