@@ -119,12 +119,6 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
         #new = np.array([fvdebugData.xc[newind], fvdebugData.yc[newind]])
         #ind = closest_point(new.T, fvData.x, fvData.y)
 
-        print fvData.time.shape
-        print fvData.ua.shape
-        print fvData.ua
-        #print fvData.ua[:, ind].shape
-        #print fvData.va[:, ind].shape
-        #print fvData.lat[ind].shape
 
         if isStation:
             fvVelCoef = ut_solv(fvData.time, fvData.ua[:, ind].flatten(),
@@ -258,17 +252,16 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
                     'mod_timeseries':mod}
 
 
-        saveName = os.path.dirname(fvFile) + 'validationStruct.p'
+        saveName = os.path.dirname(fvFile) + '/validationStruct.p'
         print 'SAVENAME'
         print saveName
         struct = np.hstack((struct, obs_loc))
 
-    pickle.dump(struct, open(saveName, "wb"))
+        pickle.dump(struct, open(saveName, "wb"))
     return struct
 
 if __name__ == '__main__':
 
-    #fvFiles = ['/EcoII/EcoEII_server_data_tree/workspace/simulated/FVCOM/dngrid/june_2013_3D/output/']
     fvFiles = ['/EcoII/EcoEII_server_data_tree/workspace/simulated/FVCOM/dngrid/calibration/bottom_roughness/2D/0.0015/output/dngrid_0001.nc',
      '/EcoII/EcoEII_server_data_tree/workspace/simulated/FVCOM/dngrid/calibration/bottom_roughness/2D/0.0020/output/dngrid_0001.nc',
      '/EcoII/EcoEII_server_data_tree/workspace/simulated/FVCOM/dngrid/calibration/bottom_roughness/2D/0.0025/output/dngrid_0001.nc',

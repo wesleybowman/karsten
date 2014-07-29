@@ -258,9 +258,9 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
                        'mod_timeseries':mod}
 
 
-            saveName = os.path.dirname(fvFile) + 'validationStruct.p'
             struct = np.hstack((struct, obs_loc))
 
+    saveName = 'validationStruct.p'
     pickle.dump(struct, open(saveName, "wb"))
     return struct
 
