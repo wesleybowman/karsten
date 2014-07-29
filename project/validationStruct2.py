@@ -259,6 +259,8 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
 
 
         saveName = os.path.dirname(fvFile) + 'validationStruct.p'
+        print 'SAVENAME'
+        print saveName
         struct = np.hstack((struct, obs_loc))
 
     pickle.dump(struct, open(saveName, "wb"))
