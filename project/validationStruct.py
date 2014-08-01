@@ -45,50 +45,51 @@ def datetime2matlabdn(dt):
 
 
 
-def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
+def main(fvFiles, adcpFiles, tideFiles, isStation=True, debug=False):
 
     #fvdebugData = FVCOM(fvdebug)
-    saveName = 'validationStruct.p'
+    #saveName = 'validationStruct.p'
     #Name = 'june_2013_3D_station'
     #Struct = {}
 
-    struct = np.array([])
-    for adcpFile in adcpFiles:
-        print adcpFile
-        adcpData = ADCP(adcpFile)
-        lonlat = np.array([adcpData.lon[0], adcpData.lat[0]]).T
+    for fvFile in fvFiles:
+        print fvFile
+        struct = np.array([])
+        for adcpFile in adcpFiles:
+            print adcpFile
+            adcpData = ADCP(adcpFile)
+            lonlat = np.array([adcpData.lon[0], adcpData.lat[0]]).T
 
-        print adcpData.mtime.shape
-        print adcpData.ua.shape
-        print adcpData.va.shape
-        print adcpData.surf.shape
+            print adcpData.mtime.shape
+            print adcpData.ua.shape
+            print adcpData.va.shape
+            print adcpData.surf.shape
 
-        adcpVelCoef = ut_solv(adcpData.mtime, adcpData.ua,
-                        adcpData.va, adcpData.lat[0],
-                        cnstit='auto', rmin=0.95, notrend=True,
-                        method='ols', nodiagn=True, linci=True, coef_int=True)
+            adcpVelCoef = ut_solv(adcpData.mtime, adcpData.ua,
+                            adcpData.va, adcpData.lat[0],
+                            cnstit='auto', rmin=0.95, notrend=True,
+                            method='ols', nodiagn=True, linci=True, coef_int=True)
 
-        adcpElevCoef = ut_solv(adcpData.mtime, adcpData.surf,
-                        [], adcpData.lat[0],
-                        cnstit='auto', rmin=0.95, notrend=True,
-                        method='ols', nodiagn=True, linci=True, coef_int=True)
+            adcpElevCoef = ut_solv(adcpData.mtime, adcpData.surf,
+                            [], adcpData.lat[0],
+                            cnstit='auto', rmin=0.95, notrend=True,
+                            method='ols', nodiagn=True, linci=True, coef_int=True)
 
-        #adcpName = adcpFile.split('/')[-1].split('.')[0]
+            #adcpName = adcpFile.split('/')[-1].split('.')[0]
 
-        adcp_obs = {'ua':adcpData.ua,
-                    'va':adcpData.va,
-                    'elev':adcpData.surf,
-                    'u':adcpData.east_vel,
-                    'v':adcpData.north_vel,
-                    'bins':adcpData.bins}
+            adcp_obs = {'ua':adcpData.ua,
+                        'va':adcpData.va,
+                        'elev':adcpData.surf,
+                        'u':adcpData.east_vel,
+                        'v':adcpData.north_vel,
+                        'bins':adcpData.bins}
 
-#        adcp_obs = pd.DataFrame({'ua':adcpData.ua,
-#                                 'va':adcpData.va,
-#                                 'elev':adcpData.surf,
-#                                 'u':adcpData.east_vel,
-#                                 'v':adcpData.north_vel})
+    #        adcp_obs = pd.DataFrame({'ua':adcpData.ua,
+    #                                 'va':adcpData.va,
+    #                                 'elev':adcpData.surf,
+    #                                 'u':adcpData.east_vel,
+    #                                 'v':adcpData.north_vel})
 
-        for fvFile in fvFiles:
 
             print fvFile
             saveName = fvFile + 'validationStruct.p'
@@ -101,13 +102,13 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
                 #ax = [adcpData.lon[0][0], adcpData.lat[0][0]]
                 fvData = FVCOM(fvFile, ax)
                 #print ax
-#                lonlat = np.array([[adcpData.lon[0][0],
-#                                   adcpData.lat[0][0]]])
-#                ind = closest_point(lonlat, fvData.lon, fvData.lat)
-#                print ind
+    #                lonlat = np.array([[adcpData.lon[0][0],
+    #                                   adcpData.lat[0][0]]])
+    #                ind = closest_point(lonlat, fvData.lon, fvData.lat)
+    #                print ind
 
-#                ind = fvData.closest_point([adcpData.lon[0][0]],
-#                                           [adcpData.lat[0][0]])
+    #                ind = fvData.closest_point([adcpData.lon[0][0]],
+    #                                           [adcpData.lat[0][0]])
 
 
             # right one
@@ -119,12 +120,6 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
             #new = np.array([fvdebugData.xc[newind], fvdebugData.yc[newind]])
             #ind = closest_point(new.T, fvData.x, fvData.y)
 
-            print fvData.time.shape
-            print fvData.ua.shape
-            print fvData.ua
-            #print fvData.ua[:, ind].shape
-            #print fvData.va[:, ind].shape
-            #print fvData.lat[ind].shape
 
             if isStation:
                 fvVelCoef = ut_solv(fvData.time, fvData.ua[:, ind].flatten(),
@@ -167,42 +162,42 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
 
 
             obs_loc = {'name': adcpFile,
-                       'type':'ADCP',
-                       'lat':adcpData.lat[0],
-                       'lon':adcpData.lon[0],
-                       'obs_timeseries':adcp_obs,
-                       'mod_timeseries':mod,
-                       'obs_time':adcpData.mtime,
-                       'mod_time':fvData.time,
-                       'vel_obs_harmonics':adcpVelCoef,
-                       'elev_obs_harmonics':adcpElevCoef,
-                       'vel_mod_harmonics':fvVelCoef,
-                       'elev_mod_harmonics':fvElevCoef}
-                       #'adcp_bins':adcpData.bins}
+                        'type':'ADCP',
+                        'lat':adcpData.lat[0],
+                        'lon':adcpData.lon[0],
+                        'obs_timeseries':adcp_obs,
+                        'mod_timeseries':mod,
+                        'obs_time':adcpData.mtime,
+                        'mod_time':fvData.time,
+                        'vel_obs_harmonics':adcpVelCoef,
+                        'elev_obs_harmonics':adcpElevCoef,
+                        'vel_mod_harmonics':fvVelCoef,
+                        'elev_mod_harmonics':fvElevCoef}
+                        #'adcp_bins':adcpData.bins}
 
-#            obs_loc = {'name': adcpName, 'type':'ADCP', 'lat':fvdebugData.lat[newind],
-#                    'lon':fvdebugData.lon[newind], 'obs_timeseries':adcp_obs,
-#                    'mod_timeseries':mod, 'obs_time':adcpData.mtime,
-#                    'mod_time':fvData.time, 'vel_obs_harmonics':adcpVelCoef,
-#                    'elev_obs_harmonics':adcpElevCoef,
-#                    'vel_mod_harmonics':fvVelCoef, 'elev_mod_harmonics':fvElevCoef}
+    #            obs_loc = {'name': adcpName, 'type':'ADCP', 'lat':fvdebugData.lat[newind],
+    #                    'lon':fvdebugData.lon[newind], 'obs_timeseries':adcp_obs,
+    #                    'mod_timeseries':mod, 'obs_time':adcpData.mtime,
+    #                    'mod_time':fvData.time, 'vel_obs_harmonics':adcpVelCoef,
+    #                    'elev_obs_harmonics':adcpElevCoef,
+    #                    'vel_mod_harmonics':fvVelCoef, 'elev_mod_harmonics':fvElevCoef}
 
             struct = np.hstack((struct, obs_loc))
 
 
-    for tideFile in tideFiles:
+    #for fvFile in fvFiles:
+        for tideFile in tideFiles:
 
-        print tideFile
+            print tideFile
 
-        tideData = Tidegauge(tideFile)
-        ut_constits = ['M2','S2','N2','K2','K1','O1','P1','Q1']
-        tideData.harmonics(cnstit=ut_constits, notrend=True,
-                           rmin=0.95, method='ols', nodiagn=True, linci=True,
-                           ordercnstit='frq')
+            tideData = Tidegauge(tideFile)
+            ut_constits = ['M2','S2','N2','K2','K1','O1','P1','Q1']
+            tideData.harmonics(cnstit=ut_constits, notrend=True,
+                            rmin=0.95, method='ols', nodiagn=True, linci=True,
+                            ordercnstit='frq')
 
-        tide_obs = {'data':tideData.data, 'elev':tideData.elev}
+            tide_obs = {'data':tideData.data, 'elev':tideData.elev}
 
-        for fvFile in fvFiles:
 
             print fvFile
 
@@ -248,25 +243,25 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
 
 
             obs_loc = {'name':tideFile, 'type':'TideGauge',
-                       'mod_time':fvData.time,
-                       'obs_time':tideData.time,
-                       'lon':tideData.lon,
-                       'lat':tideData.lat,
-                       'elev_obs_harmonics':tideData.coef,
-                       'elev_mod_harmonics': fvElevCoef,
-                       'obs_timeseries':tide_obs,
-                       'mod_timeseries':mod}
+                        'mod_time':fvData.time,
+                        'obs_time':tideData.time,
+                        'lon':tideData.lon,
+                        'lat':tideData.lat,
+                        'elev_obs_harmonics':tideData.coef,
+                        'elev_mod_harmonics': fvElevCoef,
+                        'obs_timeseries':tide_obs,
+                        'mod_timeseries':mod}
 
 
+            saveName = os.path.dirname(fvFile) + '/validationStruct.p'
+            print 'SAVENAME'
+            print saveName
             struct = np.hstack((struct, obs_loc))
 
-    saveName = 'validationStruct.p'
-    pickle.dump(struct, open(saveName, "wb"))
-    return struct
+        pickle.dump(struct, open(saveName, "wb"))
 
 if __name__ == '__main__':
 
-    #fvFiles = ['/EcoII/EcoEII_server_data_tree/workspace/simulated/FVCOM/dngrid/june_2013_3D/output/']
     fvFiles = ['/EcoII/EcoEII_server_data_tree/workspace/simulated/FVCOM/dngrid/calibration/bottom_roughness/2D/0.0015/output/dngrid_0001.nc',
      '/EcoII/EcoEII_server_data_tree/workspace/simulated/FVCOM/dngrid/calibration/bottom_roughness/2D/0.0020/output/dngrid_0001.nc',
      '/EcoII/EcoEII_server_data_tree/workspace/simulated/FVCOM/dngrid/calibration/bottom_roughness/2D/0.0025/output/dngrid_0001.nc',
@@ -284,5 +279,5 @@ if __name__ == '__main__':
 
     #ind = [-66.3419, -66.3324, 44.2755, 44.2815]
     ind = [-66.3419, -66.3324, 44.2755, 44.2815]
-    struct = main(fvFiles, adcpFiles, tideFiles, isStation=False, ax=ind)
+    main(fvFiles, adcpFiles, tideFiles, isStation=False)
 
