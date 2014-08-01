@@ -4,6 +4,7 @@ from bisect import bisect_left, bisect_right
 import matplotlib.pyplot as plt
 import matplotlib.tri as Tri
 import netCDF4 as nc
+from createNC import createNC
 
 
 
@@ -34,7 +35,7 @@ def loadGrid(filename):
     # Make Trinode available for Python indexing
     #trinodes = nv.T - 1
 
-    return lon, lat, nbe, nv, a1u, a2u, aw0, awx, awy
+    return lon, lat, nbe, nv, a1u, a2u, aw0, awx, awy, x, xc, y, yc, lonc, latc
 
 
 def node_region(ax, lon, lat):
@@ -77,7 +78,7 @@ def regioner(filename, ax):
         on.  Default is 2D.
         """
 
-    lon, lat, nbe, nv, a1u, a2u, aw0, awx, awy = loadGrid(filename)
+    lon, lat, nbe, nv, a1u, a2u, aw0, awx, awy, x, xc, y, yc, lonc, latc = loadGrid(filename)
 
     l = nv.shape[0]
 
@@ -151,15 +152,16 @@ def regioner(filename, ax):
     data['awx'] = awx[:, element_index]
     data['awy'] = awy[:, element_index]
 
-    #data['h'] = test.h[node_index]
-    #data['uvnodell'] = data['uvnodell'][element_index,:]
-#    data['x'] = test.x[node_index]
-#    data['y'] = test.y[node_index]
-#        data['zeta'] = test.elev[:,node_index]
-#        data['ua'] = test.ua[:,element_index]
-#        data['va'] = test.va[:,element_index]
+    data['x'] = x[node_index]
+    data['y'] = y[node_index]
+    data['xc'] = xc[node_index]
+    data['yc'] = yc[node_index]
+
     data['lon'] = lon[node_index]
     data['lat'] = lat[node_index]
+    data['lonc'] = lonc[node_index]
+    data['latc'] = latc[node_index]
+
     data['trigrid'] = Tri.Triangulation(data['lon'], data['lat'], \
                                             data['nv'])
 
@@ -198,4 +200,21 @@ if __name__ == '__main__':
     filename = '/home/wesley/ncfiles/smallcape_force_0001.nc'
     ind = [-66.3419, -66.3324, 44.2755, 44.2815]
 
+    print 'Regioning'
     data = regioner(filename, ind)
+    print 'Regioned'
+
+    print 'Data loading....'
+    ncFile = nc.Dataset(filename, 'r')
+    data['h'] = ncFile.variables['h'][data['node_index']]
+    data['elev'] = ncFile.variables['zeta'][:, data['node_index']]
+    data['ua'] = ncFile.variables['ua'][:, data['element_index']]
+    data['va'] = ncFile.variables['va'][:, data['element_index']]
+    data['time'] = ncFile.variables['time'][:]
+    data['siglay'] = ncFile.variables['siglay'][:, data['node_index']]
+    data['siglev'] = ncFile.variables['siglev'][:, data['node_index']]
+
+    print 'Data loaded'
+
+    print 'Creating new NC file for chunked data'
+    createNC(data)
