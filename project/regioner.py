@@ -83,8 +83,6 @@ def regioner(filename, ax):
 
     idx = node_region(ax, lon, lat)
 
-
-
     #first, reindex elements in the region
     element_index_tmp = np.zeros(l, int)
     nv_rs = nv.reshape(l*3, order='F')

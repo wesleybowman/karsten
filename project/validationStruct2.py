@@ -45,15 +45,17 @@ def datetime2matlabdn(dt):
 
 
 
-def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
+def main(fvFiles, adcpFiles, tideFiles, isStation=True, debug=False):
 
     #fvdebugData = FVCOM(fvdebug)
     #saveName = 'validationStruct.p'
     #Name = 'june_2013_3D_station'
     #Struct = {}
 
-    struct = np.array([])
     for fvFile in fvFiles:
+        print fvFile
+        struct = np.array([])
+        print struct
         for adcpFile in adcpFiles:
             print adcpFile
             adcpData = ADCP(adcpFile)
@@ -258,7 +260,6 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, ax=[], debug=False):
             struct = np.hstack((struct, obs_loc))
 
         pickle.dump(struct, open(saveName, "wb"))
-    return struct
 
 if __name__ == '__main__':
 
@@ -279,5 +280,5 @@ if __name__ == '__main__':
 
     #ind = [-66.3419, -66.3324, 44.2755, 44.2815]
     ind = [-66.3419, -66.3324, 44.2755, 44.2815]
-    struct = main(fvFiles, adcpFiles, tideFiles, isStation=False, ax=ind)
+    main(fvFiles, adcpFiles, tideFiles, isStation=False)
 
