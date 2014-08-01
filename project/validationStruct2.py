@@ -55,7 +55,6 @@ def main(fvFiles, adcpFiles, tideFiles, isStation=True, debug=False):
     for fvFile in fvFiles:
         print fvFile
         struct = np.array([])
-        print struct
         for adcpFile in adcpFiles:
             print adcpFile
             adcpData = ADCP(adcpFile)
